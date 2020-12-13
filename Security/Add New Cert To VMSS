@@ -1,0 +1,100 @@
+Requires [AzureRM.ServiceFabric](https://www.powershellgallery.com/packages/AzureRM.ServiceFabric/0.2.0) PowerShell Module installed.
+
+These new PowerShell commands are the preferred method you should suggest to your customer to add/remove the certs as this will also properly ACL the private key with NETWORK_SERVICE 
+
+Cmdlet          Add-AzureRmServiceFabricApplicationCertificate     0.2.0      AzureRM.ServiceFabric 
+
+Cmdlet          Add-AzureRmServiceFabricClientCertificate          0.2.0      AzureRM.ServiceFabric 
+
+Cmdlet          Add-AzureRmServiceFabricClusterCertificate         0.2.0      AzureRM.ServiceFabric 
+
+Cmdlet          Remove-AzureRmServiceFabricClientCertificate       0.2.0      AzureRM.ServiceFabric 
+
+Cmdlet          Remove-AzureRmServiceFabricClusterCertificate      0.2.0      AzureRM.ServiceFabric 
+
+The following is a PowerShell Script to Achieve this:
+
+```powershell
+Param(
+    [string] [Parameter(Mandatory=$true)] $KeyVaultResourceGroupName,
+    [string] [Parameter(Mandatory=$true)] $VmssResourceGroupName,
+    [string] [Parameter(Mandatory=$true)] $VaultName,
+    [string] [Parameter(Mandatory=$true)] $VmssName,
+    [string] [Parameter(Mandatory=$true)] $SubscriptionId,
+    [string] [Parameter(Mandatory=$true)] $SecretName
+)
+
+Set-StrictMode -Version 3
+
+$ErrorActionPreference = "Stop"
+
+# Login
+Login-AzureRmAccount -SubscriptionId $SubscriptionId
+$sourceVaultId = "/subscriptions/$SubscriptionId/resourceGroups/$KeyVaultResourceGroupName/providers/Microsoft.KeyVault/vaults/$VaultName"
+$sourceVaultId
+$sourceVaultUrl = (Get-AzureKeyVaultSecret -VaultName $VaultName -Name $SecretName).Id
+$sourceVaultUrl
+$certConfig = New-AzureRmVmssVaultCertificateConfig -CertificateUrl $sourceVaultUrl -CertificateStore "My"
+$certConfig
+# Get current vmss 
+$vmss = Get-AzureRmVmss -ResourceGroupName $VmssResourceGroupName -VMScaleSetName $VmssName
+$vmss
+# add new secret 
+$vmss = Add-AzureRmVmssSecret -VirtualMachineScaleSet $vmss -SourceVaultId $sourceVaultId -VaultCertificate $certConfig
+$vmss
+#update VMSS 
+Update-AzureRmVmss -ResourceGroupName $VmssResourceGroupName -Name $VmssName -VirtualMachineScaleSet $vmss -Verbose
+```
+
+[NOTE] : For installing Certificate for Linux please remove this parameter, otherwise you will get below error message  
+
+" 
+Add-AzureRmServiceFabricClusterCertificate : Code:InvalidParameter, Message:Parameter 'certificateStore' is not allowed. ,Details: 
+At line:1 char:1 
++ Add-AzureRmServiceFabricClusterCertificate -ResourceGroupName 'sqlsfp ... 
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    + CategoryInfo          : NotSpecified: (:) [Add-AzureRmServ...sterCertificate], Exception 
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.ServiceFabric.Commands.AddAzureRmServiceFabricClusterCertificate 
+Add-AzureRmServiceFabricClusterCertificate : One or more errors occurred. 
+At line:1 char:1 
++ Add-AzureRmServiceFabricClusterCertificate -ResourceGroupName 'sqlsfp ... 
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    + CategoryInfo          : CloseError: (:) [Add-AzureRmServ...sterCertificate], AggregateException 
+    + FullyQualifiedErrorId : Microsoft.Azure.Commands.ServiceFabric.Commands.AddAzureRmServiceFabricClusterCertificate 
+DEBUG: AzureQoSEvent: CommandName - Add-AzureRmServiceFabricClusterCertificate; IsSuccess - False; Duration - 00:00:25.1072146; Exception - System.AggregateException: One or more errors occurred. ---> System.AggregateException: One or more errors occurred. ---> 
+System.AggregateException: One or more errors occurred. ---> Microsoft.Rest.Azure.CloudException: Parameter 'certificateStore' is not allowed. 
+" 
+
+```powershell
+#Requires -Version 3.0 
+
+Param( 
+    [string] [Parameter(Mandatory=$true)] $KeyVaultResourceGroupName, 
+    [string] [Parameter(Mandatory=$true)] $VmssResourceGroupName, 
+    [string] [Parameter(Mandatory=$true)] $VaultName, 
+    [string] [Parameter(Mandatory=$true)] $VmssName, 
+    [string] [Parameter(Mandatory=$true)] $SubscriptionId,
+    [string] [Parameter(Mandatory=$true)] $CertificateUrl 
+) 
+
+Set-StrictMode -Version 3 
+$ErrorActionPreference = "Stop" 
+
+# Login 
+Login-AzureRmAccount -SubscriptionId $SubscriptionId 
+$sourceVaultId = "/subscriptions/$SubscriptionId/resourceGroups/$KeyVaultResourceGroupName/providers/Microsoft.KeyVault/vaults/$VaultName" 
+$sourceVaultId 
+$certConfig = New-AzureRmVmssVaultCertificateConfig -CertificateUrl $CertificateUrl -CertificateStore "My" 
+$certConfig 
+
+# Get current vmss  
+$vmss = Get-AzureRmVmss -ResourceGroupName $VmssResourceGroupName -VMScaleSetName $VmssName 
+$vmss 
+
+# add new secret  
+$vmss = Add-AzureRmVmssSecret -VirtualMachineScaleSet $vmss -SourceVaultId $sourceVaultId -VaultCertificate $certConfig 
+$vmss 
+
+#update VMSS  
+Update-AzureRmVmss -ResourceGroupName $VmssResourceGroupName -Name $VmssName -VirtualMachineScaleSet $vmss -Verbose
+```
