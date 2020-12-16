@@ -1,0 +1,218 @@
+[Symptom for Expired certificate] 
+
+ 
+
+ 
+
+[Symptom] 
+
+Cluster will show 'Upgra not reachable' warning message 
+
+Unable to see the SF Nodes in the Portal or SFX 
+
+Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource  
+
+Open the Certificate Mgr for 'Local Computer' and check below details  
+
+Make sure certificate is ACL'd to network service  
+
+Verify the Certificate Expiry, if it is expired, follow below steps  
+
+ 
+
+ 
+
+[Fix Expired Cert] 
+
+Create new cert in different KeyVault (PowerShell script attached – KeyVaultSetup_SelfSigned.ps1) 
+
+Currently there is a bug in the VMSS resource which requires the Primary and Secondary secrets must be in a different Key Vault in the same region for the deployment to succeed. 
+
+If you use the same key vault to put your secondary secret, you may get the following error in step 2) 
+
+Update-Azur eRmVmss 
+. List secrets contains repeated instances of 
+/s ubs i pti ons / 3036fb29-16f8-4f5b- b2b a- 96046ef 3203a/r esour ceGr oups /hughs f tes t/pr ovi der s/M i c r osoft . KeyVauI t/vaul ts /hughsfkesmaul t12 3 , 
+StatusCode: 400 
+Reasonphrase: Bad Request 
+OperationID . 
+At line:31 char: I 
++ Update-AzureRmVmss -Resour ceGroupName $VmssResourceGroupName -Name SV 
+which is disallowed. 
++ Categorylnfo 
++ Fullyqualifi edErrorId 
+. NotSpecifi ed: [Update-Azur eRmVmss] , ComputeCIoudException 
+. Microsoft . Azure. Commands . Compute. Common . ComputeCIoudException ,Microsoft. Azure. Commands . Compute. Automati on. UpdateAzureRmVmss
+ 
+
+Machine generated alternative text:
+WARNING: update-AzureRmVmss: A property Of the Output Of this 
+ming breaking change release. The StorageAccountType property 
+andard_LRS and Premium_LRS 
+VERBOSE: performing the operation "update" on target "VM" 
+Update 
+List secrets contains repeated instances 
+cmdlet will change in an upco 
+for a DataDisk will return St 
+of 'subscriptions/64eadebb-O 
+635-4 d7d-9dIf-4S3 20S64g7ce/res ou rceGr agnesharedResources / provi de rs croscft . Key 
+Vault/vaults/charpagne-keyvault, *hich is disallov.ed. 
+Error-code: Inva7hcFarameter 
+Error Message; List secrets contains repeated instances Of / subscriptions/64eadebb-Od3S -4d7 
+d-9dIf -48 3 20864 g 7 ce/resourceGr0Llps / champagneshared*esourcas /provi de r s c rosofc _ Keyvaul t/ v 
+atilts/Chanpagr.e-KeyvauIt, "h ich is disallov,ed. 
+Staruscode: 400 
+Rea•sonphr-ase: gad Request 
+Cpprationlü 
+99756043-a6bc-4adb-a87a-de807d21aa37 
+Update - AzureRmVmss -ResoLlrceGroupName 
+. S ResourceGrnupName "Name W 
++ Cateqorylnfo 
+Ful IyquaIlfiedError1d : microsoft . Azure , Commands . Compute _ Automation _ updateAzureRmVm 
+  
+
+Deploy new cert to all nodes in VMSS (Script attached to deploy – AddCertToVMSS.ps1) 
+
+ 
+
+For each node{ 
+
+RDP into each VM and make sure certificate is present and the private key is already ACL'd to 'Network Service'  
+
+Run certlm.msc 
+
+Find the new certificate 
+
+Right click cert, Manage Private Keys, ensure NETWORK SERVICE has full permissions 
+
+If RDP to each node is not feasible, alternatively you can automate: DSC - ACL a certificate using Desired State Configuration  
+
+ 
+
+Stop both "Azure Service Fabric Node Bootstrap Agent" and "Microsoft Service Fabric Host Service" service (run in this exact order) 
+
+net stop ServiceFabricNodeBootstrapAgent 
+
+net stop FabricHostSvc 
+
+  
+
+locate ClusterManifest.current in the SvcFab folder like "D:\SvcFab\_sys_0\Fabric\ClusterManifest.current.xml" according to actual datapath deployed, and copy to somewhere like D:\Temp\clusterManifest.xml 
+
+  
+
+Modify the D:\Temp\clusterManifest.xml and update with new thumbprint. 
+
+Replace all occurrences of old cert with the new thumbprint 
+
+Note: Any deployed applications using old cert for application encryption\ssl\etc will need to be redeployed with the updated thumbprint *after* the cluster is restored 
+
+  
+
+Run following cmdlet to update the Service Fabric cluster, replace the SvcFab path according to the actual path.  Verify the Node version, use latest 
+
+New-ServiceFabricNodeConfiguration -FabricDataRoot "D:\SvcFab" -FabricLogRoot "D:\SvcFab\Log" -ClusterManifestPath "D:\Temp\clusterManifest.xml" -InfrastructureManifestPath "D:\SvcFab\_sys_0\Fabric\Fabric.Data\InfrastructureManifest.xml"  
+
+ 
+
+Edit  "D:\SvcFab\_sys_0\Fabric\Fabric.Package.current.xml" 
+
+Note the "ManifestVersion" 
+
+Machine generated alternative text:
+encoding="utf-8"?> 
+<ServicePackage xmlns : xsd="http://l.rv.•v'.w3.org/2ØØ1/XMLSchema" 
+(DigestedServiceTypes > 
+<ServiceTypes> 
+xmlns : xsi="http : /./L.n„u.w3.org/2@Ø1/XMLSchema-instance" 
+ManifestVersion= 
+ 
+
+Cd into the corresponding folder 
+
+Machine generated alternative text:
+
+Edit "D:\SvcFab\_sys_0\Fabric\Fabric.Config.4.131473098266979018\Settings.xml" 
+
+Replace all occurrences of old cert with the new thumbprint 
+
+ 
+
+Start both services "Microsoft Service Fabric Host Service" and "Azure Service Fabric Node Bootstrap Agent" again (run in this exact order) 
+
+net start FabricHostSvc 
+
+net start ServiceFabricNodeBootstrapAgent 
+
+ 
+
+Open Task Manager and wait/verify that FabricGateway.exe is running 
+
+} 
+
+ 
+
+After all nodes updated (or at least all seed nodes) 
+
+Now you should able to reconnect to the cluster over SFX and PowerShell.  e.g. connect-servicefabriccluster 
+
+ 
+
+The cluster should be running again using the new certificate, but the Azure portal will still not work due to ARM part of the Service Fabric not be updated with proper thumbprint yet. Contact Azure support to create a ICM to request backend team to update the ARM runtime for the Service Fabric cluster, give them the new thumbprint. 
+
+  
+
+Last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
+
+https://resources.azure.com --> Resource Group --> providers --> Microsoft.Compute --> vmss 
+
+Ensure the correct KeyVault for the new cert is listed 
+
+Machine generated alternative text:
+'sourceVau1t " : 
+"id": 
+" / subscriptions/ caf23cdd -ec2e -4810- a8cf- ea81e69ab726 / resourceGroups/ sedeas tKeyVau1tGroup / providers crosoft. KeyVau1t /vaults/ sedeas tKeyVau1tRPØ1 " 
+'vaultCertificates" : 
+"certificatelJr1" : 
+"https : / / sedeastkeyvau1trpØ1. vault . azure. net : 443/ sec rets / sedeastRPØ1/1a 7d5ac427784a848f8Øbe638d46ffbd " , 
+'certificateStore" : 
+Update the thumbprint to use the new cert thumbprint 
+
+Machine generated alternative text:
+"extensionProfi1e" 
+'extensions" 
+'properties" 
+'publisher": "Microsoft . Azure. ServiceFabric" 
+"type" 
+" ServiceFabricNode" 
+"typeHand1erVersion • 
+" autoUpgradeMinorVersion true, 
+" settings" 
+"clusterEndpoint " : 
+" https : //eastus . servicefabric . azure.com/runtime/c1usters/9d559@07-9aa2-4491-95Ø6-f3Ø5e14f7fc6", 
+"nodeTypeRef" : 
+"sys" 
+"dataPath " : 
+"durabilityLeve1 " Silver" 
+"enablePa rallel)obs": 
+true, 
+'nicPrefixOverride" : 
+reverseProxyCertificate" 
+"thumbprint " • 
+. "41BIDEe9F81FA6DE57FC7E242558A4AE28e91A8Ø" , 
+"x509StoreName "My" 
+'certificate " 
+"thumbprint " • 
+. oe515ED6F477B785A196AeA946E9CD4F8DDE6DED" , 
+"x509StoreName " : 
+ 
+
+At this point you should be able to see the new thumbprint in the CommandExecution.log into the extension logs 
+
+"C:\WindowsAzure\Logs\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\1.0.0.35\CommandExecution.log" 
+
+ 
+
+ 
+
+Note :  We already had a TRACKING ID work item, RDBug 8751724: to fix this issue, and EG confirmed that they were planning to ship this fix along with 5.7 update.  
