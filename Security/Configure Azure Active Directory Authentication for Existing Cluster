@@ -1,0 +1,289 @@
+
+1) Cluster Configuration for AAD 
+https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#set-up-azure-active-directory-for-client-authentication 
+
+2) assign users to roles before they can use the Service Fabric Explorer
+https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#assign-users-to-roles 
+	i. NOTE: for internal MS employees, if the cluster is configured in the Microsoft Tenant you must have IAMSUP authorize a Security Group to the "Admin" role
+https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%20support/Home.aspx
+
+Questions: How to connect over PowerShell example using AAD
+
+$ClusterName= "sedwest.westus.cloudapp.azure.com:19000"
+$ServerCertThumprint = "D42308C8CEEABF2E78E76B8A9239F4065B4D4DBD"
+Connect-ServiceFabricCluster -ConnectionEndpoint $ClusterName `
+-ServerCertThumbprint $ServerCertThumprint `
+-AzureActiveDirectory
+
+
+Note: If the Cluster Certificate was issued to a custom domain you need to use the custom domain URL into $ClusterName (e.g. $ClusterName= "villar.westus.lvillar.com:19000") otherwise you will get the error:
+WARNING: Failed to contact Naming Service. Attempting to contact Failover Manager Service...
+WARNING: Failed to contact Failover Manager Service, Attempting to contact FMM...
+False
+Connect-ServiceFabricCluster : FABRIC_E_SERVER_AUTHENTICATION_FAILED: 
+CertificateNotMatched
+At line:17 char:1
++ Connect-ServiceFabricCluster -AzureActiveDirectory -ConnectionEndpoin ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Connect-ServiceFabricClus 
+   ter], FabricServerAuthenticationFailedException
+    + FullyQualifiedErrorId : TestClusterConnectionErrorId,Microsoft.ServiceFa 
+   bric.Powershell.ConnectCluster
+
+- Workaround to the above:
+	Create a PowerShell.exe.config
+	○ Can configure https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/network/servicepointmanager-element-network-settings
+	○ Set checkCertificateName="false" 
+
+
+
+>> try add “Windows Azure Active Directory” under “Permissions to other applications” in “Cluster Application”. And enable “sign in and read user profile” delegated permissions.
+
+Configure AAD Auth on existing cluster using Ibiza Portal(New Azure Portal)
+
+NOTE: for internal MS employees, if the cluster is configured in the Microsoft Tenant you must open a ticket with MSIT (https://microsoft.sharepoint.com/sites/itweb/ ) to add a Security Group (with the list of Admins) to the "Admin" role of the AAD application
+
+
+
+
+
+1. Create new AAD directory (or use your existing AAD - Note: you must be an Admin for your company) - 
+			a. For testing I created a new Directory called sedeastaad
+					1. if you are using an existing AAD you can skip to step #3
+ 
+2. Go to Azure Active Directory in Azure Portal.
+ 
+
+  
+3. Create a new Directory.
+
+
+
+ 
+ 
+4. Create couple of new users
+			a. alex@sfaaddomain.onmicrosoft.com
+			b. bob@sfaaddomain.onmicrosoft.com 
+ 
+ 
+
+
+
+ 
+5. Login to AAD account using user above
+ 
+PS C:\WINDOWS\system32> Login-AzureRmAccount
+ 
+ 
+Environment           : AzureCloud
+Account               : alex@sfaaddomain.onmicrosoft.com
+TenantId              : 42cdd38a-3031-4e30-8490-919fe11ea28d
+SubscriptionId        : 
+SubscriptionName      : 
+CurrentStorageAccount :  
+ 
+
+ 
+
+ 
+PS C:\> Login-AzureRmAccount
+ 
+ 
+Account          : alex@sfaaddomain.onmicrosoft.com
+SubscriptionName : 
+SubscriptionId   : 
+TenantId         : 42cdd38a-3031-4e30-8490-919fe11ea28d
+Environment      : AzureCloud 
+ 
+6. Run SetupApplications script (download scripts: http://servicefabricsdkstorage.blob.core.windows.net/publicrelease/MicrosoftAzureServiceFabric-AADHelpers.zip , 
+	Right-click the zip file, select Properties, select the Unblock check box, and then click Apply.
+	PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId 42cdd38a-3031-4e30-8490-919fe11ea28d -ClusterName aadcluster -WebApplicationReplyUrl "https://aadcluster.centralindia.cloudapp.azure.com:19080/Explorer/index.html"
+	Here, is the output.
+ 
+TenantId =  42cdd38a-3031-4e30-8490-919fe11ea28d
+Web Application Created: c06877c1-ab0e-44bb-933a-13732db46a9c
+Native Client Application Created: 7c9f8000-a48b-41b9-8aa4-df13e9b08470
+ 
+Name                           Value                                                                                                                                  
+----                           -----                                                                                                                                  
+TenantId                       42cdd38a-3031-4e30-8490-919fe11ea28d                                                                                                   
+WebAppId                       c06877c1-ab0e-44bb-933a-13732db46a9c                                                                                                   
+NativeClientAppId              7c9f8000-a48b-41b9-8aa4-df13e9b08470                                                                                                   
+ServicePrincipalId             5e994fd7-54bf-4cc3-ac8d-ab44178c1568                                                                                                   
+ 
+-----ARM template-----
+"azureActiveDirectory": {
+  "tenantId":"42cdd38a-3031-4e30-8490-919fe11ea28d",
+  "clusterApplication":"c06877c1-ab0e-44bb-933a-13732db46a9c",
+  "clientApplication":"7c9f8000-a48b-41b9-8aa4-df13e9b08470"
+},
+ 
+ 
+7. Now, from portal under the AAD, go to Enterprise applications
+
+ 
+8. Select All applications option
+
+ 
+9. Select Show All Applications and apply.
+ 
+
+ 
+10. Select the Application Cluster(aadcluster_Cluster).
+
+11. Go to Users and groups and select Add user option.
+
+ 
+
+ 
+12. Select the user and give it the Admin role.
+NOTE: for internal MS employees, if the cluster is configured in the Microsoft Tenant you must have IAMSUP authorize a Security Group to the "Admin" role
+
+ 
+13. Now, go back to the Azure portal and select Service Fabric, and go to security option and click on Add.
+
+14. Select, authentication type as Azure Active Directory and pass all the details(Tenant ID, Cluster application and Client application).
+
+ 
+15. Now, you can see the message: Cluster is updating user configuration. (It may take some time to complete)
+
+16. Once the update complete and you will try to access the Service Fabric Explorer, you will see this type of error.
+
+17. Now, to overcome this, go to App Registrations and select the Cluster 
+
+18. Then go to Settings, select required permissions option, and click on Add.
+ 
+
+ 
+19. Select Windows Azure Active Directory option.
+
+ 
+ 
+20. Select All Application permissions and Delegated permissions.
+
+ 
+21. After adding all permissions, click on Grant Permissions option. If you will miss this, you will probably see something like this.
+ 
+
+ 
+22. Once you click on Grant Permissions, you will be able to access the SF Cluster via AAD.
+ 
+
+ 
+23. Now, try to access you cluster: https://aadcluster.centralindia.cloudapp.azure.com:19080/Explorer 
+	you will be able to access Service Fabric explorer from your AAD user.
+
+	Below is outdated since Classic Portal is no longer available to all users
+	
+	1. Create new AAD directory (or use your existing AAD - Note: you must be an Admin for your company) - 
+		i. For testing I created a new Directory called sedeastaad
+			a. if you are using an existing AAD you can skip to step #3
+	 
+	2. Create a couple new users
+			a. steve@sedeastaad.onmicrosoft.com
+			b. faridap@sedeastaad.onmicrosoft.com
+				 
+	3. Login to AAD account using user above
+		PS C:\Users\sedwards> Login-AzureRmAccount
+		 
+		Environment           : AzureCloud
+		Account               : steve@sedeastaad.onmicrosoft.com
+		TenantId              : 406252bb-ee63-470e-a88e-0f6f62ade0c8
+		SubscriptionId        :
+		SubscriptionName      :
+		CurrentStorageAccount :
+		 
+	4. Run SetupApplications script (download scripts: http://servicefabricsdkstorage.blob.core.windows.net/publicrelease/MicrosoftAzureServiceFabric-AADHelpers.zip, 
+		i. Right-click the zip file, select Properties, select the Unblock check box, and then click Apply.
+	
+		PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId 406252bb-ee63-470e-a88e-0f6f62ade0c8 -ClusterName sedeast -WebApplicationReplyUrl "https://sedwest.eastus.cloudapp.azure.com:19080/Explorer/index.html"
+		TenantId =  406252bb-ee63-470e-a88e-0f6f62ade0c8
+		Web Application Created: 5844289d-3d57-4059-8e72-312cea555641
+		Native Client Application Created: 449aec00-0a43-41f9-9a88-11cd857b6761
+		 
+		Name                           Value
+		----                           -----
+		TenantId                       406252bb-ee63-470e-a88e-0f6f62ade0c8
+		WebAppId                       5844289d-3d57-4059-8e72-312cea555641
+		NativeClientAppId              449aec00-0a43-41f9-9a88-11cd857b6761
+		ServicePrincipalId             341e81ac-78c0-4942-885e-50024cadb054
+		 
+		-----ARM template-----
+		"azureActiveDirectory": {
+		  "tenantId":"406252bb-ee63-470e-a88e-0f6f62ade0c8",
+		  "clusterApplication":"5844289d-3d57-4059-8e72-312cea555641",
+		  "clientApplication":"449aec00-0a43-41f9-9a88-11cd857b6761"
+		},
+	 
+	5. Within your AAD, click on the Applications menu. In the Show drop-down box, pick Applications My Company Owns and then click on the check button over to the right to do a search.
+
+	
+	6. You should see two applications listed. One will be for Native client applications and the other for Web Applications. 
+		i. Click on the application name for the Web Application type (sedeast_Cluster). Since we will be doing our connectivity test connecting to the Service Fabric Explorer web UI, this is the application we need to set the user permissions on.
+
+	7. Click on the Users menu.
+
+	
+	8. Click on the user name that should be the administrator and then select the Assign button at the bottom of the portal Window.
+		i. NOTE: for internal MS employees, if the cluster is configured in the Microsoft Tenant you must have IAMSUP authorize a Security Group to the "Admin" role
+		
+
+
+
+
+	9. In the Assign Users dialog box, pick Admin from the dropdown box and select the check button
+
+
+	10. Repeat steps 8-9 but this time, for the rest of the users, assigning either Admin or Read-only roles. This step completes what you will need to do in the classic portal, so you can close the classic portal window.
+	
+	11. Update SF cluster with AAD security info
+		a. Azure Portal à SF Cluster à Security (this option has been removed, customer will have to deploy ARM template change)
+ 
+
+		
+		a. Optionally, Add the AAD the Cluster configuration via Azure Resource Editor
+			• Go to https://resources.azure.com --> Subscription --> RG --> providers --> Microsoft.ServiceFabric --> clusters --> clustername
+			• Click EDIT
+			{
+			  "type": "Microsoft.ServiceFabric/clusters",
+			  "location": "eastus",
+			  "id": "/subscriptions/caf23cdd-ec2e-4810-a8cf-ea81e69ab754/resourcegroups/sedeastgroup/providers/Microsoft.ServiceFabric/clusters/sedeast",
+			  "name": "sedeast",
+			  "tags": {},
+			  "etag": "W/\"636336611766996600\"",
+			  "properties": {
+			    "provisioningState": "Succeeded",
+			    "clusterId": "6a2a75b2-b767-47c1-bf94-5b37f4a424ac",
+			    "clusterCodeVersion": "5.6.231.9494",
+			    "clusterState": "Ready",
+			    "managementEndpoint": "https://sedeast.eastus.cloudapp.azure.com:19080",
+			    "clusterEndpoint": "https://eastus.servicefabric.azure.com/runtime/clusters/6a2a75b2-b767-47c1-bf94-5b37f4a424eb",
+			    "certificate": {
+			      "thumbprint": "00515ED6F477B785A196A0A946E9CD4F8DDE6DAD",
+			      "x509StoreName": "My"
+			    },
+			
+			    ...
+			
+			    "vmImage": "Windows",    
+			        "azureActiveDirectory": {
+			          "tenantId":"406252bb-ee63-470e-a88e-0f6f62ade0c8",
+			          "clusterApplication":"5844289d-3d57-4059-8e72-312cea555641",
+			          "clientApplication":"449aec00-0a43-41f9-9a88-11cd857b6761"
+			        },
+			    "reliabilityLevel": "Silver",
+			    "reverseProxyCertificate": {
+			      "thumbprint": "41B1DE09FB1FA6DE57FC7E242558A4AE2B391A80",
+			      "x509StoreName": "My"
+			    },
+			
+			    ...
+			
+			   }
+	
+			• Click PUT
+		 
+	12. You can open the management endpoint https://sedwest.eastus.cloudapp.azure.com:19080/Explorer/index.html#/ 
+		i. Sign in using your new AAD user (e.g. @sedeastaad.onmicrosoft.com account)
+
+
