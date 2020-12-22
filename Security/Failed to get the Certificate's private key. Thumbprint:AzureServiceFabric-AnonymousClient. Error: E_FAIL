@@ -1,0 +1,28 @@
+While investigating na issue in na unsecured SF Cluster I noticed lots of the below entries either in the SF Traces and in the Admin event logs for in the nodes:
+
+
+CryptAcquireCertificatePrivateKey failed. Error:0x80090014
+----------------
+Can't get private key filename for certificate. Error: 0x80090014
+----------------
+All tries to get private key filename failed.
+----------------
+Failed to get the Certificate's private key. Thumbprint:AzureServiceFabric-AnonymousClient. Error: E_FAIL
+----------------
+Can't find anonymous certificate. ErrorCode: E_FAIL
+----------------
+Error at AclAnonymousCertificate, ErrorCode E_FAIL
+ 
+Checked into the nodes we can see the Certificate is present in all the nodes and Network Services does have read rights on the Private Key:
+
+ 
+
+ 
+The PID for the errors in the traces is for FabricFAS.exe
+
+Explanation according to PG:
+This is a certificate we generate for unsecure cluster. This is not related to the common name feature. We are aware of this issue and this shouldn’t affect functionality of any SF component and just shows up as warning in traces.
+
+In another words, we should ignore those warnings.
+
+
