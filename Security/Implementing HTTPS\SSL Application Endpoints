@@ -1,0 +1,160 @@
+
+
+We are working on better end to end documentation for adding an HTTPS endpoint to a Service Fabric application, but for now you can follow the steps in http://stackoverflow.com/questions/36991658/stateless-web-api-on-azure-service-fabric-over-https/37032732.  Basically you just define the HTTPS endpoint in your service manifest, and then bind it to a cert thumbprint in the application manifest.  In the local dev cluster you can just specify the thumbprint of your dev cert which is already in your certificate store.  Once you deploy to an Azure cluster then you also need to get the certificate deployed into the VMs themselves, and for this we recommend adding the cert to KeyVault (step 1 and 2 at https://azure.microsoft.com/en-us/documentation/articles/service-fabric-secure-azure-cluster-with-certs/) and then associating it with the Virtual Machine Scaleset using either the Add-AzureRmVmssSecret Powershell cmdlet or the vaultCertificates element of the ARM template virtualMachineScaleSets section.
+
+Also see Add new cert to VMSS
+
+https://azure.microsoft.com/en-us/documentation/articles/service-fabric-service-manifest-resources/
+
+Additional Samples
+PG: Certificate Configuration Changes
+
+
+Here is a Sample showing for WebApi project with Secure endpoint, 
+ (https://yourcluster.region.cloudapp.azure.com:9010/api/values)
+
+To use you will have to 
+        1) Download sample
+        2) Create your own SSL certificate
+                a. Setup KeyVault Certificate for Secure SF Cluster
+                b. Add new cert to VMSS
+        3) Change thumbprint specified in ApplicationManifest.xml parameter "SslCertificate" to match your certificates thumbprint
+        4) Open Port in Load Balancer
+                a. Open Application WebAPI Endpoint
+        5) Deploy to your cluster
+        6) Test endpoint
+                a. https://yourcluster.region.cloudapp.azure.com:9010/api/values
+
+Setting up HTTPS endpoints in ASP.NET Core services in Service Fabric
+
+https://dzimchuk.net/setting-up-https-endpoints-in-asp-net-core-services-in-service-fabric/   
+https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-tutorial-dotnet-app-enable-https-endpoint
+
+Simplified Steps - https://matt.kotsenas.com/posts/https-in-service-fabric-web-api
+
+The above steps will have your certificate, which cert intended purpose as "Server Authentication" installed in your LocalMachine\My certificate store from your keyVault. You can RDP into the SF cluster node to verify that.
+
+After that, your application will need to link this cert and have the deployment agent to bind this cert to http.sys.
+Here is how to do it:
+
+	1) Step 1: define the port in the ServiceManifest.xml file.
+	  <Resources>
+	    <Endpoints>
+	      <Endpoint Protocol="https" Name="ServiceEndpoint" Type="Input" Port="443" CertificateRef="SslCertificate" />
+	    </Endpoints>
+	  </Resources>
+	</ServiceManifest>
+
+
+Basically, you define the Protocol as HTTPS and give an Endpoint Name and reference it to a "SslCertificate" variable to SSL binding
+
+	2) Step2: define the cert association policy and cert handling mechanism from your ApplicationManifest.xml file.
+	a) Set Certificate Thumbprint as a parameters in ApplicatonManifest.xml
+	
+	  <Parameters>
+	    <Parameter Name="Web1_InstanceCount" DefaultValue="-1" />
+	    <Parameter Name="ServiceEndpointThumbprint" DefaultValue="your thumbprint here" />
+	  </Parameters>
+	
+	b) Define the EndpointBindingPolicy in ApplicationManifest.xml which references the same Endpoint Name you defined in ServiceManifest.xml
+	
+	  <ServiceManifestImport>
+	    <ServiceManifestRef ServiceManifestName="Web1Pkg" ServiceManifestVersion="1.0.0" />
+	    <ConfigOverrides />
+			<Policies>
+				<EndpointBindingPolicy EndpointRef="ServiceEndpoint" CertificateRef="SslCertificate" />
+			</Policies>
+	  </ServiceManifestImport>
+	
+	c) Add a new EndpointCertificate in ApplicationManifest.xml to tell the binding process where to find the cert, so the deployment can use the parameter in step a to find the cert thumbprint.
+	
+	<Certificates>
+		<EndpointCertificate X509StoreName="My" X509FindValue="[ServiceEndpointThumbprint]" Name="SslCertificate"/>
+	</Certificates>
+	
+	
+	Attaching both ServiceManifest.xml and applicationManifest.xml sample
+
+	
+
+	
+	
+	For ASP.NET Web api using Owin listener, you will need to check and make sure the OwinCommunicationListener.cs in the OpenAsync method has set the HTTPS protocol correctly.
+	
+	        public Task<string> OpenAsync(CancellationToken cancellationToken)
+	        {
+	            var serviceEndpoint = this.serviceContext.CodePackageActivationContext.GetEndpoint(this.endpointName);
+	            int port = serviceEndpoint.Port;
+	 
+	            if (this.serviceContext is StatefulServiceContext)
+	            {
+	                StatefulServiceContext statefulServiceContext = this.serviceContext as StatefulServiceContext;
+	 
+	                this.listeningAddress = string.Format(
+	                    CultureInfo.InvariantCulture,
+	                    "https://+:{0}/{1}{2}/{3}/{4}",
+	                    port,
+	                    string.IsNullOrWhiteSpace(this.appRoot)
+	                        ? string.Empty
+	                        : this.appRoot.TrimEnd('/') + '/',
+	                    statefulServiceContext.PartitionId,
+	                    statefulServiceContext.ReplicaId,
+	                    Guid.NewGuid());
+	            }
+	            else if (this.serviceContext is StatelessServiceContext)
+	            {
+	                this.listeningAddress = string.Format(
+	                    CultureInfo.InvariantCulture,
+	                    "https://+:{0}/{1}",
+	                    port,
+	                    string.IsNullOrWhiteSpace(this.appRoot)
+	                        ? string.Empty
+	                        : this.appRoot.TrimEnd('/') + '/');
+	            }
+	
+	You can check and make sure the port and cert are bound correctly, RDP into a node and run the following command:
+	
+	netsh http show sslcert and your certificate thumbprint should be seen bound to your port 
+	
+	SSL Certificate bindings:
+	-------------------------
+	
+	    IP:port                      : 0.0.0.0:19080
+	    Certificate Hash             : b24ac3bbf58709de716dbdce4ff31cb5f08aca19
+	    Application ID               : {7f7f579c-89a9-412e-b4ef-1ac59cdf2f25}
+	    Certificate Store Name       netsh : My
+	    Verify Client Certificate Revocation : Disabled
+	    Verify Revocation Using Cached Client Certificate Only : Disabled
+	    Usage Check                  : Enabled
+	    Revocation Freshness Time    : 0
+	    URL Retrieval Timeout        : 0
+	    Ctl Identifier               : (null)
+	    Ctl Store Name               : (null)
+	    DS Mapper Usage              : Disabled
+	    Negotiate Client Certificate : Disabled
+	
+	    IP:port                      : 0.0.0.0:9001
+	    Certificate Hash             : 85fb1cb077cd7c78789f5bb61a7a4f3b282008e3
+	    Application ID               : {ba9bcb9f-58ac-4f6d-8e53-95f20f6811cd}
+	    Certificate Store Name       : My
+	    Verify Client Certificate Revocation : Disabled
+	    Verify Revocation Using Cached Client Certificate Only : Disabled
+	    Usage Check                  : Enabled
+	    Revocation Freshness Time    : 0
+	    URL Retrieval Timeout        : 0
+	    Ctl Identifier               : (null)
+	    Ctl Store Name               : (null)
+	    DS Mapper Usage              : Disabled
+	    Negotiate Client Certificate : Disabled
+	
+	Also check the binding situation:
+	netsh http show servicestate view=requestq > binding.txt
+	Open binding.txt to see if the listener was set up correctly.
+	
+	
+	
+	netsh http show sslcert  > sslcerts.txt
+	netsh http show servicestate view=requestq > binding.txt
+	
+
+
