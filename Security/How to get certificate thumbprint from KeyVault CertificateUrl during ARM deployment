@@ -1,0 +1,34 @@
+In the VirtualMachineProfile in the ARM template for the VMSS resource customers can specify the certificates to deploy to the VMs from KeyVault.  This looks like:
+                        "secrets": [
+                            {
+                                "sourceVault": {
+                                    "id": "/subscriptions/a5a6a5dd-00cd-4b5b-a3f7-ce35dac045e8/resourceGroups/dsplatform/providers/Microsoft.KeyVault/vaults/dsplatformvault"
+                                },
+                                "vaultCertificates": [
+                                    {
+                                        "certificateUrl": "https://dsplatformvault.vault.azure.net/secrets/sfcert/5473480842494d3fb57643aa624f4dbd",
+                                        "certificateStore": "My"
+                                    }
+                                ]
+                            }
+
+To determine the thumbprint of the certificate that will be obtained from that Vault URL you can query MDM:
+	Namespace: Crp
+	Events: ContextActivity
+	Filtering conditions: 
+		subscriptionid =={subscriptionid}    or    activityId=={ServiceRequestId}
+			(note: ServiceRequestId is in Get-Sub on the first ARM operation within the group of operations identified by the correlation id)
+		message contains {KeyVault URL ID}    
+			(note: the KeyVault URL ID is the last numeric portion of the URL such as 5473480842494d3fb57643aa624f4dbd)
+			
+	
+You will see messages like this:
+	Successfully retrieved certificate with Uri:https://dsplatformvault.vault.azure.net/secrets/sfcert/5473480842494d3fb57643aa624f4dbd and thumbprint:6349CBF19B20776A315F25CF30D8840650B4125F
+	
+	Thumbprint 6349CBF19B20776A315F25CF30D8840650B4125F found for Uri https://dsplatformvault.vault.azure.net/secrets/sfcert/5473480842494d3fb57643aa624f4dbd
+
+
+You can validate the certificates being installed on the VM by getting the WaAppAgent.log from the VM (InspectIaaSDisk) and looking for lines such as:
+	[INFO]  Imported Certificate: E=spoon@apttus.com, CN=Stanley Poon, O=Apttus, L=San Mateo, S=California, C=US.
+	[INFO]  Certificate thumbprint: 6349CBF19B20776A315F25CF30D8840650B4125F
+
