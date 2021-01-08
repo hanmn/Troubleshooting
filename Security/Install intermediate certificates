@@ -1,0 +1,58 @@
+Currently SF does not accept .CER or P7B certificates uploaded to keyvault.  
+Missing intermediate can be installed using a customscriptextension to avoid SSL chain errors 
+
+Upload the script and the intermediates to a storage account and add a CustomScriptExtension extension 
+  
+               "virtualMachineProfile": {
+                    "extensionProfile": {
+                      "extensions": [
+                        {
+                          "type": "Microsoft.Compute/virtualMachines/extensions",
+                          "name": "InstallCertificates",
+ 
+                          "properties": {
+                            "publisher": "Microsoft.Compute",
+                            "type": "CustomScriptExtension",
+                            "typeHandlerVersion": "1.8",
+                            "autoUpgradeMinorVersion": true,
+                            "settings": {
+                              "fileUris": [
+                                "https://mgarmstorage2.blob.core.windows.net/sfdeploy/certinst.ps1"
+                              ],
+                              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File certinst.ps1"
+                            }
+                          }
+                        },
+ 
+ 
+ 
+ 
+The content of the script 
+----
+ 
+function Install-IntermediateCertificateFromUrl ($certurl)
+{
+    $bytes = (Invoke-WebRequest $certurl -UseBasicParsing).Content
+ 
+    $store = new-object System.Security.Cryptography.X509Certificates.X509Store "CA", "LocalMachine"
+    $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
+ 
+    $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]$bytes
+#   $cert 
+    $store.Add($cert)
+    $store.Close()
+}
+ 
+#intermediate cert urls   
+$cert1url  = "https://mgarmstorage2.blob.core.windows.net/sfdeploy/qvocag2.crt"
+$cert2url = "https://mgarmstorage2.blob.core.windows.net/sfdeploy/staatdernederlandenorganisatieca-g2.crt"
+## or download directly from the distribution points provided in Authority Info Access Extensions
+ 
+#$cert1url = "http://trust.quovadisglobal.com/qvocag2.crt"
+#$cert2url = "https://www.pkioverheid.nl/fileadmin/PKI/PKI_certifcaten/staatdernederlandenorganisatieca-g2.crt"
+ 
+ 
+Install-IntermediateCertificateFromUrl $cert1url
+Install-IntermediateCertificateFromUrl $cert2url
+---
+See aösp  6854007 - Deploy  intermediate  certs
