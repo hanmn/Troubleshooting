@@ -1,0 +1,32 @@
+https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-security-update-certs-azure#add-a-secondary-certificate-and-swap-it-to-be-the-primary-using-resource-manager-powershell
+Mentioned:
+Secondary cluster certificate cannot be added through the Azure portal. You have to use Azure powershell for that.
+
+The above feature may be added back to portal, but for now, you will have to use the ARM template PowerShell ARM Template Deployment - Swap certificates or https://resources.azure.com to add the secondary certificate.
+
+
+Step 1: Make sure you push the 2nd cert to the VMSS already, you can follow Add new cert to VMSS
+
+Step 2: Go to https://resources.azure.com and find your subscription -- > resource group -- > providers/Microsoft.Compute/virtualMachineScaleSets -- > your VMSS
+
+
+Step 3: enable "Edit" and "Read/Write" permission
+
+
+Step 4: add the following "certificateSecondary" settings in VMSS/extensionProfile/extensions:
+
+
+And click PUT.
+
+Step 5: wait for VMSS Status under the resource group is "Succeeded" before update the Service Fabric cluster settings:
+
+
+Step 6: do the step 2 and 3 for the Microsoft.ServiceFabric provider for your cluster
+
+Step 7: adding "thumbprintSecondary": "656A78764F57E938BBBA08377F8D9C6DFBE19BA7" setting
+
+
+Step 8: wait for the SF cluster Updating the secondary certificate
+
+
+Step 9: Swap Primary and Secondary certificates
