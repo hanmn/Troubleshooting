@@ -1,0 +1,9 @@
+Steps to download the pfx/pem file from keyvault -
+
+	1. In Azure portal, go to the associated keyvault with cluster.
+	2. Select Certificates and click on the certificate being used.
+	3. You should see below screen - 
+
+
+
+	4. Download the certificate in pfx/pem or cer format using the links above. 
