@@ -10,7 +10,7 @@ https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%2
 Questions: How to connect over PowerShell example using AAD
 
 $ClusterName= "sedwest.westus.cloudapp.azure.com:19000"
-$ServerCertThumprint = "D42308C8CEEABF2E78E76B8A9239F4065B4D4DBD"
+$ServerCertThumprint = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 Connect-ServiceFabricCluster -ConnectionEndpoint $ClusterName `
 -ServerCertThumbprint $ServerCertThumprint `
 -AzureActiveDirectory
@@ -62,8 +62,8 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
  
  
 4. Create couple of new users
-			a. alex@sfaaddomain.onmicrosoft.com
-			b. bob@sfaaddomain.onmicrosoft.com 
+			a. foo@company.domain.com
+			b. bar@company.domain.com 
  
  
 
@@ -76,8 +76,8 @@ PS C:\WINDOWS\system32> Login-AzureRmAccount
  
  
 Environment           : AzureCloud
-Account               : alex@sfaaddomain.onmicrosoft.com
-TenantId              : 42cdd38a-3031-4e30-8490-919fe11ea28d
+Account               : foo@sfaaddomain.onmicrosoft.com
+TenantId              : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 SubscriptionId        : 
 SubscriptionName      : 
 CurrentStorageAccount :  
@@ -89,33 +89,33 @@ CurrentStorageAccount :
 PS C:\> Login-AzureRmAccount
  
  
-Account          : alex@sfaaddomain.onmicrosoft.com
+Account          : foo@sfaaddomain.onmicrosoft.com
 SubscriptionName : 
 SubscriptionId   : 
-TenantId         : 42cdd38a-3031-4e30-8490-919fe11ea28d
+TenantId         : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 Environment      : AzureCloud 
  
 6. Run SetupApplications script (download scripts: http://servicefabricsdkstorage.blob.core.windows.net/publicrelease/MicrosoftAzureServiceFabric-AADHelpers.zip , 
 	Right-click the zip file, select Properties, select the Unblock check box, and then click Apply.
-	PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId 42cdd38a-3031-4e30-8490-919fe11ea28d -ClusterName aadcluster -WebApplicationReplyUrl "https://aadcluster.centralindia.cloudapp.azure.com:19080/Explorer/index.html"
+	PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -ClusterName aadcluster -WebApplicationReplyUrl "https://mycluster.centralindia.cloudapp.azure.com:19080/Explorer/index.html"
 	Here, is the output.
  
-TenantId =  42cdd38a-3031-4e30-8490-919fe11ea28d
-Web Application Created: c06877c1-ab0e-44bb-933a-13732db46a9c
-Native Client Application Created: 7c9f8000-a48b-41b9-8aa4-df13e9b08470
+TenantId =  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Web Application Created: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Native Client Application Created: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
  
 Name                           Value                                                                                                                                  
 ----                           -----                                                                                                                                  
-TenantId                       42cdd38a-3031-4e30-8490-919fe11ea28d                                                                                                   
-WebAppId                       c06877c1-ab0e-44bb-933a-13732db46a9c                                                                                                   
-NativeClientAppId              7c9f8000-a48b-41b9-8aa4-df13e9b08470                                                                                                   
-ServicePrincipalId             5e994fd7-54bf-4cc3-ac8d-ab44178c1568                                                                                                   
+TenantId                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                  
+WebAppId                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                   
+NativeClientAppId              XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                  
+ServicePrincipalId             XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                
  
 -----ARM template-----
 "azureActiveDirectory": {
-  "tenantId":"42cdd38a-3031-4e30-8490-919fe11ea28d",
-  "clusterApplication":"c06877c1-ab0e-44bb-933a-13732db46a9c",
-  "clientApplication":"7c9f8000-a48b-41b9-8aa4-df13e9b08470"
+  "tenantId":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "clusterApplication":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "clientApplication":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 },
  
  
@@ -170,7 +170,7 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
  
 
  
-23. Now, try to access you cluster: https://aadcluster.centralindia.cloudapp.azure.com:19080/Explorer 
+23. Now, try to access you cluster: https://mycluster.centralindia.cloudapp.azure.com:19080/Explorer 
 	you will be able to access Service Fabric explorer from your AAD user.
 
 	Below is outdated since Classic Portal is no longer available to all users
@@ -180,15 +180,15 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
 			a. if you are using an existing AAD you can skip to step #3
 	 
 	2. Create a couple new users
-			a. steve@sedeastaad.onmicrosoft.com
-			b. faridap@sedeastaad.onmicrosoft.com
+			a. foo@company.domain.com
+			b. bar@company.domain.com
 				 
 	3. Login to AAD account using user above
 		PS C:\Users\sedwards> Login-AzureRmAccount
 		 
 		Environment           : AzureCloud
-		Account               : steve@sedeastaad.onmicrosoft.com
-		TenantId              : 406252bb-ee63-470e-a88e-0f6f62ade0c8
+		Account               : foo@company.domain.com
+		TenantId              : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		SubscriptionId        :
 		SubscriptionName      :
 		CurrentStorageAccount :
@@ -196,23 +196,23 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
 	4. Run SetupApplications script (download scripts: http://servicefabricsdkstorage.blob.core.windows.net/publicrelease/MicrosoftAzureServiceFabric-AADHelpers.zip, 
 		i. Right-click the zip file, select Properties, select the Unblock check box, and then click Apply.
 	
-		PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId 406252bb-ee63-470e-a88e-0f6f62ade0c8 -ClusterName sedeast -WebApplicationReplyUrl "https://sedwest.eastus.cloudapp.azure.com:19080/Explorer/index.html"
-		TenantId =  406252bb-ee63-470e-a88e-0f6f62ade0c8
-		Web Application Created: 5844289d-3d57-4059-8e72-312cea555641
-		Native Client Application Created: 449aec00-0a43-41f9-9a88-11cd857b6761
+		PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -ClusterName sedeast -WebApplicationReplyUrl "https://mycluster.eastus.cloudapp.azure.com:19080/Explorer/index.html"
+		TenantId =  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		Web Application Created: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		Native Client Application Created: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		 
 		Name                           Value
 		----                           -----
-		TenantId                       406252bb-ee63-470e-a88e-0f6f62ade0c8
-		WebAppId                       5844289d-3d57-4059-8e72-312cea555641
-		NativeClientAppId              449aec00-0a43-41f9-9a88-11cd857b6761
-		ServicePrincipalId             341e81ac-78c0-4942-885e-50024cadb054
+		TenantId                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		WebAppId                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		NativeClientAppId              XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		ServicePrincipalId             XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		 
 		-----ARM template-----
 		"azureActiveDirectory": {
-		  "tenantId":"406252bb-ee63-470e-a88e-0f6f62ade0c8",
-		  "clusterApplication":"5844289d-3d57-4059-8e72-312cea555641",
-		  "clientApplication":"449aec00-0a43-41f9-9a88-11cd857b6761"
+		  "tenantId":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+		  "clusterApplication":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+		  "clientApplication":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 		},
 	 
 	5. Within your AAD, click on the Applications menu. In the Show drop-down box, pick Applications My Company Owns and then click on the check button over to the right to do a search.
@@ -247,19 +247,19 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
 			{
 			  "type": "Microsoft.ServiceFabric/clusters",
 			  "location": "eastus",
-			  "id": "/subscriptions/caf23cdd-ec2e-4810-a8cf-ea81e69ab754/resourcegroups/sedeastgroup/providers/Microsoft.ServiceFabric/clusters/sedeast",
-			  "name": "sedeast",
+			  "id": "/subscriptions/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/resourcegroups/<GROUP NAME>/providers/Microsoft.ServiceFabric/clusters/mycluster",
+			  "name": "mycluster",
 			  "tags": {},
 			  "etag": "W/\"636336611766996600\"",
 			  "properties": {
 			    "provisioningState": "Succeeded",
-			    "clusterId": "6a2a75b2-b767-47c1-bf94-5b37f4a424ac",
+			    "clusterId": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 			    "clusterCodeVersion": "5.6.231.9494",
 			    "clusterState": "Ready",
-			    "managementEndpoint": "https://sedeast.eastus.cloudapp.azure.com:19080",
-			    "clusterEndpoint": "https://eastus.servicefabric.azure.com/runtime/clusters/6a2a75b2-b767-47c1-bf94-5b37f4a424eb",
+			    "managementEndpoint": "https://mycluster.eastus.cloudapp.azure.com:19080",
+			    "clusterEndpoint": "https://eastus.servicefabric.azure.com/runtime/clusters/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 			    "certificate": {
-			      "thumbprint": "00515ED6F477B785A196A0A946E9CD4F8DDE6DAD",
+			      "thumbprint": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 			      "x509StoreName": "My"
 			    },
 			
@@ -267,13 +267,13 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
 			
 			    "vmImage": "Windows",    
 			        "azureActiveDirectory": {
-			          "tenantId":"406252bb-ee63-470e-a88e-0f6f62ade0c8",
-			          "clusterApplication":"5844289d-3d57-4059-8e72-312cea555641",
-			          "clientApplication":"449aec00-0a43-41f9-9a88-11cd857b6761"
+			          "tenantId":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+			          "clusterApplication":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+			          "clientApplication":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 			        },
 			    "reliabilityLevel": "Silver",
 			    "reverseProxyCertificate": {
-			      "thumbprint": "41B1DE09FB1FA6DE57FC7E242558A4AE2B391A80",
+			      "thumbprint": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 			      "x509StoreName": "My"
 			    },
 			
@@ -283,7 +283,7 @@ NOTE: for internal MS employees, if the cluster is configured in the Microsoft T
 	
 			• Click PUT
 		 
-	12. You can open the management endpoint https://sedwest.eastus.cloudapp.azure.com:19080/Explorer/index.html#/ 
-		i. Sign in using your new AAD user (e.g. @sedeastaad.onmicrosoft.com account)
+	12. You can open the management endpoint https://mycluster.eastus.cloudapp.azure.com:19080/Explorer/index.html#/ 
+		i. Sign in using your new AAD user (e.g. @company.domain.com account)
 
 
