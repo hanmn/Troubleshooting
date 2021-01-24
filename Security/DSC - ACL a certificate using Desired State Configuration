@@ -20,7 +20,7 @@
 	              "autoUpgradeMinorVersion": true,
 	              "settings": {
 	                "configuration": {
-	                  "url": "https://y5tuzpiqftqie100.blob.core.windows.net/scripts/SetCertificateACL_DSC.zip",
+	                  "url": "https://XXXXXXXXXXX.blob.core.windows.net/scripts/SetCertificateACL_DSC.zip",
 	                  "script": "SetCertificateACL_DSC.ps1",
 	                  "function": "SetCertificatePermissions"
 	                }
