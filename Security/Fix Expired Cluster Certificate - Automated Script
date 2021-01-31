@@ -38,14 +38,6 @@ If you use the same key vault to put your secondary secret, you may get the foll
 
 Update-Azur eRmVmss 
 . List secrets contains repeated instances of 
-/s ubs i pti ons / 3036fb29-16f8-4f5b- b2b a- 96046ef 3203a/r esour ceGr oups /hughs f tes t/pr ovi der s/M i c r osoft . KeyVauI t/vaul ts /hughsfkesmaul t12 3 , 
-StatusCode: 400 
-Reasonphrase: Bad Request 
-OperationID . 
-At line:31 char: I 
-+ Update-AzureRmVmss -Resour ceGroupName $VmssResourceGroupName -Name SV 
-which is disallowed. 
-+ Categorylnfo 
 + Fullyqualifi edErrorId 
 . NotSpecifi ed: [Update-Azur eRmVmss] , ComputeCIoudException 
 . Microsoft . Azure. Commands . Compute. Common . ComputeCIoudException ,Microsoft. Azure. Commands . Compute. Automati on. UpdateAzureRmVmss
@@ -63,12 +55,12 @@ of 'subscriptions/64eadebb-O
 Vault/vaults/charpagne-keyvault, *hich is disallov.ed. 
 Error-code: Inva7hcFarameter 
 Error Message; List secrets contains repeated instances Of / subscriptions/64eadebb-Od3S -4d7 
-d-9dIf -48 3 20864 g 7 ce/resourceGr0Llps / champagneshared*esourcas /provi de r s c rosofc _ Keyvaul t/ v 
+d-9dIf -48 3 20864 g 7 ce/resourceGr0Llps / champagneshared*esourcas /provi de r s c rosofc _ Keyvaul t/XXXXXXXXXXXXX v 
 atilts/Chanpagr.e-KeyvauIt, "h ich is disallov,ed. 
 Staruscode: 400 
 Rea•sonphr-ase: gad Request 
 Cpprationlü 
-99756043-a6bc-4adb-a87a-de807d21aa37 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 Update - AzureRmVmss -ResoLlrceGroupName 
 . S ResourceGrnupName "Name W 
 + Cateqorylnfo 
@@ -109,7 +101,7 @@ Param(
 
 [ValidateNotNullOrEmpty()] 
 
-[string]$oldThumbprint="3970078b210373a1251797d110d423c7df199db4", 
+[string]$oldThumbprint="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
 
  
 
@@ -117,7 +109,7 @@ Param(
 
 [ValidateNotNullOrEmpty()] 
 
-[string]$newThumbprint="b919400eeafb8b5afb7244ee1a81d41b81fe96bf", 
+[string]$newThumbprint="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
 
  
 
@@ -164,10 +156,10 @@ Ensure the correct KeyVault for the new cert is listed
 Machine generated alternative text:
 'sourceVau1t " : 
 "id": 
-" / subscriptions/ caf23cdd -ec2e -4810- a8cf- ea81e69ab726 / resourceGroups/ sedeas tKeyVau1tGroup / providers crosoft. KeyVau1t /vaults/ sedeas tKeyVau1tRPØ1 " 
+" / subscriptions/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX / resourceGroups/ sedeas tKeyVau1tGroup / providers crosoft. KeyVau1t /vaults/ test tKeyVau1tRPØ1 " 
 'vaultCertificates" : 
 "certificatelJr1" : 
-"https : / / sedeastkeyvau1trpØ1. vault . azure. net : 443/ sec rets / sedeastRPØ1/1a 7d5ac427784a848f8Øbe638d46ffbd " , 
+"https : / / testkeyvau1trpØ1. vault . azure. net : 443/ sec rets / testRPØ1/1a XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " , 
 'certificateStore" : 
 Update the thumbprint to use the new cert thumbprint 
 
@@ -182,7 +174,7 @@ Machine generated alternative text:
 " autoUpgradeMinorVersion true, 
 " settings" 
 "clusterEndpoint " : 
-" https : //eastus . servicefabric . azure.com/runtime/c1usters/9d559@07-9aa2-4491-95Ø6-f3Ø5e14f7fc6", 
+" https : //eastus . servicefabric . azure.com/runtime/c1usters/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
 "nodeTypeRef" : 
 "sys" 
 "dataPath " : 
@@ -192,11 +184,11 @@ true,
 'nicPrefixOverride" : 
 reverseProxyCertificate" 
 "thumbprint " • 
-. "41BIDEe9F81FA6DE57FC7E242558A4AE28e91A8Ø" , 
+. "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" , 
 "x509StoreName "My" 
 'certificate " 
 "thumbprint " • 
-. oe515ED6F477B785A196AeA946E9CD4F8DDE6DED" , 
+. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" , 
 "x509StoreName " : 
  
 
@@ -209,7 +201,7 @@ KeyVaultSetup_SelfSigned.ps1:
 
 ```powershell
 #Requires -Version 3.0
-# DEPENDENCY (clone from https://github.com/ChackDan/Service-Fabric/tree/master/Scripts/ServiceFabricRPHelpers)
+# DEPENDENCY (clone from https://github.com/user/Service-Fabric/tree/master/Scripts/ServiceFabricRPHelpers)
 
 Param(
     [string] [Parameter(Mandatory=$true)] $location,
