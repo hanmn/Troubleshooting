@@ -120,8 +120,8 @@ Basically, you define the Protocol as HTTPS and give an Endpoint Name and refere
 	-------------------------
 	
 	    IP:port                      : 0.0.0.0:19080
-	    Certificate Hash             : b24ac3bbf58709de716dbdce4ff31cb5f08aca19
-	    Application ID               : {7f7f579c-89a9-412e-b4ef-1ac59cdf2f25}
+	    Certificate Hash             : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	    Application ID               : {XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
 	    Certificate Store Name       netsh : My
 	    Verify Client Certificate Revocation : Disabled
 	    Verify Revocation Using Cached Client Certificate Only : Disabled
@@ -134,8 +134,8 @@ Basically, you define the Protocol as HTTPS and give an Endpoint Name and refere
 	    Negotiate Client Certificate : Disabled
 	
 	    IP:port                      : 0.0.0.0:9001
-	    Certificate Hash             : 85fb1cb077cd7c78789f5bb61a7a4f3b282008e3
-	    Application ID               : {ba9bcb9f-58ac-4f6d-8e53-95f20f6811cd}
+	    Certificate Hash             : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	    Application ID               : {XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
 	    Certificate Store Name       : My
 	    Verify Client Certificate Revocation : Disabled
 	    Verify Revocation Using Cached Client Certificate Only : Disabled
