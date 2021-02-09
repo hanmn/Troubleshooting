@@ -23,7 +23,7 @@ Step 5: wait for VMSS Status under the resource group is "Succeeded" before upda
 
 Step 6: do the step 2 and 3 for the Microsoft.ServiceFabric provider for your cluster
 
-Step 7: adding "thumbprintSecondary": "656A78764F57E938BBBA08377F8D9C6DFBE19BA7" setting
+Step 7: adding "thumbprintSecondary": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" setting
 
 
 Step 8: wait for the SF cluster Updating the secondary certificate
