@@ -1,16 +1,15 @@
-New-SelfSignedCertificate -NotBefore '2018-05-09' -NotAfter '2018-06-01' -DnsName www.domain-name.eastus.cloudapp.azure.com -CertStoreLocation Cert:\LocalMachine\My -Provider "Microsoft Strong Cryptographic Provider" -KeyExportPolicy ExportableEncrypted
+You can create self-signed certificates easily using the following PowerShell cmdlet
+	
+	New-SelfSignedCertificate -NotBefore '2018-05-09' -NotAfter '2018-06-01' -DnsName www.domain-name.eastus.cloudapp.azure.com -CertStoreLocation Cert:\LocalMachine\My -Provider "Microsoft Strong Cryptographic Provider" -KeyExportPolicy ExportableEncrypted
 
 Verify cert:
-
 	Certutil -v -store my <thumbprint>
 
 
-Provider = Microsoft Software Key Storage Provider
+SF will not be able to extract and parse the certificate's private key if the certificate was created with an unsuitable CSP 
+example:
+	Provider = Microsoft Software Key Storage Provider
  
-Which denotes that the certificate has been created with an unsuitable CSP. This explains why the SF 6.2 runtime was not able to extract and parse the certificate’s private key.
- 
-
-Dump cert details
-
+To dump cert details:
 	Certutil -v -dump -store my <thumbprint>
-	Certutil -v -dump certfilename.pkx > output.txt
+	Certutil -v -dump certfilename.pfx > output.txt
