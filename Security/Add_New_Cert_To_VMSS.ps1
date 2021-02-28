@@ -14,6 +14,8 @@
 # For Linux Clusters, remove -CertificateStore "My" parameter from New-AzureRmVmssVaultCertificateConfig function
 #
 # Requires -Version 3.0
+# Certificate Configuration
+# Couldn't add or renew certificate
 
 Param(
     [string] [Parameter(Mandatory=$true)] $KeyVaultResourceGroupName,
