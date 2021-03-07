@@ -1,4 +1,4 @@
-#Requires [AzureRM.ServiceFabric module], latest available @ https://www.powershellgallery.com/packages/AzureRM.ServiceFabric/0.3.8
+# [AzureRM.ServiceFabric module], latest available @ https://www.powershellgallery.com/packages/AzureRM.ServiceFabric/0.3.8
 #
 #These new PowerShell commands are the preferred method to add/remove or manage certificates in the cluster
 #    Cmdlet          Add-AzureRmServiceFabricApplicationCertificate     0.2.0      AzureRM.ServiceFabric 
@@ -13,7 +13,6 @@
 # For Windows Cluster this script should run as-is
 # For Linux Clusters, remove -CertificateStore "My" parameter from New-AzureRmVmssVaultCertificateConfig function
 #
-# Requires -Version 3.0
 # Certificate Configuration
 # Couldn't add or renew certificate
 
