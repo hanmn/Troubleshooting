@@ -1,4 +1,7 @@
 
+# Intent of the repo
+What does this do, when do I use this vs other online resources
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
