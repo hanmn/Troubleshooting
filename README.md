@@ -1,4 +1,7 @@
 
+# Intent of the repo
+This is a public repository for all of Service Fabric's Troublesooting guides, and is intended to provide a central location for community driven troubleshooting content. This is the material that is reference by Customer Support Services when a ticket is created, by Service Fabric Site Reliability Engineers responding to an incident, and by users when self discoverying resolutions to active system issues.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
