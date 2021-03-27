@@ -203,7 +203,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
         Set-Acl -Path $keyFullPath -AclObject $acl -ErrorAction Stop
 
         # Observe the access rights currently assigned to this certificate.
-        get-acl $keyFullPath| Format-List 
+        get-acl $keyFullPath| Format-List
         #------------------------------------------------------- done ACL
 
         # create a temp folder
@@ -243,7 +243,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
         #update the node configuration
         $logRoot = $clusterDataRootPath + "\Log"
         Write-Host "Updating Node configuration with new cert:" $newThumbprint
-        New-ServiceFabricNodeConfiguration -FabricDataRoot $clusterDataRootPath -FabricLogRoot $logRoot -ClusterManifestPath $newManifest -InfrastructureManifestPath $newInfraManifest 
+        New-ServiceFabricNodeConfiguration -FabricDataRoot $clusterDataRootPath -FabricLogRoot $logRoot -ClusterManifestPath $newManifest -InfrastructureManifestPath $newInfraManifest
         Write-Host "Updating Node configuration with new cert: complete"
 
         #restart these services
