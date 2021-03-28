@@ -1,11 +1,11 @@
 # [AzureRM.ServiceFabric module], latest available @ https://www.powershellgallery.com/packages/AzureRM.ServiceFabric/0.3.8
 #
 #These new PowerShell commands are the preferred method to add/remove or manage certificates in the cluster
-#    Cmdlet          Add-AzureRmServiceFabricApplicationCertificate     0.2.0      AzureRM.ServiceFabric 
-#    Cmdlet          Add-AzureRmServiceFabricClientCertificate          0.2.0      AzureRM.ServiceFabric 
-#    Cmdlet          Add-AzureRmServiceFabricClusterCertificate         0.2.0      AzureRM.ServiceFabric 
-#    Cmdlet          Remove-AzureRmServiceFabricClientCertificate       0.2.0      AzureRM.ServiceFabric 
-#    Cmdlet          Remove-AzureRmServiceFabricClusterCertificate      0.2.0      AzureRM.ServiceFabric 
+#    Cmdlet          Add-AzureRmServiceFabricApplicationCertificate     0.2.0      AzureRM.ServiceFabric
+#    Cmdlet          Add-AzureRmServiceFabricClientCertificate          0.2.0      AzureRM.ServiceFabric
+#    Cmdlet          Add-AzureRmServiceFabricClusterCertificate         0.2.0      AzureRM.ServiceFabric
+#    Cmdlet          Remove-AzureRmServiceFabricClientCertificate       0.2.0      AzureRM.ServiceFabric
+#    Cmdlet          Remove-AzureRmServiceFabricClusterCertificate      0.2.0      AzureRM.ServiceFabric
 #
 #
 #The following is a PowerShell Script to Achieve this:
