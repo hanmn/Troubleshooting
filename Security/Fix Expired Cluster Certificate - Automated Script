@@ -1,303 +1,95 @@
-Video demo: 
-
-https://microsoft.sharepoint.com/:v:/r/teams/DSHome/azure/AzureTechnologies/ServiceFabric/Shared%20Documents/Training%20Roadmap/Fix_Expired_Cert_script.wmv?csf=1&e=f4099a88fc0245eb83fcd66a54684339 
-
- 
-
-[Symptom for Expired certificate] 
-
- 
+[Symptoms for Expired certificate] 
 
 [Symptom] 
+   Cluster will show 'Upgrade Service not reachable' warning message 
+   Unable to see the SF Nodes in the Portal or SFX 
+   Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource  
 
-Cluster will show 'Upgrade Service not reachable' warning message 
+[Verify Certificate Expired Status on Node]
+    RDP to any node
+    Open the Certificate Mgr for 'Local Computer' and check below details  
+    Make sure certificate is ACL'd to network service  
+    Verify the Certificate Expiry, if it is expired, follow below steps  
 
-Unable to see the SF Nodes in the Portal or SFX 
+[Fix Expired Cert steps] 
 
-Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric% 
+1) Create new cert in different KeyVault (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
 
-4Admin.evtx'  event log from 'transport' resource  
+2) Deploy new cert to all nodes in VMSS (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1) 
 
-Open the Certificate Mgr for 'Local Computer' and check below details  
-
-Make sure certificate is ACL'd to network service  
-
-Verify the Certificate Expiry, if it is expired, follow below steps  
-
+3) RDP into node 0 for each NodeType in the cluster  
+    a) if a cluster has a single nodetype they only need to RDP into one of the nodes 
+    b) If a cluster has multiple nodetypes they need to RDP into one node on each nodetype 
  
+4) For each nodetype you are mitigating, open PowerShell ISE (verify it is running as Administrator) 
+    a) Download FixExpiredCert.ps1 from https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/FixExpiredCert.ps1
+    b) Open PowerShell ISE and edit Parameter values as necessary ($oldThumbprint, $newThumbprint, $nodeIpArray)
+       (note: $nodeIpArray should list IP addresses for all nodes in the specific vnet for the nodetype you are working on) 
 
+        Param(
+            [Parameter(Mandatory=$false)]
+            [ValidateNotNullOrEmpty()]
+            [string] $clusterDataRootPath="D:\SvcFab",
+
+            [Parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]
+    --->    [string]$oldThumbprint="replace with expired thumbprint",
+
+            [Parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]
+    --->    [string]$newThumbprint="replace with new thumbprint",
+
+            [Parameter(Mandatory=$false)]
+            [ValidateNotNullOrEmpty()]
+            [string]$certStoreLocation='Cert:\LocalMachine\My\',
+
+            [Parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]
+    --->    [string[]]$nodeIpArray=@("10.0.0.4","10.0.0.5","10.0.0.6" )
+        )
+
+5) Run the FixExpiredCert.ps1 script on each nodetype (https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-nodetypes)
+    a) It should prompt for the RDP credentials and then remotely execute all the necessary mitigation steps for each node listed in the nodeIpArray using Remote PowerShell
+        Note: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script, changes are idempotent.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node. 
  
-
-[Fix Expired Cert] 
-
-Create new cert in different KeyVault (PowerShell script attached – KeyVaultSetup_SelfSigned.ps1) 
-
-Currently there is a bug in the VMSS resource which requires the Primary and Secondary secrets must be in a different Key Vault in the same region for the deployment to succeed. 
-
-If you use the same key vault to put your secondary secret, you may get the following error in step 2) 
-
-Update-Azur eRmVmss 
-. List secrets contains repeated instances of 
-+ Fullyqualifi edErrorId 
-. NotSpecifi ed: [Update-Azur eRmVmss] , ComputeCIoudException 
-. Microsoft . Azure. Commands . Compute. Common . ComputeCIoudException ,Microsoft. Azure. Commands . Compute. Automati on. UpdateAzureRmVmss
-Machine generated alternative text:
-WARNING: update-AzureRmVmss: A property Of the Output Of this 
-ming breaking change release. The StorageAccountType property 
-andard_LRS and Premium_LRS 
-VERBOSE: performing the operation "update" on target "VM" 
-Update 
-List secrets contains repeated instances 
-cmdlet will change in an upco 
-for a DataDisk will return St 
-of 'subscriptions/64eadebb-O 
-635-4 d7d-9dIf-4S3 20S64g7ce/res ou rceGr agnesharedResources / provi de rs croscft . Key 
-Vault/vaults/charpagne-keyvault, *hich is disallov.ed. 
-Error-code: Inva7hcFarameter 
-Error Message; List secrets contains repeated instances Of / subscriptions/64eadebb-Od3S -4d7 
-d-9dIf -48 3 20864 g 7 ce/resourceGr0Llps / champagneshared*esourcas /provi de r s c rosofc _ Keyvaul t/XXXXXXXXXXXXX v 
-atilts/Chanpagr.e-KeyvauIt, "h ich is disallov,ed. 
-Staruscode: 400 
-Rea•sonphr-ase: gad Request 
-Cpprationlü 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-Update - AzureRmVmss -ResoLlrceGroupName 
-. S ResourceGrnupName "Name W 
-+ Cateqorylnfo 
-Ful IyquaIlfiedError1d : microsoft . Azure , Commands . Compute _ Automation _ updateAzureRmVm 
-  
-
-Deploy new cert to all nodes in VMSS (Script attached to deploy – AddCertToVMSS.ps1) 
-
+6) After step 5 services should be restarting and when ready you should able to reconnect to the cluster over SFX and PowerShell.  
+    Note 1: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running using the new certificate and SFX endpoint and PowerShell endpoints should be accessible. 
+    Note 2: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not be updated with the new thumbprint.  To correct this Contact Azure support to create a support ticket to request the final update to the SFRP record.   
  
-
-RDP into node 0 for each NodeType in the cluster  
-
-if a cluster has a single nodetype they only need to RDP into one of the nodes 
-
-If a cluster has multiple nodetypes they need to RDP into one node on each nodetype 
-
- 
-
-For each nodetype you are mitigating, open PowerShell ISE (verify it is running as Administrator) 
-
-Download and Copy contents of FixExpiredCert from Master Branch (https://servicefabricsupport.visualstudio.com/_git/Tools?path=%2FScripts%2FFixExpiredCert.ps1&version=GBmaster&_a=contents) 
-
-Copy contents into PowerShell ISE and edit highlighted Param values as necessary (note: nodeIpArray should list IP addresses for all nodes in the specific vnet for the nodetype you are RDP into) 
-
- 
-
-Param( 
-
-[Parameter(Mandatory=$false)]  
-
-[ValidateNotNullOrEmpty()] 
-
-[string] $clusterDataRootPath="D:\SvcFab", 
-
- 
-
-[Parameter(Mandatory=$false)] #$true 
-
-[ValidateNotNullOrEmpty()] 
-
-[string]$oldThumbprint="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
-
- 
-
-[Parameter(Mandatory=$false)] #$true 
-
-[ValidateNotNullOrEmpty()] 
-
-[string]$newThumbprint="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
-
- 
-
-[Parameter(Mandatory=$false)] 
-
-[ValidateNotNullOrEmpty()] 
-
-[string]$certStoreLocation='Cert:\LocalMachine\My\', 
-
- 
-
-[Parameter(Mandatory=$false)] #$true 
-
-[ValidateNotNullOrEmpty()] 
-
-[string[]]$nodeIpArray=@("10.0.1.4","10.0.1.5","10.0.1.6" ) 
-
-) 
-
- 
-
-Run the script on each nodetype 
-
-It should prompt for the RDP credentials and then remotely execute all the necessary mitigation steps for each node listed in the nodeIpArray 
-
-Note: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node. 
-
- 
-
-After step 5 you should able to reconnect to the cluster over SFX and PowerShell.  Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running using the new certificate and SFX endpoint and PowerShell endpoints should be accessible. 
-
-The Azure portal will still not work due to the ARM part of the Service Fabric Resource Provider has not be updated with proper thumbprint yet.  
-
-Contact Azure support to create a ICM to request backend team to update the ARM runtime for the Service Fabric cluster, give them the new thumbprint. 
-
-  
-
-Last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
-
-https://resources.azure.com --> Resource Group --> providers --> Microsoft.Compute --> vmss 
-
-Ensure the correct KeyVault for the new cert is listed 
-
-Machine generated alternative text:
-'sourceVau1t " : 
-"id": 
-" / subscriptions/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX / resourceGroups/ sedeas tKeyVau1tGroup / providers crosoft. KeyVau1t /vaults/ test tKeyVau1tRPØ1 " 
-'vaultCertificates" : 
-"certificatelJr1" : 
-"https : / / testkeyvau1trpØ1. vault . azure. net : 443/ sec rets / testRPØ1/1a XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " , 
-'certificateStore" : 
-Update the thumbprint to use the new cert thumbprint 
-
-Machine generated alternative text:
-"extensionProfi1e" 
-'extensions" 
-'properties" 
-'publisher": "Microsoft . Azure. ServiceFabric" 
-"type" 
-" ServiceFabricNode" 
-"typeHand1erVersion • 
-" autoUpgradeMinorVersion true, 
-" settings" 
-"clusterEndpoint " : 
-" https : //eastus . servicefabric . azure.com/runtime/c1usters/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
-"nodeTypeRef" : 
-"sys" 
-"dataPath " : 
-"durabilityLeve1 " Silver" 
-"enablePa rallel)obs": 
-true, 
-'nicPrefixOverride" : 
-reverseProxyCertificate" 
-"thumbprint " • 
-. "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" , 
-"x509StoreName "My" 
-'certificate " 
-"thumbprint " • 
-. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" , 
-"x509StoreName " : 
- 
-
-At this point you should be able to see the new thumbprint in the CommandExecution.log into the extension logs 
-
-"C:\WindowsAzure\Logs\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\1.0.0.35\CommandExecution.log" 
-
-
-KeyVaultSetup_SelfSigned.ps1:
-
-```powershell
-#Requires -Version 3.0
-# DEPENDENCY (clone from https://github.com/user/Service-Fabric/tree/master/Scripts/ServiceFabricRPHelpers)
-
-Param(
-    [string] [Parameter(Mandatory=$true)] $location,
-    [string] [Parameter(Mandatory=$true)] $clusterName,
-    [string] [Parameter(Mandatory=$true)] $certVersion,
-    [string] [Parameter(Mandatory=$true)] $outputPath,
-    [string] [Parameter(Mandatory=$true)] $SubscriptionId
-)
-
-Set-StrictMode -Version 3
-
-$ErrorActionPreference = "Stop"
-
-# ======= dont change anything below here =======
-$certificateName = 		$clusterName + $certVersion
-$vaultName = 			$clusterName + "KeyVault" + $certVersion
-$resourceGroupName = 	$vaultName + "Group"
-$certificateNamePath = 	$outputPath + "\" + $certificateName + ".pfx"
-$dnsName = 				$clusterName + "." + $location + ".cloudapp.azure.com"
-
-
-### DEPENDENCY CHECK ###
-# (clone from https://github.com/ChackDan/Service-Fabric/tree/master/Scripts/ServiceFabricRPHelpers)
-cd C:\CIE\Service-Fabric-Tools\Service-Fabric\Scripts\ServiceFabricRPHelpers
-Import-Module .\ServiceFabricRPHelpers.psm1
-
-$password1 = (Read-Host -AsSecureString -Prompt "Enter Certificate Password ")
-$password2 = (Read-Host -AsSecureString -Prompt "Re-Enter Certificate Password ")
-
-Login-AzureRmAccount
-
-Set-AzureRmContext -SubscriptionId $subscriptionId
-
-New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
-
-New-AzureRmKeyVault -VaultName $vaultName -ResourceGroupName $resourceGroupName  -Location $location
-
-
-Set-AzureRmKeyVaultAccessPolicy -VaultName $vaultName -ResourceGroupName $resourceGroupName  -EnabledForDeployment
-
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password1)
-$verifiedPassword1 = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) 
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password2)
-$verifiedPassword2 = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR) 
-
-If($verifiedPassword1 -eq $verifiedPassword2)
-{
-    $keyVaultInfo = $outputPath + "\" + $certificateName + ".txt"
-
-    New-Item -ItemType Directory -Force -Path $outputPath
-
-	Invoke-AddCertToKeyVault -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName  -Location $location -VaultName $vaultName -CertificateName $certificateName -Password $verifiedPassword1 -CreateSelfSignedCertificate -DnsName $dnsName -OutputPath $outputPath  | Out-File $keyVaultInfo
-    Get-Content $keyVaultInfo
-
-	Import-PfxCertificate -Exportable -CertStoreLocation Cert:\CurrentUser\TrustedPeople -FilePath $certificateNamePath -Password $password1
-
-	Import-PfxCertificate -Exportable -CertStoreLocation Cert:\CurrentUser\My -FilePath $certificateNamePath -Password $password1
-} Else {
-	Write-Host "Passwords did not match, exiting."
-}
-
-$BSTR = ""
-$verifiedPassword1 = ""
-$verifiedPassword2 = ""
-
-Write-Host "operation complete"
-```
-
-AddCertToVMSS.ps1
-```powershell
-Param(
-    [string] [Parameter(Mandatory=$true)] $KeyVaultResourceGroupName,
-    [string] [Parameter(Mandatory=$true)] $VmssResourceGroupName,
-    [string] [Parameter(Mandatory=$true)] $VaultName,
-    [string] [Parameter(Mandatory=$true)] $VmssName,
-    [string] [Parameter(Mandatory=$true)] $SubscriptionId
-    ,[string] [Parameter(Mandatory=$true)] $CertificateUrl
-)
- 
-Set-StrictMode -Version 3
- 
-$ErrorActionPreference = "Stop"
- 
-# Login
-Login-AzureRmAccount -SubscriptionId $SubscriptionId
-$sourceVaultId = "/subscriptions/$SubscriptionId/resourceGroups/$KeyVaultResourceGroupName/providers/Microsoft.KeyVault/vaults/$VaultName"
-$sourceVaultId
-
-$certConfig = New-AzureRmVmssVaultCertificateConfig -CertificateUrl $CertificateUrl -CertificateStore "My"
-$certConfig
-# Get current vmss 
-$vmss = Get-AzureRmVmss -ResourceGroupName $VmssResourceGroupName -VMScaleSetName $VmssName
-$vmss
-# add new secret 
-$vmss = Add-AzureRmVmssSecret -VirtualMachineScaleSet $vmss -SourceVaultId $sourceVaultId -VaultCertificate $certConfig
-$vmss
-#update VMSS 
-Update-AzureRmVmss -ResourceGroupName $VmssResourceGroupName -Name $VmssName -VirtualMachineScaleSet $vmss -Verbose
-```
+7) The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
+
+    a) Go to https://resources.azure.com --> Resource Group --> providers --> Microsoft.Compute --> vmss 
+
+        Ensure the correct KeyVault for the new cert is listed, update the "sourceVault" and "certificateUrl"
+
+            "secrets": [
+            {
+                "sourceVault": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/xxxxxx/providers/Microsoft.KeyVault/vaults/xxxxxxxx"
+                },
+                "vaultCertificates": [
+                {
+                    "certificateUrl": "https://xxxxxx.vault.azure.net/secrets/xxxxxx/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "certificateStore": "My"
+                }
+                ]
+            }
+
+        Update the "thumbprint" propert with the new certificate thumbprint 
+
+            "extensionProfile": {
+                "extensions": [
+                {
+                    "properties": {
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                        "clusterEndpoint": "https://xxxxx.servicefabric.azure.com/runtime/clusters/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                        "nodeTypeRef": "sys",
+                        "dataPath": "D:\\\\SvcFab",
+                        "durabilityLevel": "Bronze",
+                        "enableParallelJobs": true,
+                        "nicPrefixOverride": "10.0.0.0/24",
+                        "certificate": {
+                        "thumbprint": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                        "x509StoreName": "My"
+                        }
