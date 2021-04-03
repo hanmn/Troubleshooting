@@ -1,28 +1,26 @@
-[Symptoms for Expired certificate] 
-
-[Symptom] 
+##[Symptom] 
    Cluster will show 'Upgrade Service not reachable' warning message 
    Unable to see the SF Nodes in the Portal or SFX 
    Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource  
 
-[Verify Certificate Expired Status on Node]
+##[Verify Certificate Expired Status on Node]
     RDP to any node
     Open the Certificate Mgr for 'Local Computer' and check below details  
     Make sure certificate is ACL'd to network service  
     Verify the Certificate Expiry, if it is expired, follow below steps  
 
-[Fix Expired Cert steps] 
+##[Fix Expired Cert steps] 
 
-1) Create new cert in different KeyVault (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
+1. Create new cert in different KeyVault (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
 
-2) Deploy new cert to all nodes in VMSS (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1) 
+2. Deploy new cert to all nodes in VMSS (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1) 
 
-3) RDP into node 0 for each NodeType in the cluster  
+3. RDP into node 0 for each NodeType in the cluster  
     a) if a cluster has a single nodetype they only need to RDP into one of the nodes 
     b) If a cluster has multiple nodetypes they need to RDP into one node on each nodetype 
  
-4) For each nodetype you are mitigating, open PowerShell ISE (verify it is running as Administrator) 
-    a) Download FixExpiredCert.ps1 from https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/FixExpiredCert.ps1
+4. For each nodetype you are mitigating, open PowerShell ISE (verify it is running as Administrator) 
+    a) Download [FixExpiredCert.ps1](../blob/master/Security/FixExpiredCert.ps1) from https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/FixExpiredCert.ps1
     b) Open PowerShell ISE and edit Parameter values as necessary ($oldThumbprint, $newThumbprint, $nodeIpArray)
        (note: $nodeIpArray should list IP addresses for all nodes in the specific vnet for the nodetype you are working on) 
 
@@ -48,15 +46,15 @@
     --->    [string[]]$nodeIpArray=@("10.0.0.4","10.0.0.5","10.0.0.6" )
         )
 
-5) Run the FixExpiredCert.ps1 script on each nodetype (https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-nodetypes)
+5. Run the FixExpiredCert.ps1 script on each nodetype (https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-nodetypes)
     a) It should prompt for the RDP credentials and then remotely execute all the necessary mitigation steps for each node listed in the nodeIpArray using Remote PowerShell
         Note: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script, changes are idempotent.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node. 
  
-6) After step 5 services should be restarting and when ready you should able to reconnect to the cluster over SFX and PowerShell.  
+6. After step 5 services should be restarting and when ready you should able to reconnect to the cluster over SFX and PowerShell.  
     Note 1: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running using the new certificate and SFX endpoint and PowerShell endpoints should be accessible. 
     Note 2: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not be updated with the new thumbprint.  To correct this Contact Azure support to create a support ticket to request the final update to the SFRP record.   
  
-7) The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
+7. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
 
     a) Go to https://resources.azure.com --> Resource Group --> providers --> Microsoft.Compute --> vmss 
 
