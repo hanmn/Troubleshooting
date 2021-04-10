@@ -2,13 +2,10 @@
 
 *This example shows how to setup the Principle and set the ACL using SecurityAccessPolicies, from the ApplicationManifest.xml.  Two different certs are updated, an EndpointCertificate and a simple SecretsCertificate.*
 
-*See more about this at https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-application-secret-management *
-
-# Certificate-Configurations
-# Private-Key-Permissions
+*See more about this at* https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-application-secret-management
 
 ---
-
+'''xml
 <ApplicationManifest>
  …
  …
@@ -30,3 +27,4 @@
 		<EndpointCertificate X509FindValue="[ApplicationClientThumbprint]" Name="WebAdminCert" />
 	</Certificates>
 </ApplicationManifest>
+'''
