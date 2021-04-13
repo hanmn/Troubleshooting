@@ -5,7 +5,8 @@
 *See more about this at* https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-application-secret-management
 
 ---
-'''xml
+
+```xml
 <ApplicationManifest>
  …
  …
@@ -27,4 +28,4 @@
 		<EndpointCertificate X509FindValue="[ApplicationClientThumbprint]" Name="WebAdminCert" />
 	</Certificates>
 </ApplicationManifest>
-'''
+```
