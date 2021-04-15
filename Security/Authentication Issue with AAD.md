@@ -1,4 +1,5 @@
-Symptom : AAD Authentication fails on SFX (Service Fabric Explorer).
+## Symptom
+AAD Authentication fails on SFX (Service Fabric Explorer).
 
 According to the https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#assign-users-to-roles, users should be assigned to ‘ReadOnly’ or 'Admin' role, any other will be invalid.
 
