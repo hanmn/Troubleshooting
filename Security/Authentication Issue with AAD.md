@@ -4,7 +4,7 @@ AAD Authentication fails on SFX (Service Fabric Explorer).
 According to the https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#assign-users-to-roles, users should be assigned to ‘ReadOnly’ or 'Admin' role, any other will be invalid.
 
 In this case CSS reviewed the traces and noticed where the user was assigned to ‘ReadWriteUser’ group, and therfore it breaks due to the wrong role assignment.  Mitigate by fixing the user configuration to be either ReadOnly or Admin.
- 
+|:---------:|:-------------:|:-------------------------:|:-----:|:-----:| 
 | 2018-5-11 | 00:58:11.740	| SystemFabric.AAD.Server	| 980	| 3580	| Claim: name: xxxx xxxx
 | 2018-5-11 | 00:58:11.740	| SystemFabric.AAD.Server	| 980	| 3580	| Claim: nonce: 90b47fd2-eea2-45c7-9973-96bbb73e2f83
 | 2018-5-11 | 00:58:11.740	| SystemFabric.AAD.Server	| 980	| 3580	| Claim: http://schemas.microsoft.com/identity/claims/objectidentifier: d954c3a1-d94d-46f5-b252-08cb229047b2
