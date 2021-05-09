@@ -1,19 +1,19 @@
 ## [Symptom] 
-   Cluster will show 'Upgrade Service not reachable' warning message 
-   Unable to see the SF Nodes in the Portal or SFX 
-   Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource  
+   * Cluster will show 'Upgrade Service not reachable' warning message 
+   * Unable to see the SF Nodes in the Portal or SFX 
+   * Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource  
 
 ## [Verify Certificate Expired Status on Node]
-    RDP to any node
-    Open the Certificate Mgr for 'Local Computer' and check below details  
-    Make sure certificate is ACL'd to network service  
-    Verify the Certificate Expiry, if it is expired, follow below steps  
+    * RDP to any node
+        * Open the Certificate Mgr for 'Local Computer' and check below details  
+        * Make sure certificate is ACL'd to network service  
+        * Verify the Certificate Expiry, if it is expired, follow below steps  
 
 ## [Fix Expired Cert steps] 
 
-1. Create new cert in different KeyVault (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
+1. Create new cert in different KeyVault using [CreateKeyVaultAndCertificateForServiceFabric.ps1](./blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
 
-2. Deploy new cert to all nodes in VMSS (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1) 
+2. Deploy new cert to all nodes in VMSS using [Add_New_Cert_To_VMSS.ps1](./blob/master/Security/Add_New_Cert_To_VMSS.ps1) 
 
 3. RDP into node 0 for each NodeType in the cluster  
 
