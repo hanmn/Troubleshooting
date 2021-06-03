@@ -1,6 +1,6 @@
 ## How to mitigate SecurityApi_CertGetCertificateChain health warning (CTL accessibility issue or CRL slow/offline)
 
-##[Assessment]]
+## Assessment
 You can modify the threshold to mitigate such warnings about slow certificate chain validations or CRL lookup by setting SlowAPiThreshold value.  However, while removing the warnings from SFX the performance issue may still persist.
 
 ```json
