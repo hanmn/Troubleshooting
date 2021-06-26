@@ -25,29 +25,25 @@ Reasonphrase: Bad Request](./media/image1.png)
 7. [https://resources.azure.com ](https://resources.azure.com)
 
     a.  Edit your VMSS and add a new VM Extension, update URL to your container and DSC script
-
  
 ```json
 {
   "properties": {
     "publisher": "Microsoft.Powershell",
-    "type": "DSC",
-    "typeHandlerVersion": "2.9",
-    "autoUpgradeMinorVersion": true,
-    "settings": {
-      "configuration": {
-        "url": "<https://y5tuzpiqftqie100.blob.core.windows.net/scripts/SetCertificateACL_DSC.zip>",
-        "script": "SetCertificateACL_DSC.ps1",
-        "function": "SetCertificatePermissions"
-      }
-    }
-  },
-  "name": "Microsoft.Powershell.DSC"
+    "type": "DSC",
+    "typeHandlerVersion": "2.9",
+    "autoUpgradeMinorVersion": true,
+    "settings": {
+        "configuration": {
+            "url": "<https://y5tuzpiqftqie100.blob.core.windows.net/scripts/SetCertificateACL_DSC.zip>",
+            "script": "SetCertificateACL_DSC.ps1",
+            "function": "SetCertificatePermissions"
+        }
+    }
+ },
+ "name": "Microsoft.Powershell.DSC"
 }
 ```
- 
-
- 
 
 8.  Click PUT, and it should apply the NETWORK\_SERVICE ACL to the certs on all the nodes in the VMSS
 
