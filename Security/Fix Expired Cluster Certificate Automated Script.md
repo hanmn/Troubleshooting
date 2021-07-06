@@ -58,9 +58,9 @@
 
         Note: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script, changes are idempotent.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node.
  
-6. After step 5 services should be restarting and when ready you should able to reconnect to the cluster over SFX and PowerShell from your development computer.  *(Make sure you have installed the new Cert to CurrentUser\My)*
+6. After step 5 services should be restarting and when ready you should able to reconnect to the cluster over SFX and PowerShell from your development computer.  *(Make sure you have installed the new Cert to `CurrentUser\My`)*
 
-        ```PowerShell
+```PowerShell
         $ClusterName= "clustername.cluster_region.cloudapp.azure.com:19000"
         $Certthumprint = "{replace_with_ClusterThumprint}"
 
@@ -71,11 +71,11 @@
             -FindValue $Certthumprint `
             -StoreLocation CurrentUser `
             -StoreName My
-        ```
+```
 
-        Note 1: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running using the new certificate and SFX endpoint and PowerShell endpoints should be accessible.
+**Note 1**: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running using the new certificate and SFX endpoint and PowerShell endpoints should be accessible.
 
-        Note 2: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not be updated with the new thumbprint.  To correct this Contact Azure support to create a support ticket to request the final update to the SFRP record.
+**Note 2**: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not be updated with the new thumbprint.  To correct this Contact Azure support to create a support ticket to request the final update to the SFRP record.
  
 7. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault
 
