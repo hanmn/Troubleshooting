@@ -12,14 +12,12 @@
 
     a.  create a new container called 'scripts'
 
-![List secrets contains repeated instances of /subscriptions/{redacted}/resourceGroups/{redacted}/... which is disallowed
-StatusCode: 400
-Reasonphrase: Bad Request](./media/image1.png)
+![Containers, scripts](./media/dsc_image001.jpg)
 
 
 6.  Upload the .zip file to the container
 
-> ![/media/image2.jpg](./media/image2.jpg)
+> ![/media/image2.jpg](./media/dsc_image002.jpg)
 
 
 7. [https://resources.azure.com ](https://resources.azure.com)
@@ -61,4 +59,4 @@ Reasonphrase: Bad Request](./media/image1.png)
 > Special permissions
 > Full Control = Allow
 > Read = Allow
-> For special permissions or advanced settings.](./media/image3.png)
+> For special permissions or advanced settings.](./media/dsc_image003.png)
