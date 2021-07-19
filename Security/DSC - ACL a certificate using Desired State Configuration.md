@@ -12,12 +12,12 @@
 
     a.  create a new container called 'scripts'
 
-![Containers, scripts](./media/dsc_image001.jpg)
+![Containers, scripts](../media/dsc_image001.jpg)
 
 
 6.  Upload the .zip file to the container
 
-> ![/media/image2.jpg](./media/dsc_image002.jpg)
+> ![/media/image2.jpg](../media/dsc_image002.jpg)
 
 
 7. [https://resources.azure.com ](https://resources.azure.com)
@@ -59,4 +59,4 @@
 > Special permissions
 > Full Control = Allow
 > Read = Allow
-> For special permissions or advanced settings.](./media/dsc_image003.png)
+> For special permissions or advanced settings.](../media/dsc_image003.png)
