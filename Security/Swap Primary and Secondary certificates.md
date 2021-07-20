@@ -10,7 +10,7 @@ Swap Primary and Secondary certificates
 
 ## Steps
 
-1.  Create new cert in different KeyVault using [CreateKeyVaultAndCertificateForServiceFabric.ps1](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1)
+1.  Create new cert in different KeyVault using [CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
     a.  Currently there is a bug in which Primary and Secondary secrets should be in a different Key Vault in the same region for the deployment to succeed.
 
@@ -19,10 +19,10 @@ Swap Primary and Secondary certificates
 > ![Update-Azur eRmVmss
 > . List secrets contains repeated instances of /subscriptions/{redacted}/resourceGroups/{redacted}/... which is disallowed
 > StatusCode: 400
-> Reasonphrase: Bad Request](./media/image1.png)
+> Reasonphrase: Bad Request](../media/certswap_image1.png)
 
 
-2.  Add the cert to the VMSS - [Add new cert to VMSS](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1)
+2.  Add the cert to the VMSS - [Add new cert to VMSS](./Add_New_Cert_To_VMSS.ps1)
 
 
 3.  *(optional)* Change Advanced Upgrade Settings to use shorter times, which speeds up the cert add and swap operations significantly
