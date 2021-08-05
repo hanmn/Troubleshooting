@@ -1,4 +1,5 @@
-## [Assessment]
+## Why do cluster upgrades take so long
+
 Cluster upgrade performance questions come up somewhat frequently, I hope the following helps explain in some detail how the Service Fabric cluster upgrade process works and what effect it has on the end-to-end performance.   
 
 

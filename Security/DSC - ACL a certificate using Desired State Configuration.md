@@ -1,8 +1,8 @@
 ## DSC Example - ACL a certificate using Desired State Configuration
 
-1.  Create a new Self Signed cert -[CreateKeyVaultAndCertificateForServiceFabric.ps1](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1)   -- or get one from CA
+1.  Create a new Self Signed cert -[CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)   -- or get one from CA
 
-2.  Add the cert to the VMSS - [Add new cert to VMSS](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1)
+2.  Add the cert to the VMSS - [Add new cert to VMSS](./Add_New_Cert_To_VMSS.ps1)
 
 3.  Edit the attached DSC script, **change the Thumbprint** you want to ACL
 
@@ -12,42 +12,36 @@
 
     a.  create a new container called 'scripts'
 
-![List secrets contains repeated instances of /subscriptions/{redacted}/resourceGroups/{redacted}/... which is disallowed
-StatusCode: 400
-Reasonphrase: Bad Request](./media/image1.png)
+![Containers, scripts](../media/dsc_image001.jpg)
 
 
 6.  Upload the .zip file to the container
 
-> ![/media/image2.jpg](./media/image2.jpg)
+> ![/media/image2.jpg](../media/dsc_image002.jpg)
 
 
 7. [https://resources.azure.com ](https://resources.azure.com)
 
     a.  Edit your VMSS and add a new VM Extension, update URL to your container and DSC script
-
  
 ```json
 {
   "properties": {
     "publisher": "Microsoft.Powershell",
-    "type": "DSC",
-    "typeHandlerVersion": "2.9",
-    "autoUpgradeMinorVersion": true,
-    "settings": {
-      "configuration": {
-        "url": "<https://y5tuzpiqftqie100.blob.core.windows.net/scripts/SetCertificateACL_DSC.zip>",
-        "script": "SetCertificateACL_DSC.ps1",
-        "function": "SetCertificatePermissions"
-      }
-    }
-  },
-  "name": "Microsoft.Powershell.DSC"
+    "type": "DSC",
+    "typeHandlerVersion": "2.9",
+    "autoUpgradeMinorVersion": true,
+    "settings": {
+        "configuration": {
+            "url": "<https://y5tuzpiqftqie100.blob.core.windows.net/scripts/SetCertificateACL_DSC.zip>",
+            "script": "SetCertificateACL_DSC.ps1",
+            "function": "SetCertificatePermissions"
+        }
+    }
+ },
+ "name": "Microsoft.Powershell.DSC"
 }
 ```
- 
-
- 
 
 8.  Click PUT, and it should apply the NETWORK\_SERVICE ACL to the certs on all the nodes in the VMSS
 
@@ -65,4 +59,4 @@ Reasonphrase: Bad Request](./media/image1.png)
 > Special permissions
 > Full Control = Allow
 > Read = Allow
-> For special permissions or advanced settings.](./media/image3.png)
+> For special permissions or advanced settings.](../media/dsc_image003.png)

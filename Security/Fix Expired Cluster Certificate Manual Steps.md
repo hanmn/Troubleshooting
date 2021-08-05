@@ -12,9 +12,9 @@
 
 ## [Fix Expired Cert steps] 
 
-1. Create new cert in different KeyVault (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
+1. Create new cert in different KeyVault - [CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1) 
 
-2. Deploy new cert to all nodes in VMSS (https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Add_New_Cert_To_VMSS.ps1) 
+2. Deploy new cert to all nodes in VMSS - [Add_New_Cert_To_VMSS.ps1](./Add_New_Cert_To_VMSS.ps1) 
 
 
 ## For each node { 
