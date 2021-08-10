@@ -1,4 +1,4 @@
-## Use the <https://resources.azure.com> to add the Secondary Certificate
+## Use [https://resources.azure.com](https://resources.azure.com) to add the Secondary Certificate
 
 In the MSDN article <https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-security-update-certs-azure#add-a-secondary-certificate-and-swap-it-to-be-the-primary-using-resource-manager-powershell> it's mentioned that secondary cluster certificate cannot be added through the Azure portal. You have to use Azure powershell for that.
 
