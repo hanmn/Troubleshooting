@@ -1,8 +1,8 @@
-## Use the <https://resources.azure.com> to add the Secondary Certificate
+## Use [https://resources.azure.com](https://resources.azure.com) to add the Secondary Certificate
 
 In the MSDN article <https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-security-update-certs-azure#add-a-secondary-certificate-and-swap-it-to-be-the-primary-using-resource-manager-powershell> it's mentioned that secondary cluster certificate cannot be added through the Azure portal. You have to use Azure powershell for that.
 
-In the future the feature to add a secondary certificate may be added to the portal, but for now you will have to use an ARM template [PowerShell ARM Template Deployment - Swap certificates](./PowerShell%20ARM%20Template%20Deployment%20-%20Swap%20certificates.md) or <https://resources.azure.com> to add the secondary certificate.
+Another option is to use the [Azure Resource Explorer](https://resources.azure.com)
 
  
 
@@ -12,7 +12,7 @@ In the future the feature to add a secondary certificate may be added to the por
 
     a. Create with any reputable CA
 
-    b. Generate or Import using Azure Portal -> Key Vault - https://blogs.technet.microsoft.com/kv/2016/09/26/get-started-with-azure-key-vault-certificates/
+    b. Generate Selfsigned, Import existing certs using Azure Portal -> Key Vault - https://blogs.technet.microsoft.com/kv/2016/09/26/get-started-with-azure-key-vault-certificates/
 
     c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
@@ -128,7 +128,7 @@ Succeeded
 
 7. Next edit the Microsoft.ServiceFabric provider for your cluster
 
-* Adding \"thumbprintSecondary\": \"656A78764F57E938BBBA08377F8D9C6DFBE19BA7\" setting
+* Adding \"certificateSecondary\": \"8934E0494979684F2627EE382B5AD84A8FAD6823\" setting
 
 ```json
   "properties": {
@@ -140,9 +140,12 @@ Succeeded
     "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "certificate": {
       "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
-      "thumbprintSecondary": "8934E0494979684F2627EE382B5AD84A8FAD6823",
       "x509StoreName": "My"
     },
+    "certificateSecondary": {
+      "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
+      "x509StoreName": "my"
+    }
 ```
 
 8. **Wait** for the SF cluster Updating the secondary certificate to complete
@@ -152,7 +155,7 @@ Succeeded
 * FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
  
 
-9. Swap the Primary and Secondary certificates in the VMMS resource
+9. Swap the values of "thumbprint" and "thumbprintSecondary" properties in the VMMS resource
 
 ```json
 "virtualMachineProfile": {
@@ -183,7 +186,7 @@ Succeeded
 
     ![Click PUT](../media/resourcemgr7.png)
 
-10. Swap the Primary and Secondary certificates in the ServiceFabric Cluster resource
+10. Swap the "thumbprint" property value in "certificate" and "certificateSecondary" for the ServiceFabric Cluster resource
 
 ```json
   "properties": {
@@ -191,22 +194,27 @@ Succeeded
     "clusterId": "d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "clusterCodeVersion": "6.3.162.9494",
     "clusterState": "Ready",
-    "managementEndpoint": "https://highsftest.westus.cloudapp.azure.com:19080",
+    "managementEndpoint": "https://hughsftest.westus.cloudapp.azure.com:19080",
     "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "certificate": {
       "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
-      "thumbprintSecondary": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
       "x509StoreName": "My"
     },
+    "certificateSecondary": {
+      "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
+      "x509StoreName": "my"
+    }
 ```
 * And then scroll back to the top of the page and click PUT and Wait for the update to complete.
 
     ![Click PUT](../media/resourcemgr7.png)
 
-11. When the cluster updates are complete you should be able to verify the certificate thumbprints have swapped by checking in the Azure portal > Cluster -> Security 
+11. When the cluster updates are complete you should be able to verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
+    ![Manifest](../media/resourcemgr8.png)
+
+* Or in the Azure portal > Cluster -> Security 
 
     ![Portal -> Cluster -> Security](../media/resourcemgr9.png)
 
-* Or from Service Fabric Explorer -> Cluster -> Manifest
-    ![Manifest](../media/resourcemgr8.png)
+* Feel free to delete the old certificate at this point (now in the Secondary)
 
