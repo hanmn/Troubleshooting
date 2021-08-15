@@ -136,7 +136,7 @@ Succeeded
     "clusterId": "d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "clusterCodeVersion": "6.3.162.9494",
     "clusterState": "Ready",
-    "managementEndpoint": "https://highsftest.westus.cloudapp.azure.com:19080",
+    "managementEndpoint": "https://hughsftest.westus.cloudapp.azure.com:19080",
     "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "certificate": {
       "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
