@@ -1,10 +1,8 @@
-## Use [https://resources.azure.com](https://resources.azure.com) to add the Secondary Certificate
+## Swap Reverse Proxy certificate
 
-In the MSDN article <https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-security-update-certs-azure#add-a-secondary-certificate-and-swap-it-to-be-the-primary-using-resource-manager-powershell> it's mentioned that secondary cluster certificate cannot be added through the Azure portal. You have to use Azure powershell for that.
+## Reference
 
-Another option is to use the [Azure Resource Explorer](https://resources.azure.com)
-
- 
+https://github.com/ChackDan/Service-Fabric/tree/master/ARM%20Templates/ReverseProxySecureSample#rolling-over-reverse-proxy-certificate
 
 ## Steps
 
@@ -37,18 +35,23 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
         …
         "secrets": [
             {
-            "sourceVault": {
-                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault"
-            },
-            "vaultCertificates": [
-                {
-                "certificateUrl": "https://samplevault.vault.azure.net/secrets/clustercert001/d5eeaf025c7d435f81e7420393b442a9",
-                "certificateStore": "My"
+                "sourceVault": {
+                    "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault1"
                 },
-                {
-                "certificateUrl": "https://samplevault.vault.azure.net/secrets/clustercert002/77ff7688258a41f7b0afdd890eb4aa8c",
-                "certificateStore": "My"
-                }            ]
+                "vaultCertificates": [
+                    {
+                        "certificateUrl": "https://samplevault1.vault.azure.net/secrets/clustercert001/d5eeaf025c7d435f81e7420393b442a9",
+                        "certificateStore": "My"
+                    },
+                    {
+                        "certificateUrl": "https://samplevault1.vault.azure.net/secrets/sedeastrp01/e3a0dc94add34e418110729eaf7c11cf",
+                        "certificateStore": "My"
+                    },
+                    {
+                        "certificateUrl": "https://samplevault1.vault.azure.net/secrets/sedeastrp02/c5487522af3249bda482a5f5dbbb0357",
+                        "certificateStore": "My"
+                    }
+                ]
             }
         ]
 ```
@@ -56,34 +59,47 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 >> b. If the new certificate is in a **different Key Vault** as the Primary add an additional secret to the array of 'secrets' as shown below, or alternatively use [Add new cert to VMSS](.\Add_New_Cert_To_VMMS.ps1)
 
 ```json
-    "virtualMachineProfile": {
-        "osProfile": {
-        …
-        "secrets": [
-            {
-            "sourceVault": {
-                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault"
+"virtualMachineProfile": {
+    "osProfile": {
+    …
+    "secrets": [
+        {
+        "sourceVault": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault1"
             },
             "vaultCertificates": [
                 {
-                "certificateUrl": "https://samplevault.vault.azure.net/secrets/clustercert001/d5eeaf025c7d435f81e7420393b442a9",
-                "certificateStore": "My"
-                }           ]
-            },
-            {
-            "sourceVault": {
+                    "certificateUrl": "https://samplevault1.vault.azure.net/secrets/clustercert001/d5eeaf025c7d435f81e7420393b442a9",
+                    "certificateStore": "My"
+                }
+            ]
+        },
+        {
+        "sourceVault": {
                 "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault2"
             },
             "vaultCertificates": [
                 {
-                "certificateUrl": "https://samplevault2.vault.azure.net/secrets/clustercert002/77ff7688258a41f7b0afdd890eb4aa8c",
-                "certificateStore": "My"
-                }            ]
-            }
-        ]
+                    "certificateUrl": "https://samplevault2.vault.azure.net/secrets/sedeastrp01/77ff7688258a41f7b0afdd890eb4aa8c",
+                    "certificateStore": "My"
+                }
+            ]
+        },
+        {
+        "sourceVault": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault3"
+            },
+            "vaultCertificates": [
+                {
+                    "certificateUrl": "https://samplevault3.vault.azure.net/secrets/sedeastrp02/77ff7688258a41f7b0afdd890eb4aa8c",
+                    "certificateStore": "My"
+                }
+            ]
+        }
+    ]
 ```
 
-5. Add the following **\"certificateSecondary\"** settings in VMSS/extensionProfile/extensions:
+5. Add the following **\"reverseProxySecondaryCertificate\"** settings in VMSS/extensionProfile/extensions:
 
 ```json
 "virtualMachineProfile": {
@@ -99,13 +115,17 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                     "nodeTypeRef": "WordCount",
                     ...
                     "certificate": {
-                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",                        
+                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
                         "x509StoreName": "My"
                     },
-                    "certificateSecondary": {
-                        "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",                        
+                    "reverseProxyCertificate": {
+                        "thumbprint": "FECA164373E6AE7B1CBAAE3E2BF11FC8353A2E79",
                         "x509StoreName": "My"
                     },
+                    "reverseProxySecondaryCertificate": {
+                        "thumbprint": "ED37DFE6F4ED42182998F314FD633B2F042ABC32",
+                        "x509StoreName": "My"
+                    }
                 },
                 "publisher": "Microsoft.Azure.ServiceFabric",
                 "type": "ServiceFabricNode",
@@ -131,9 +151,10 @@ Succeeded
 
 7. Next edit the Microsoft.ServiceFabric provider for your cluster
 
-* Adding \"certificateSecondary\": \"8934E0494979684F2627EE382B5AD84A8FAD6823\" setting
+* Adding \"thumbprintSecondary\": \"ED37DFE6F4ED42182998F314FD633B2F042ABC32\" setting
 
 ```json
+  "type": "Microsoft.ServiceFabric/clusters",
   "properties": {
     "provisioningState": "Succeeded",
     "clusterId": "d4556f3b-e496-4a46-9f20-3db88fecdf11",
@@ -142,12 +163,13 @@ Succeeded
     "managementEndpoint": "https://hughsftest.westus.cloudapp.azure.com:19080",
     "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "certificate": {
-      "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
+      "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
       "x509StoreName": "My"
     },
-    "certificateSecondary": {
-      "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
-      "x509StoreName": "my"
+    "reverseProxyCertificate": {
+      "thumbprint": "FECA164373E6AE7B1CBAAE3E2BF11FC8353A2E79",
+      "thumbprintSecondary": "ED37DFE6F4ED42182998F314FD633B2F042ABC32",
+      "x509StoreName": "My"
     }
 ```
 
@@ -158,7 +180,7 @@ Succeeded
 * FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
  
 
-9. Swap the values of "thumbprint" and "thumbprintSecondary" properties in the VMMS resource
+9. Swap the values of "reverseProxyCertificate" and "reverseProxySecondaryCertificate" properties in the VMMS resource
 
 ```json
 "virtualMachineProfile": {
@@ -170,15 +192,21 @@ Succeeded
                 "properties": {
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    ... swap thumbprints in the two certificate properties below
+                    "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
+                    "nodeTypeRef": "WordCount",
+                    ...
                     "certificate": {
-                        "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
+                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
                         "x509StoreName": "My"
                     },
-                    "certificateSecondary": {
-                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",                        
+                    "reverseProxyCertificate": {
+                        "thumbprint": "ED37DFE6F4ED42182998F314FD633B2F042ABC32",
                         "x509StoreName": "My"
                     },
+                    "reverseProxySecondaryCertificate": {
+                        "thumbprint": "FECA164373E6AE7B1CBAAE3E2BF11FC8353A2E79",
+                        "x509StoreName": "My"
+                    }
                 },
                 "publisher": "Microsoft.Azure.ServiceFabric",
                 "type": "ServiceFabricNode",
@@ -192,9 +220,10 @@ Succeeded
 
     ![Click PUT](../media/resourcemgr7.png)
 
-10. Swap the "thumbprint" property value in "certificate" and "certificateSecondary" for the ServiceFabric Cluster resource
+10. Swap the "reverseProxyCertificate" property values for "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
 
 ```json
+  "type": "Microsoft.ServiceFabric/clusters",
   "properties": {
     "provisioningState": "Succeeded",
     "clusterId": "d4556f3b-e496-4a46-9f20-3db88fecdf11",
@@ -206,21 +235,24 @@ Succeeded
       "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
       "x509StoreName": "My"
     },
-    "certificateSecondary": {
-      "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
-      "x509StoreName": "my"
+    "reverseProxyCertificate": {
+      "thumbprint": "ED37DFE6F4ED42182998F314FD633B2F042ABC32",
+      "thumbprintSecondary": "FECA164373E6AE7B1CBAAE3E2BF11FC8353A2E79",
+      "x509StoreName": "My"
     }
 ```
+
 * And then scroll back to the top of the page and click PUT and Wait for the update to complete.
 
     ![Click PUT](../media/resourcemgr7.png)
 
 11. When the cluster updates are complete you should be able to verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
-    ![Manifest](../media/resourcemgr8.png)
+    ![Manifest](../media/rpcertswap_image003.png)
 
 * Or in the Azure portal > Cluster -> Security 
 
-    ![Portal -> Cluster -> Security](../media/resourcemgr9.png)
+    ![Portal -> Cluster -> Security](../media/rpcertswap_image004.png)
 
 * Feel free to delete the old certificate at this point (now in the Secondary)
+
 
