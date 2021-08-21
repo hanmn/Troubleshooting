@@ -83,7 +83,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
         ]
 ```
 
-5. Add the following **\"thumbprintSecondary\"** settings in VMSS/extensionProfile/extensions:
+5. Add the following **\"certificateSecondary\"** settings in VMSS/extensionProfile/extensions:
 
 ```json
 "virtualMachineProfile": {
@@ -99,10 +99,13 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                     "nodeTypeRef": "WordCount",
                     ...
                     "certificate": {
-                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
-                        "thumbprintSecondary": "8934E0494979684F2627EE382B5AD84A8FAD6823",
+                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",                        
                         "x509StoreName": "My"
-                    }
+                    },
+                    "certificateSecondary": {
+                        "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",                        
+                        "x509StoreName": "My"
+                    },
                 },
                 "publisher": "Microsoft.Azure.ServiceFabric",
                 "type": "ServiceFabricNode",
@@ -170,9 +173,12 @@ Succeeded
                     ... swap thumbprints in the two certificate properties below
                     "certificate": {
                         "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
-                        "thumbprintSecondary": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
                         "x509StoreName": "My"
-                    }
+                    },
+                    "certificateSecondary": {
+                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",                        
+                        "x509StoreName": "My"
+                    },
                 },
                 "publisher": "Microsoft.Azure.ServiceFabric",
                 "type": "ServiceFabricNode",
