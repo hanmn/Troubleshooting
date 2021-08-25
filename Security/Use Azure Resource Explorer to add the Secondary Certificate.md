@@ -158,7 +158,7 @@ Succeeded
 * FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
  
 
-9. Swap the values of "thumbprint" and "thumbprintSecondary" properties in the VMMS resource
+9. Swap the values of "certificate" and "certificateSecondary" properties in the VMMS resource
 
 ```json
 "virtualMachineProfile": {

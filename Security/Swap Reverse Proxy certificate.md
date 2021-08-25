@@ -247,11 +247,11 @@ Succeeded
     ![Click PUT](../media/resourcemgr7.png)
 
 11. When the cluster updates are complete you should be able to verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
-    ![Manifest](../media/rpcertswap_image003.png)
+    ![Manifest](../media/rpcertswap_image003.PNG)
 
 * Or in the Azure portal > Cluster -> Security 
 
-    ![Portal -> Cluster -> Security](../media/rpcertswap_image004.png)
+    ![Portal -> Cluster -> Security](../media/rpcertswap_image004.PNG)
 
 * Feel free to delete the old certificate at this point (now in the Secondary)
 
