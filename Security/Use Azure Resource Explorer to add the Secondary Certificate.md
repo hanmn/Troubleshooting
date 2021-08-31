@@ -134,6 +134,8 @@ Succeeded
 * Adding \"certificateSecondary\": \"8934E0494979684F2627EE382B5AD84A8FAD6823\" setting
 
 ```json
+  "type": "Microsoft.ServiceFabric/clusters",
+    ...
   "properties": {
     "provisioningState": "Succeeded",
     "clusterId": "d4556f3b-e496-4a46-9f20-3db88fecdf11",
@@ -143,12 +145,9 @@ Succeeded
     "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "certificate": {
       "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
+      "thumbprintSecondary": "8934E0494979684F2627EE382B5AD84A8FAD6823",
       "x509StoreName": "My"
     },
-    "certificateSecondary": {
-      "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
-      "x509StoreName": "my"
-    }
 ```
 
 8. **Wait** for the SF cluster Updating the secondary certificate to complete
@@ -195,6 +194,8 @@ Succeeded
 10. Swap the "thumbprint" property value in "certificate" and "certificateSecondary" for the ServiceFabric Cluster resource
 
 ```json
+  "type": "Microsoft.ServiceFabric/clusters",
+    ...
   "properties": {
     "provisioningState": "Succeeded",
     "clusterId": "d4556f3b-e496-4a46-9f20-3db88fecdf11",
@@ -204,12 +205,9 @@ Succeeded
     "clusterEndpoint": "https://westus.servicefabric.azure.com/runtime/clusters/d4556f3b-e496-4a46-9f20-3db88fecdf11",
     "certificate": {
       "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
+      "thumbprintSecondary": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
       "x509StoreName": "My"
     },
-    "certificateSecondary": {
-      "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
-      "x509StoreName": "my"
-    }
 ```
 * And then scroll back to the top of the page and click PUT and Wait for the update to complete.
 
