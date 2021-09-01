@@ -17,7 +17,7 @@
 
 6.  Upload the .zip file to the container
 
-> ![/media/image2.jpg](../media/dsc_image002.jpg)
+> ![Upload zip to container](../media/dsc_image002.jpg)
 
 
 7. [https://resources.azure.com ](https://resources.azure.com)
