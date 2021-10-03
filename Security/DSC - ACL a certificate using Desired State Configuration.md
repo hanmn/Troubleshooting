@@ -1,6 +1,6 @@
 ## DSC Example - ACL a certificate using Desired State Configuration
 
-1.  Create a new Self Signed cert -[CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)   -- or get one from CA
+1.  Create a new Self Signed cert -[CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)  -- or get one from CA
 
 2.  Add the cert to the VMSS - [Add new cert to VMSS](./Add_New_Cert_To_VMSS.ps1)
 
@@ -23,7 +23,7 @@
 7. [https://resources.azure.com ](https://resources.azure.com)
 
     a.  Edit your VMSS and add a new VM Extension, update URL to your container and DSC script
- 
+
 ```json
 {
   "properties": {

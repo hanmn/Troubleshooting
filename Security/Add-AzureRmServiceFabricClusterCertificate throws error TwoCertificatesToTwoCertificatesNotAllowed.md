@@ -1,5 +1,5 @@
 ## Add-AzureRmServiceFabricClusterCertificate throws error **TwoCertificatesToTwoCertificatesNotAllowed**
- 
+
 ```PowerShell
     Add-AzureRmServiceFabricClusterCertificate -ResourceGroupName xxxxxgroup -Name xxxxxx -SecretIdentifier <https://xxxxxxxx.vault.azure.net/secrets/contoso003/ebb8119c8e4e42dbb206a0c4af054803>
 ```
@@ -42,7 +42,7 @@ This error will thrown if the \"certificate\" property in the Service Fabric res
             \"x509StoreName\": \"My\"
         },
 ```
- 
+
 
 **Correct**
 

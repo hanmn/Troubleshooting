@@ -16,7 +16,7 @@ You can modify the threshold to mitigate such warnings about slow certificate ch
 ```
 
 Reference: [Modify configuration setting for Security/SlowApiThreshold](https://github.com/Microsoft/service-fabric/issues/48)
- 
+
 This warning may also be caused when a NSG has blocked certificate CRL and CTL access/download.
 
 ## Mitigation

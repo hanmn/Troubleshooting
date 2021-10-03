@@ -6,7 +6,7 @@ Here is a simple PowerShell script.
     $vmssName = "yourVmssName"
     $vmssResourceGroup = "yourVmssResourceGroupName"
     $publicConfig = @{"UserName" = "yourAdminUserName"}
-    $privateConfig = @{"Password" = "***********"} 
+    $privateConfig = @{"Password" = "***********"}
 
     $extName = "VMAccessAgent"
     $publisher = "Microsoft.Compute"
@@ -18,4 +18,4 @@ Here is a simple PowerShell script.
 
     Update-AzureRmVmss -ResourceGroupName $vmssResourceGroup -Name $vmssName -VirtualMachineScaleSet $vmss
 ```
- 
+

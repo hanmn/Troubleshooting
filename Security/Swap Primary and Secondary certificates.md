@@ -27,7 +27,7 @@ Reasonphrase: Bad Request](../media/certswap_image1.png)
 ```Batch
 Health check retry timeout - set to 00:02:00
 Health check wait duration - set to 00:00:30
-Health check stable duration - set to 00:00:30  
+Health check stable duration - set to 00:00:30
 ```
 
 3.  Add new Cert thumbprint in Secondary Certificate slot
@@ -52,7 +52,7 @@ Add-AzureRmServiceFabricClusterCertificate -ResourceGroupName 'Group1' -Name 'Co
 
 * Azure Portal -> ResourceGroup -> Cluster -> Security
 	* Select the Secondary certificate
-	* Click ellipse ( ... ) and pick **Delete** 
+	* Click ellipse ( ... ) and pick **Delete**
 
 or
 

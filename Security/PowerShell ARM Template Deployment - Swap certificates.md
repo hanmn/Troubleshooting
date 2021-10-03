@@ -79,7 +79,7 @@
 ```
 
 * save the file
- 
+
 
 5.  Run .\\deploy.ps1 and deploy the template. If everything is correct it should work and swap certificates.
 

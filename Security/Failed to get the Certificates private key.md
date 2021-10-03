@@ -14,9 +14,9 @@ Entries  in the SF Traces and in the Microsoft-ServiceFabric Admin event logs:
     Error at AclAnonymousCertificate, ErrorCode E_FAIL
 
 ## [Analysis]
- 
+
 * Checked into the nodes we can see the Certificate is present in all nodes and NetworkService account has Read rights on the Private Key:
- 
+
 * The PID for the errors in the traces is for FabricFAS.exe
 
 Explanation according to PG:
