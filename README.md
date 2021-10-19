@@ -5,8 +5,8 @@ This is a public repository for all of Service Fabric's Troublesooting guides, a
 # Table of Contents
 Troubleshooting guides are grouped by categories, and stored in relavantly named subdirectories; each directory containing a README the lists the commonly used and exposed guides through portal as recommendations during ticket creation process. The following are the categories of guides that are stored in relatantly named directories:
 
-[Security](./Security/README.md)
-[Cluster](./Cluster/README.md)
+* [Security](./Security/README.md)
+* [Cluster](./Cluster/README.md)
 
 
 # Contributing
