@@ -1,6 +1,6 @@
 ## Why do cluster upgrades take so long
 
-Cluster upgrade performance questions come up somewhat frequently, I hope the following helps explain in some detail how the Service Fabric cluster upgrade process works and what effect it has on the end-to-end performance.   
+Cluster upgrade performance questions come up somewhat frequently, I hope the following helps explain in some detail how the Service Fabric cluster upgrade process works and what effect it has on the end-to-end performance. 
 
 
 The default settings can be found in the Advanced Upgrade settings for the cluster.  Azure Portal -> Resource group -> Service Fabric Cluster -> Fabric Upgrades (check Advanced Settings)
