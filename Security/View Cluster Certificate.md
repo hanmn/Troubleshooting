@@ -21,6 +21,3 @@ If the web browser does not allow you to view the certificate you can run the fo
 	Write-Output "Saved file to " $output
 	Invoke-Item $output
 ```
-
-
-

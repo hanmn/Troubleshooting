@@ -24,7 +24,7 @@ Set-Acl -Path $certificateFilePath -AclObject $acl
 
 Install the certificates section:- [https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-windows-cluster-x509-security](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-windows-cluster-x509-security)
 
-Now set the access control on this certificate so that the Service Fabric process, which runs under the Network Service account, can use it by running the following script. Provide the thumbprint of the certificate and "NETWORK SERVICE" for the service account. You can check that the ACLs on the certificate are correct by opening the certificate in Start > Manage computer certificates and looking at All Tasks > Manage Private Keys.
+Now set the access control on this certificate so that the Service Fabric process, which runs under the Network Service account, can use it by running the following script. Provide the thumbprint of the certificate and "NETWORK SERVICE" for the service account. You can check that the ACLs on the certificate are correct by opening the certificate in Start -> Manage computer certificates, and looking at All Tasks-> Manage Private Keys.
 
 ```PowerShell
     param

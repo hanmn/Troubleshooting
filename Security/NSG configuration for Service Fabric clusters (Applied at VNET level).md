@@ -2,8 +2,8 @@
 
 ## **The minimum rules are required for these ports on Service Fabric clusters:**
 -   **Inbound** \[application specific ports such as 80/443 or others as required by your services\]
--   **Inbound** 19000 required for PowerShell management endpoint, Visual Studio (used by Client and Azure Portal) -  management, status, and health report
--   **Inbound** 19080 required for Service Fabric Explorer Http management endpoint -  management, status, and health report
+-   **Inbound** 19000 required for PowerShell management endpoint, Visual Studio (used by Client and Azure Portal) - management, status, and health report
+-   **Inbound** 19080 required for Service Fabric Explorer Http management endpoint - management, status, and health report
 -   **Inbound** 3389 (**Windows**) or 22 (**Linux**) required for RDP/SSH access to the nodes
 -   **Inbound** 168.63.129.16 - <https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview>
 -   **Outbound -** IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s) - see **SFRP endpoint** below
@@ -44,18 +44,18 @@ To work-around this you can do either of the following:
 
 ![Error UpgradeService.Primary, SFRPStreamChannel, System.FabricUpgradeService.StreamChannelException](../media/nsg01.png)
 
-* Currently these IP addresses for these regional SF providers are not static or published and have the possibility to change, although in practice it will be very rare for these to change.  The IP addresses will also vary based on the region the SF cluster is deployed in to.
+* Currently these IP addresses for these regional SF providers are not static or published and have the possibility to change, although in practice it will be very rare for these to change. The IP addresses will also vary based on the region the SF cluster is deployed in to.
 
     - To find the correct IP addresses you can use NSLOOKUP for the regions you are deploying to:
 
 ```command
         NSLOOKUP westus.servicefabric.azure.com
-        Addresses:  137.117.19.182
-                  104.40.85.143
-                  104.40.77.32
+        Addresses: 137.117.19.182
+                   104.40.85.143
+                   104.40.77.32
 ```
 
-- Add the 137.117.19.182 and 104.40.85.143 and 104.40.77.32 ip address to your outbound NSG rule.  These IP addresses should rarely, if ever change, but if they do the impact is minor and should only affect the management endpoint connectivity and it shouldn't cause any serious issue for you applications.  If it were to change at some point in the future you would have to update your NSG again. 
+- Add the 137.117.19.182 and 104.40.85.143 and 104.40.77.32 ip address to your outbound NSG rule.  These IP addresses should rarely, if ever change, but if they do the impact is minor and should only affect the management endpoint connectivity and it shouldn't cause any serious issue for you applications.  If it were to change at some point in the future you would have to update your NSG again. 
 
 
 **Note**  Some regions have SFRP dns names which are flipped so instead of japaneast you may need to try eastjapan

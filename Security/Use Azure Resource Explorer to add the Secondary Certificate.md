@@ -4,7 +4,7 @@ In the MSDN article <https://docs.microsoft.com/en-us/azure/service-fabric/servi
 
 Another option is to use the [Azure Resource Explorer](https://resources.azure.com)
 
- 
+
 
 ## Steps
 
@@ -155,7 +155,7 @@ Succeeded
 ![Azure Portal •  Service Fabric cluster  • status  • Updating user certificate](../media/resourcemgr6.png)
 
 * FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
- 
+
 
 9. Swap the values of "certificate" and "certificateSecondary" properties in the VMMS resource
 

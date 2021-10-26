@@ -4,11 +4,11 @@
 From command prompt:
 
 	netsh http show sslcert
- 
+
 
 Will show which certificate thumbprint is bound to the port
 
- 
+
 ### SSL Certificate bindings:
 ---
     
@@ -25,7 +25,7 @@ Will show which certificate thumbprint is bound to the port
     Ctl Store Name : (null)	
     DS Mapper Usage : Disabled	
     Negotiate Client Certificate : Disabled	
-	 
+	
 	
 	IP:port : 0.0.0.0:9001	
 	Certificate Hash : 85fb1cb077cd7c78789f5bb61a7a4f3b282008e3	
