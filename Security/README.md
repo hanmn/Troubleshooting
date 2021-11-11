@@ -3,8 +3,8 @@ The following are the collection of them by category that is surfaced to the use
 
 ## **Category**
 ### Certificate Expired
-* [Fix Expired Cluster Certificate Automated Script](./Fix Expired Cluster Certificate Automated Script.md)
-* [Fix Expired Cluster Certificate Manual Steps](./Fix Expired Cluster Certificate Manual Steps.md)
+* [Fix Expired Cluster Certificate Automated Script](./Fix%20Expired%20Cluster%20Certificate%20Automated%20Script.md)
+* [Fix Expired Cluster Certificate Manual Steps](./Fix%20Expired%20Cluster%20Certificate%20Manual%20Steps.md)
 * [FixExpiredCert.ps1](FixExpiredCert.ps1)
 
 ### Couldn't add or renew certificate
