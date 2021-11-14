@@ -8,6 +8,8 @@ The following are the collection of them by category that is surfaced to the use
 * [FixExpiredCert.ps1](FixExpiredCert.ps1)
 
 ### Couldn't add or renew certificate
+* [Add-AzureRmServiceFabricClusterCertificate throws error TwoCertificatesToTwoCertificatesNotAllowed](./Add-AzureRmServiceFabricClusterCertificate%20throws%20error%20TwoCertificatesToTwoCertificatesNotAllowed.md)
+* [Add_New_Cert_To_VMSS.ps1](./Add_New_Cert_To_VMSS.ps1)
 
 ### Private Key Permissions
 
