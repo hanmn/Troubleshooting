@@ -12,6 +12,7 @@ The following are the collection of them by category that is surfaced to the use
 * [Add_New_Cert_To_VMSS.ps1](./Add_New_Cert_To_VMSS.ps1)
 
 ### Private Key Permissions
+* [Failed to get the Certificates private key](./Failed%20to%20get%20the%20Certificates%20private%20key.md)
 
 ### Certificate Configuration
 
