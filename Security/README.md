@@ -13,6 +13,7 @@ The following are the collection of them by category that is surfaced to the use
 
 ### Private Key Permissions
 * [Failed to get the Certificates private key](./Failed%20to%20get%20the%20Certificates%20private%20key.md)
+* [ACL_Application_Cert_from_ApplicationManifest](./ACL_Application_Cert_from_ApplicationManifest.md)
 
 ### Certificate Configuration
 
