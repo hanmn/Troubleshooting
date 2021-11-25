@@ -17,5 +17,10 @@ The following are the collection of them by category that is surfaced to the use
 * [ACL_Application_Cert_from_ApplicationManifest](./ACL_Application_Cert_from_ApplicationManifest.md)
 
 ### Certificate Configuration
+* [Install intermediate certificates](/Security/Install%20intermediate%20certificates.md)
+* [Swap Reverse Proxy certificate](./Swap%20Reverse%20Proxy%20certificate.md)
+* [View Cluster Certificate](./View%20Cluster%20Certificate.md)
 
 ### AAD configuration
+* [Configure Azure Active Directory Authentication for Existing Cluster](./Configure%20Azure%20Active%20Directory%20Authentication%20for%20Existing%20Cluster.md)
+* [Authentication Issue with AAD](./Authentication%20Issue%20with%20AAD.md)
