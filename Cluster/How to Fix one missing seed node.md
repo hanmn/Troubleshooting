@@ -61,7 +61,7 @@ As you can see in this example, there are 5 nodes configured as seed nodes, with
 
 1.  Determine which Fault Domain (FD) and Upgrade Domain (UD) the missing seed node came from, e.g. from the cluster map in SFX. In this example node _sys_4 had been removed at some point and was replaced with _sys_6, however _sys_6 is not one of the configured seed nodes.  All our seed nodes should be evenly distributed across UD and FD boundaries, so we will conclude the missing node was from UD4 and FD4.
 
-![Cluster Map showing UD and FD matrix, missing node _sys_4 should have been placed in UD4/FD4](../media/oneseednode003.png)
+    ![Cluster Map showing UD and FD matrix, missing node _sys_4 should have been placed in UD4/FD4](../media/oneseednode003.PNG)
 
 
 2.  Increase the VMSS instance count by +1, for this example from 5 to 6 
@@ -185,8 +185,9 @@ Disabling _sys_4 with the RemoveNode intent will cause a cluster upgrade which w
         - From PowerShell - https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-manage-powershell#change-the-capacity-of-a-scale-set
 
 
-17. The cluster should be healthy for _sys_0,1,2,3,6 and all should be marked as seed node = true
+17. The cluster should be healthy for _sys_0,1,2,3,6 and all should be marked as 'Is Seed Node = true'
 
+    ![_sys_4 now a seed node_](../media/oneseednode004.PNG)
 
 ## **Notes**
 
