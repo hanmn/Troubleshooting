@@ -11,9 +11,9 @@
 
 ## [Fix Expired Cert steps]
 
-1. Create new cert in different KeyVault using [CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)
+1. Create new cert in different KeyVault using [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
-2. Deploy new cert to all nodes in VMSS using [Add_New_Cert_To_VMSS.ps1](./Add_New_Cert_To_VMSS.ps1)
+2. Deploy new cert to all nodes in VMSS using [Add_New_Cert_To_VMSS.ps1](../Scripts/Add_New_Cert_To_VMSS.ps1)
 
 3. RDP into node 0 for each NodeType in the cluster
 
@@ -22,7 +22,7 @@
     * If a cluster has multiple nodetypes they need to RDP into one node on each nodetype
  
 4. For each nodetype you are mitigating, open PowerShell ISE (verify it is running as Administrator)
-    * Download [FixExpiredCert.ps1](./FixExpiredCert.ps1)
+    * Download [FixExpiredCert.ps1](../Scripts/FixExpiredCert.ps1)
 
     * Open PowerShell ISE and edit Parameter values as necessary ($oldThumbprint, $newThumbprint, $nodeIpArray)
 

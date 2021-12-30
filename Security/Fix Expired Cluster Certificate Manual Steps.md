@@ -12,9 +12,9 @@
 
 ## [Fix Expired Cert steps] 
 
-1. Create new cert in different KeyVault - [CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1) 
+1. Create new cert in different KeyVault - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
 
-2. Deploy new cert to all nodes in VMSS - [Add_New_Cert_To_VMSS.ps1](./Add_New_Cert_To_VMSS.ps1) 
+2. Deploy new cert to all nodes in VMSS - [Add_New_Cert_To_VMSS.ps1](../Scripts/Add_New_Cert_To_VMSS.ps1) 
 
 
 ## For each node { 
