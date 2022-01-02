@@ -14,7 +14,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
     b. Generate Selfsigned, Import existing certs using Azure Portal -> Key Vault - https://blogs.technet.microsoft.com/kv/2016/09/26/get-started-with-azure-key-vault-certificates/
 
-    c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)
+    c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
 
 2. Go to <https://resources.azure.com> and find your subscription \-- \> resource group \-- \> providers/Microsoft.Compute/virtualMachineScaleSets \-- \> your VMSS

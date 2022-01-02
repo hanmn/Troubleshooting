@@ -2,13 +2,13 @@
 
 | Process Name | function | Security Context | 
 |---|---|---|
-| FabricSetup.exe | Runtime installation and cluster set up process | System account |
-| FabricDeployer.exe | Configuration or upgrade deployment process | System account |
-| FabricInstallerSvc.exe | Services responsible for Fabric and cluster installation | System account |
+| FabricSetup.exe | Runtime installation and cluster set up process | System Account |
+| FabricDeployer.exe | Configuration or upgrade deployment process | System Account |
+| FabricInstallerSvc.exe | Services responsible for Fabric and cluster installation | System Account |
 
 | Process Name | **child processes** | function | Security Context | 
 |---|---|---|---|
-| FabricHostSvc.exe |  | Parent Supervisor Process | System | 
+| FabricHostSvc.exe |  | Parent Supervisor Process | System Account | 
 | | Fabric.exe | System Service running host. (CM, FM, etc..) | Network Service Account |
 | | FabricDCA.exe | Fabric Diagnostics Collection Agent. Responsible for collect raw ETL, perf, dump data and send to Diagnostics store | Network Service Account |
 | | FabricGateway.exe | Gateway process. The TCP listener for 19000 and http(s) listener for 19080 by default to bridge in the management and REST functions to the service fabric cluster | Network Service Account |

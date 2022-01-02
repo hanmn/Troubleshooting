@@ -1,8 +1,8 @@
 ## DSC Example - ACL a certificate using Desired State Configuration
 
-1.  Create a new Self Signed cert -[CreateKeyVaultAndCertificateForServiceFabric.ps1](./CreateKeyVaultAndCertificateForServiceFabric.ps1)  -- or get one from CA
+1.  Create a new Self Signed cert -[CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)  -- or get one from CA
 
-2.  Add the cert to the VMSS - [Add new cert to VMSS](./Add_New_Cert_To_VMSS.ps1)
+2.  Add the cert to the VMSS - [Add new cert to VMSS](../Scripts/Add_New_Cert_To_VMSS.ps1)
 
 3.  Edit the attached DSC script, **change the Thumbprint** you want to ACL
 
