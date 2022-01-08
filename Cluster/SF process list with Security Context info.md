@@ -2,6 +2,7 @@
 
 | Process Name | function | Security Context | 
 |---|---|---|
+| NodeBootstrapAgent.exe | Node bootstrap and initial configuration | System Account |
 | FabricSetup.exe | Runtime installation and cluster set up process | System Account |
 | FabricDeployer.exe | Configuration or upgrade deployment process | System Account |
 | FabricInstallerSvc.exe | Services responsible for Fabric and cluster installation | System Account |
