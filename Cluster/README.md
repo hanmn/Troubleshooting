@@ -9,6 +9,7 @@ The following are the collection of them by category that is surfaced to the use
 [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
 
 ### Nodes
+[How to Fix one missing seed node](./How%20to%20Fix%20one%20missing%20seed%20node.md)
 [Issues caused by Deallocating a VMSS](./Issues%20caused%20by%20Deallocating%20a%20VMSS.md)
 
 ### Patch Orchestration
