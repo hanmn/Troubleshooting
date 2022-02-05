@@ -1,6 +1,8 @@
 # How to Query Eventstore from PowerShell
 
-## Example to get Cluster Eventsm including Fabric Upgrade history using the EventStore rest endpoint
+MSDN Reference: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-diagnostics-eventstore-query
+
+## Example: get Cluster Events including Fabric Upgrade history using the EventStore rest endpoint
 
 - If your cluster is using a CA signed certificate you can simply make the Rest call
 
