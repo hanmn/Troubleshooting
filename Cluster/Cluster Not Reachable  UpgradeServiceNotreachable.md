@@ -27,7 +27,7 @@
     - See [Common issues caused by AutoScale](./Common%20issues%20customers%20experience%20when%20using%20Auto-scale%20with%20Service%20Fabric%20clusters.md)
 
 - fabric:/System/UpgradeService is unable to reach SFRP
-    - Investigate why Stream Channel is broken, see [FUS Stream Architecture](.\FUS%20Stream%20Architecture.md)
+    - Investigate why Stream Channel is broken, see [FUS Stream Architecture](./FUS%20Stream%20Architecture.md)
     - NSG may be preventing the connection, see [Check for a Network Security Group](../Security/NSG%20configuration%20for%20Service%20Fabric%20clusters%20(Applied%20at%20VNET%20level).md)
 
 - TLS disabled
