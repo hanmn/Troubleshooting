@@ -7,7 +7,7 @@ Troubleshooting guides are grouped by categories, and stored in relavantly named
 
 * [Security](./Security/README.md) - Certificates, KeyVault, Azure Active Directory, Permissions.
 * [Cluster](./Cluster/README.md) - Scaling, Deployments, Nodes, Patch Orchestration.
-* [Upgrade](./Upgrade/README.md) - SF Internal Components During Upgrades
+* [Deployment](./Deployment/README.md) - SF Internal Components During Deployment
 
 
 # Contributing
