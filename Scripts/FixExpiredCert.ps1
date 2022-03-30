@@ -57,7 +57,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
 
             $bootstrapService = Get-Service -Name $bootstrapAgent
             if ($bootstrapService.Status -eq "Running"){
-                Stop-Service $bootstrapAgent
+                Stop-Service $bootstrapAgent -ErrorAction SilentlyContinue 
                 Write-Host "Stopping " $bootstrapAgent " service"
             }
             Do
@@ -74,7 +74,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
 
             $fabricHostService = Get-Service -Name $fabricHost
             if ($fabricHostService.Status -eq "Running"){
-                Stop-Service $fabricHost
+                Stop-Service $fabricHost -ErrorAction SilentlyContinue 
                 Write-Host "Stopping " $fabricHost " service"
             }
             Do
@@ -97,7 +97,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
 
             $fabricHostService = Get-Service -Name $fabricHost
             if ($fabricHostService.Status -eq "Stopped"){
-                Start-Service $fabricHost
+                Start-Service $fabricHost -ErrorAction SilentlyContinue 
                 Write-Host "Starting" $fabricHost " service"
             }
             Do
@@ -115,7 +115,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
 
             $bootstrapService = Get-Service -Name $bootstrapAgent
             if ($bootstrapService.Status -eq "Stopped"){
-                Start-Service $bootstrapAgent
+                Start-Service $bootstrapAgent -ErrorAction SilentlyContinue 
                 Write-Host "Starting" $bootstrapAgent " service"
             }
             Do
