@@ -191,7 +191,7 @@ Succeeded
 
     ![Click PUT](../media/resourcemgr7.png)
 
-10. Swap the "thumbprint" property value in "certificate" and "certificateSecondary" for the ServiceFabric Cluster resource
+10. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
 
 ```json
   "type": "Microsoft.ServiceFabric/clusters",
