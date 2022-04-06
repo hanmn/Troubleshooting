@@ -4,6 +4,7 @@
 ## **Symptoms** 
 
 - Cluster runtime upgrades fail
+- Cluster configuration upgrades will still with a presafety check on EnsureSeedNodeQuorum.
 - Application upgrades fail and give "seed quorum lost" error.
 - The VM in the virtual machine scale set (Instances list) with the matching Node name listed in <Infrastructure><Votes> section was deleted and the Node is no longer showing in Service Fabric Explorer 
 
@@ -59,7 +60,7 @@ As you can see in this example, there are 5 nodes configured as seed nodes, with
 
 ## **Steps to Repair**
 
-1.  Determine which Fault Domain (FD) and Upgrade Domain (UD) the missing seed node came from, e.g. from the cluster map in SFX. In this example node _sys_4 had been removed at some point and was replaced with _sys_6, however _sys_6 is not one of the configured seed nodes.  All our seed nodes should be evenly distributed across UD and FD boundaries, so we will conclude the missing node was from UD4 and FD4.
+1.  Determine which Fault Domain (FD) and Upgrade Domain (UD) the missing seed node came from, e.g. from the cluster map in SFX. In this example node _sys_4 had been removed at some point and was replaced with _sys_6, however _sys_6 is not one of the configured seed nodes.  All our seed nodes should be evenly distributed across UD and FD boundaries, so we will conclude the missing node was from UD4 and FD4, which is where _sys_6 is currently configured.
 
     ![Cluster Map showing UD and FD matrix, missing node _sys_4 should have been placed in UD4/FD4](../media/oneseednode003.PNG)
 
@@ -184,8 +185,15 @@ Disabling _sys_4 with the RemoveNode intent will cause a cluster upgrade which w
         - From Azure Portal -> Resource Group -> Scaling
         - From PowerShell - https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-manage-powershell#change-the-capacity-of-a-scale-set
 
+17. From the PowerShell window you can now remove the nodestate for all the nodes marked as (Down)
 
-17. The cluster should be healthy for _sys_0,1,2,3,6 and all should be marked as 'Is Seed Node = true'
+```PowerShell
+    Connect-ServiceFabricCluster -ConnectionEndpoint ...
+    Remove-ServiceFabricNodeState -NodeName _sys_7 -Force
+    Remove-ServiceFabricNodeState -NodeName _sys_4 -Force
+```
+
+18. The cluster should be healthy for _sys_0,1,2,3,6 and all should be marked as 'Is Seed Node = true'
 
     ![_sys_4 now a seed node_](../media/oneseednode004.PNG)
 
