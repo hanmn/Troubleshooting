@@ -4,11 +4,11 @@ Param(
     [ValidateNotNullOrEmpty()]
     [string] $ClusterDataRootPath="D:\SvcFab",
 
-    [Parameter(Mandatory=$false)] 
+    [Parameter(Mandatory=$true)] 
     [ValidateNotNullOrEmpty()]
     [string]$NodeToFake="_sys_4",
 
-    [Parameter(Mandatory=$false)] #$true
+    [Parameter(Mandatory=$true)] 
     [ValidateNotNullOrEmpty()]
     [string]$TemporaryNodeIpAddress="10.0.0.10" # ip address for this node which we will fake into looking like $NodeToFake - missing seed node _sys_4
 )
