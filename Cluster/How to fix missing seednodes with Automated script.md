@@ -82,7 +82,7 @@ As you can see in this example, there are 5 nodes configured as seed nodes, with
 3. Open PowerShell prompt and excecute the PowerShell command similar to this, substituting **_sys_3** with the name of your missing seed node, and **10.0.0.9** with the IP address of the current **Fake seed node** which you are running this command on.
 
 ```PowerShell
-    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Scripts/FixMissingSeednode.ps1","d:\FixMissingSeednode.ps1");
+    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/FixMissingSeednode.ps1","d:\FixMissingSeednode.ps1");
     d:\FixMissingSeednode.ps1 -NodeToFake '_sys_3' -TemporaryNodeIpAddress '10.0.0.9'
 ```
 
@@ -97,7 +97,7 @@ As you can see in this example, there are 5 nodes configured as seed nodes, with
 5. Now **repeat steps 3 and 4** to reconfigure _sys_8 to a Fake seed node for _sys_4.
 
 ```PowerShell
-    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Scripts/FixMissingSeednode.ps1","d:\FixMissingSeednode.ps1");
+    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/FixMissingSeednode.ps1","d:\FixMissingSeednode.ps1");
     d:\FixMissingSeednode.ps1 -NodeToFake '_sys_4' -TemporaryNodeIpAddress '10.0.0.10'
 ```
 
