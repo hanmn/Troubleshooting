@@ -1,4 +1,6 @@
-﻿#Requires -Version 3.0
+﻿#
+# For usage information, please refer to https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Cluster/How%20to%20fix%20missing%20seednodes%20with%20Automated%20script.md
+#
 Param(
     [Parameter(Mandatory=$false)] 
     [ValidateNotNullOrEmpty()]
