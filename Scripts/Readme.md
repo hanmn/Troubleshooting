@@ -23,6 +23,6 @@ The repo is organized by support scenario and each support topic contains a desc
 As described in the [MIT license](../LICENSE-CODE), these scripts are provided as-is with no warranty or liability associated with their use.
 
 # Provide Feedback
-We value your input.  If you encounter problems with the scripts or ideas on how they can be improved please file an issue in the [Issues](../issues) section of the project.
+We value your input.  If you encounter problems with the scripts or ideas on how they can be improved please file an issue in the [Issues](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/issues) section of the project.
 
 # Known Issues
