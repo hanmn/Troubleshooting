@@ -2,7 +2,8 @@
 
 When working with Microsoft support on a Service Fabric Windows cluster issue, it may be necessary to capture additional diagnostics information from one or more nodes in the cluster. 
 
-## Default, the script will collect information such as:
+## Default diagnostic information script will collect:
+**NOTE: All of these options except Service Fabric can be disabled using switch arguments when running script.**
 - Windows Event Logs - System, Application, Firewall, Http, Service Fabric
 - Operating System information
     - Drive configuration
@@ -13,6 +14,10 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
     - .Net Registry export
     - Policies Registry export
     - Schannel Registry export
+    - Processes
+    - Services
+    - Drivers
+    - Hotfixes
 - Network information
     - Network port tests
     - External connection test
@@ -25,6 +30,14 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
     - Netsh SSL information
     - IP Configuration
     - WinRM settings
+- Service Fabric information
+    - Service Fabric registry exort
+    - Directory list of fabric data root
+    - Directory list of fabric root
+    - Copy of Service Fabric configuration (.xml) files
+    - List of Seed nodes
+    - SFRP network connectivity check with installed certificate
+    - REST queries to local FabricGateway for Cluster / Node / App / and Service events
 
 ## Optional diagnostic information script can collect:
 - Certificate information store list
@@ -39,15 +52,28 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
 
 # Setup
 There are multiple ways to run this script to collect information.
-1. Run script locally on each node(s).
+1. RDP and run script locally on each node(s).
 2. Assuming proper connectivity and authentication, from administrator machine, run script remotely for each node(s).
 3. Assuming proper connectivity and authentication, RDP into a node and run script remotely for each node(s).
 
 # Instructions
-1. Copy the script files specified above to location where script will be executed.
+1. Copy the script files specified above to location where script will be executed. If network connectivity exists on machine where script will be executed, the following command can be used to download:
+```powershell
+    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/S
+    cripts/sf-collect-node-info.ps1");
+```
 2. Preferably, open Administrator Powershell prompt.  
-    NOTE: A non-Administrator powershell prompt can be used if needed but not all data will be collected.
-3. 
+    **NOTE: A non-Administrator powershell prompt can be used if needed but not all data will be collected.**
+3. To execute with default configuration:
+```powershell
+    .\sf-collect-node-info.ps1
+```
+4. After script has executed, instructions will be displayed showing location of zip file containing all of the diagnostics.
+5. Upload diagnostics zip file to case workspace.
+6. For additional information about different arguments and switches, see 'Help' information below or from command prompt type:
+```powershell
+    help .\sf-collect-node-info.ps1 -full
+```
 
 # Help
 
