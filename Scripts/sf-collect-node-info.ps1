@@ -612,29 +612,38 @@ function process-machine()
         add-job -jobName "perfmon" -scriptBlock {
             param($workdir = $args[0], $perfmonMin = $args[1])
             $Counters = @(
-                "\\$($env:computername)\processor(_total)\*",
                 "\\$($env:computername)\memory\available mbytes",
                 "\\$($env:computername)\memory\pool paged bytes",
                 "\\$($env:computername)\memory\pool nonpaged bytes",
-                "\\$($env:computername)\network adapter(*)\packets/sec",
                 "\\$($env:computername)\network adapter(*)\current bandwidth",
+                "\\$($env:computername)\network adapter(*)\packets/sec",
                 "\\$($env:computername)\physicaldisk(*)\% idle time",
                 "\\$($env:computername)\physicaldisk(*)\current disk queue length",
                 "\\$($env:computername)\process(*)\% processor time"
+                "\\$($env:computername)\processor(_total)\*",
             )
             
-            $logStream = new-object System.IO.StreamWriter ("$($workdir)\PerfmonCounters.csv, $true)
+            $logStream = new-object System.IO.StreamWriter ("$($workdir)\PerfmonCounters.csv", $true)
+            
+            # header
+            # (machine) (tz) (min offset),counter name 1,counter name 2,...
+            # (PDH-CSV 4.0) (Eastern Daylight Time)(240),\\wltpX1000002\TCPv6\Connection Failures,\\wltpX1000002\TCPv6\Segments Received/sec
             $logStream.WriteLine("timestamp,path,value")
+            $logstream.WriteLine("(PDH-CSV 4.0)()(),$([string]::join(`",`",$counters))")
             $iterations = ($perfmonMin * 60)
             
             try
             {
                 for ($count = 0; $count -le $iterations; $count++)
                 {
+                    $samples = @((Get-Counter -Counter $Counters -MaxSamples 1 -erroraction silentlycontinue).CookedValue)
+                    $logstream.WriteLine("$($samples[0].TimeStamp),$([string]::join(`",`",$samples))")
                     foreach ($counter in (Get-Counter -Counter $Counters -MaxSamples 1 -erroraction silentlycontinue))
                     {
                         foreach($sample in $counter.CounterSamples)
                         {           
+                            # row
+                            # (time),counter1,counter2,...
                             $logStream.WriteLine("$($sample.TimeStamp),$($sample.Path),$($sample.CookedValue)")
                         }
                     } 
