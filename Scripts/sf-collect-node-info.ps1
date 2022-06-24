@@ -411,18 +411,6 @@ function process-machine()
 {
     write-host "processing machine"
     
-    if (!$legacy)
-    {
-        add-job -jobName "windows update" -scriptBlock {
-            param($workdir = $args[0]) 
-            Get-WindowsUpdateLog -LogPath "$($workdir)\windowsupdate.log.txt"
-        } -arguments $workdir
-    }
-    else
-    {
-        copy-item "$env:systemroot\windowsupdate.log" "$($workdir)\windowsupdate.log.txt"
-    }
-
     if (!$noEventLogs)
     {
         add-job -jobName "event logs" -scriptBlock {
@@ -447,6 +435,18 @@ function process-machine()
 
     if(!$noOs)
     {
+        if (!$legacy)
+        {
+            add-job -jobName "windows update" -scriptBlock {
+                param($workdir = $args[0]) 
+                Get-WindowsUpdateLog -LogPath "$($workdir)\windowsupdate.log.txt"
+            } -arguments $workdir
+        }
+        else
+        {
+            copy-item "$env:systemroot\windowsupdate.log" "$($workdir)\windowsupdate.log.txt"
+        }
+
         add-job -jobName "check machinekeys" -scriptBlock {
             param($workdir = $args[0])
             $machineKeys = "C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys"
@@ -611,7 +611,7 @@ function process-machine()
     {
         add-job -jobName "perfmon" -scriptBlock {
             param($workdir = $args[0], $perfmonMin = $args[1])
-            $Counters = @(
+            $Counters = (new-object collections.arraylist (,(
                 "\\$($env:computername)\memory\available mbytes",
                 "\\$($env:computername)\memory\pool paged bytes",
                 "\\$($env:computername)\memory\pool nonpaged bytes",
@@ -619,34 +619,30 @@ function process-machine()
                 "\\$($env:computername)\network adapter(*)\packets/sec",
                 "\\$($env:computername)\physicaldisk(*)\% idle time",
                 "\\$($env:computername)\physicaldisk(*)\current disk queue length",
-                "\\$($env:computername)\process(*)\% processor time"
-                "\\$($env:computername)\processor(_total)\*",
-            )
+                "\\$($env:computername)\process(*)\% processor time",
+                "\\$($env:computername)\processor(_total)\*")))
             
+            $counters.sort()
             $logStream = new-object System.IO.StreamWriter ("$($workdir)\PerfmonCounters.csv", $true)
             
             # header
             # (machine) (tz) (min offset),counter name 1,counter name 2,...
             # (PDH-CSV 4.0) (Eastern Daylight Time)(240),\\wltpX1000002\TCPv6\Connection Failures,\\wltpX1000002\TCPv6\Segments Received/sec
-            $logStream.WriteLine("timestamp,path,value")
-            $logstream.WriteLine("(PDH-CSV 4.0)()(),$([string]::join(`",`",$counters))")
+            #$logstream.WriteLine("`"(PDH-CSV 4.0)($((get-timezone).Id))($((get-timezone).baseutcoffset.totalminutes))`",`"$($counters -join '","')`"")
             $iterations = ($perfmonMin * 60)
-            
+            $first = $true
             try
             {
                 for ($count = 0; $count -le $iterations; $count++)
                 {
-                    $samples = @((Get-Counter -Counter $Counters -MaxSamples 1 -erroraction silentlycontinue).CookedValue)
-                    $logstream.WriteLine("$($samples[0].TimeStamp),$([string]::join(`",`",$samples))")
-                    foreach ($counter in (Get-Counter -Counter $Counters -MaxSamples 1 -erroraction silentlycontinue))
+                    #[performancecountersampleset]
+                    $samples = (Get-Counter -Counter $Counters -MaxSamples 1 -erroraction silentlycontinue)
+                    if($first)
                     {
-                        foreach($sample in $counter.CounterSamples)
-                        {           
-                            # row
-                            # (time),counter1,counter2,...
-                            $logStream.WriteLine("$($sample.TimeStamp),$($sample.Path),$($sample.CookedValue)")
-                        }
-                    } 
+                        $logstream.WriteLine("`"(PDH-CSV 4.0)($((get-timezone).Id))($((get-timezone).baseutcoffset.totalminutes))`",`"$([string]::join('`",`"',$samples.CounterSamples.Path))`"")
+                        $first = $false
+                    }
+                    $logstream.WriteLine("`"$($samples.TimeStamp)`",`"$([string]::join('`",`"',$samples.CounterSamples.CookedValue))`"")
                 }
             }
             finally
