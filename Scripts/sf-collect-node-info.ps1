@@ -611,45 +611,23 @@ function process-machine()
     {
         add-job -jobName "perfmon" -scriptBlock {
             param($workdir = $args[0], $perfmonMin = $args[1])
-            $Counters = (new-object collections.arraylist (,(
-                "\\$($env:computername)\memory\available mbytes",
-                "\\$($env:computername)\memory\pool paged bytes",
-                "\\$($env:computername)\memory\pool nonpaged bytes",
-                "\\$($env:computername)\network adapter(*)\current bandwidth",
-                "\\$($env:computername)\network adapter(*)\packets/sec",
-                "\\$($env:computername)\physicaldisk(*)\% idle time",
-                "\\$($env:computername)\physicaldisk(*)\current disk queue length",
-                "\\$($env:computername)\process(*)\% processor time",
-                "\\$($env:computername)\processor(_total)\*")))
-            
-            $counters.sort()
-            $logStream = new-object System.IO.StreamWriter ("$($workdir)\PerfmonCounters.csv", $true)
-            
-            # header
-            # (machine) (tz) (min offset),counter name 1,counter name 2,...
-            # (PDH-CSV 4.0) (Eastern Daylight Time)(240),\\wltpX1000002\TCPv6\Connection Failures,\\wltpX1000002\TCPv6\Segments Received/sec
-            #$logstream.WriteLine("`"(PDH-CSV 4.0)($((get-timezone).Id))($((get-timezone).baseutcoffset.totalminutes))`",`"$($counters -join '","')`"")
-            $iterations = ($perfmonMin * 60)
-            $first = $true
-            try
-            {
-                for ($count = 0; $count -le $iterations; $count++)
-                {
-                    #[performancecountersampleset]
-                    $samples = (Get-Counter -Counter $Counters -MaxSamples 1 -erroraction silentlycontinue)
-                    if($first)
-                    {
-                        $logstream.WriteLine("`"(PDH-CSV 4.0)($((get-timezone).Id))($((get-timezone).baseutcoffset.totalminutes))`",`"$([string]::join('`",`"',$samples.CounterSamples.Path))`"")
-                        $first = $false
-                    }
-                    $logstream.WriteLine("`"$($samples.TimeStamp)`",`"$([string]::join('`",`"',$samples.CounterSamples.CookedValue))`"")
-                }
-            }
-            finally
-            {
-                $logstream.close()
-                $logstream = $Null
-            }
+            $command = "Logman.exe create counter sfnodediag -o $($workdir)\PerfCounters.blg -f bincirc -v mmddhhmm -max 300 -c " `
+                + '"\Memory\*"  ' `
+                + '"\.NET CLR Memory(*)\*"  ' `
+                + '"\Network Interface(*)\*"  ' `
+                + '"\Netlogon(*)\*"  ' `
+                + '"\Paging File(*)\*"  ' `
+                + '"\PhysicalDisk(*)\*"  ' `
+                + '"\Processor(*)\*"  ' `
+                + '"\Process(*)\*"  ' `
+                + '"\Server\*"  ' `
+                + '"\System\*"  ' `
+                + "-si 00:00:01"
+            invoke-expression $command
+            invoke-expression "logman.exe start sfnodediag"
+            start-sleep -seconds ($perfmonMin * 60)
+            invoke-expression "logman.exe stop sfnodediag"
+            invoke-expression "logman.exe stop sfnodediag"
         } -arguments @($workdir,$perfmonMin)
     }
 
