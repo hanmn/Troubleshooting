@@ -166,6 +166,7 @@ param(
     [int]$netmonMin,
     [string]$networkTestAddress = $env:computername,
     [int]$perfmonMin,
+    [object]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985),
     [int]$timeoutMinutes = [Math]::Max($perfmonMin,$netmonMin) + 15,
     [string]$apiversion = "6.2-preview", #"6.0"
     [string[]]$remoteMachines,
@@ -177,7 +178,7 @@ param(
     [switch]$quiet,
     [string]$runCommand
 )
-[int[]]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Continue"
 $timer = get-date
@@ -199,7 +200,6 @@ $disableWarnOnZoneCrossing = $false
 $firewallsDisabled = $false
 $global:allparams = @{}
 [string]$scriptUrl = 'https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
-
 
 # to bypass self-signed cert validation check
 add-type @"
@@ -848,6 +848,11 @@ function rest-query($cert, $url)
 
 try
 {
+    # arrays on command line easier to pass as strings
+    if(@($ports).count -le 1)
+    {
+        [object[]]$ports = $ports.Replace(" ",",").Split(",")
+    }
 
     # create argument list with all values including defaults
     foreach($param in $MyInvocation.MyCommand.Parameters.GetEnumerator())
@@ -881,10 +886,15 @@ try
             continue
         }
 
-        # join arrays
-        if($param.Value.ParameterType -imatch "\[\]" -and $paramValue)
+        # join arrays passed as string due to command line issues with arrays
+        if($param.Value.ParameterType.IsArray -and $paramValue)
         {
-            $paramvalue = (get-variable -ValueOnly -Name $param.key -ErrorAction SilentlyContinue) -join ","
+            if($paramValue.count -le 1)
+            {
+                [object[]]$paramValue = $paramValue.Replace(" ",",").Split(",")
+            }
+
+            #$paramvalue = (get-variable -ValueOnly -Name $param.key -ErrorAction SilentlyContinue) -join ","
             #$paramValue = "`'$($arr)`'"
         }
         
