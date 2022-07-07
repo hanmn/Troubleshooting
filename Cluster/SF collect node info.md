@@ -3,7 +3,7 @@
 When working with Microsoft support on a Service Fabric Windows cluster issue, it may be necessary to capture additional diagnostics information from one or more nodes in the cluster. 
 
 ## Default diagnostic information script will collect:
-**NOTE: All of these options except Service Fabric can be disabled using switch arguments when running script.**
+**NOTE: All of these options disabled using switch arguments when running script.**
 - Windows Event Logs - System, Application, Firewall, Http, Service Fabric
 - Operating System information
     - Drive configuration
@@ -42,6 +42,7 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
 ## Optional diagnostic information script can collect:
 - Certificate information store list
 - Performance Monitor counter collection for basic performance
+- Network trace
 
 # Requirements
 - Windows 2012 / Windows  2016 Service Fabric cluster
@@ -76,30 +77,24 @@ There are multiple ways to run this script to collect information.
 ```
 
 # Help
-
-NAME
-    G:\github\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1
-
+```
 SYNOPSIS
     powershell script to collect service fabric node diagnostic data
 
     To download and execute, run the following commands on each sf node in admin powershell:
-    iwr('https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1')
-    -UseBasicParsing|iex
+    iwr('https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1') -UseBasicParsing|iex
 
     To download and execute with arguments:
-    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/S
-    cripts/sf-collect-node-info.ps1");
+    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1");
     .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
 
     upload to workspace sfgather* dir or zip
 
 
 SYNTAX
-    G:\github\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1 [[-workdir] <String>] [[-eventLogNames]
-    <String>] [[-externalUrl] <String>] [[-startTime] <DateTime>] [[-endTime] <DateTime>] [[-networkTestAddress] <String>]
-    [[-perfmonMin] <Int32>] [[-timeoutMinutes] <Int32>] [[-apiversion] <String>] [[-ports] <Int32[]>] [[-remoteMachines]
-    <String[]>] [-noAdmin] [-noEventLogs] [-noOs] [-noNet] [-certInfo] [-quiet] [-modifyFirewall] [<CommonParameters>]
+    G:\github\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1 [[-workdir] <String>] [-certInfo] [[-eventLogNames] <String>] [[-externalUrl] <String>] [[-startTime] <DateTime>] [[-endTime] <DateTime>]
+    [-modifyFirewall] [[-netmonMin] <Int32>] [[-networkTestAddress] <String>] [[-perfmonMin] <Int32>] [[-timeoutMinutes] <Int32>] [[-apiversion] <String>] [[-ports] <Int32[]>] [[-remoteMachines] <String[]>] [-noAdmin]
+    [-noEventLogs] [-noOs] [-noNet] [-noSF] [-quiet] [[-runCommand] <String>] [<CommonParameters>]
 
 
 DESCRIPTION
@@ -150,6 +145,16 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
+    -certInfo [<SwitchParameter>]
+        switch to enable collection of certificate store export to troubleshoot certificate issues.
+        thumbprints and serial numbers during export will be partially masked.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -eventLogNames <String>
         regex list of eventlog names to export into csv formatl
         default list should be sufficient for most scenarios.
@@ -191,11 +196,28 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
+    -modifyFirewall [<SwitchParameter>]
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
+    -netmonMin <Int32>
+        minutes to run network trace at end of collection after all jobs run.
+
+        Required?                    false
+        Position?                    6
+        Default value                0
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -networkTestAddress <String>
         remote machine for service fabric tcp port test.
 
         Required?                    false
-        Position?                    6
+        Position?                    7
         Default value                $env:computername
         Accept pipeline input?       false
         Accept wildcard characters?  false
@@ -205,7 +227,7 @@ PARAMETERS
         cpu, memory, disk, network.
 
         Required?                    false
-        Position?                    7
+        Position?                    8
         Default value                0
         Accept pipeline input?       false
         Accept wildcard characters?  false
@@ -215,8 +237,8 @@ PARAMETERS
         script will cancel any running jobs and collect what is available if timeout is hit.
 
         Required?                    false
-        Position?                    8
-        Default value                $perfmonMin + 15
+        Position?                    9
+        Default value                [Math]::Max($perfmonMin,$netmonMin) + 15
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
@@ -224,7 +246,7 @@ PARAMETERS
         api version for testing fabricgateway endpoint with service fabric rest api calls.
 
         Required?                    false
-        Position?                    9
+        Position?                    10
         Default value                6.2-preview
         Accept pipeline input?       false
         Accept wildcard characters?  false
@@ -234,7 +256,7 @@ PARAMETERS
         default ports include basic connectivity, rdp, and service fabric.
 
         Required?                    false
-        Position?                    10
+        Position?                    11
         Default value                @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985)
         Accept pipeline input?       false
         Accept wildcard characters?  false
@@ -243,11 +265,10 @@ PARAMETERS
         comma separated list of machine names and / or ip addresses to run diagnostic script on remotely.
         this will only work if proper connectivity, authentication, and OS health exists.
         if there are errors connecting, run script instead individually on each node.
-        to resolve remote connectivity issues, verify tcp port connectivity for ports, review, winrm, firewall, and nsg
-        configurations.
+        to resolve remote connectivity issues, verify tcp port connectivity for ports, review, winrm, firewall, and nsg configurations.
 
         Required?                    false
-        Position?                    11
+        Position?                    12
         Default value
         Accept pipeline input?       false
         Accept wildcard characters?  false
@@ -289,9 +310,8 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
-    -certInfo [<SwitchParameter>]
-        switch to enable collection of certificate store export to troubleshoot certificate issues.
-        thumbprints and serial numbers during export will be partially masked.
+    -noSF [<SwitchParameter>]
+        bypass service fabric information collection.
 
         Required?                    false
         Position?                    named
@@ -308,11 +328,13 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
-    -modifyFirewall [<SwitchParameter>]
+    -runCommand <String>
+        command to run at end of collection.
+        command needs to runnable from 'invoke-expression'
 
         Required?                    false
-        Position?                    named
-        Default value                False
+        Position?                    13
+        Default value
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
@@ -372,6 +394,17 @@ NOTES
 
 
 
+    -------------------------- EXAMPLE 5 --------------------------
+
+    PS C:\>.\sf-collect-node-info.ps1 -runCommand "dir c:\windows -recurse"
+
+    example to run custom command on machine after data collection
+    output will be captured in runCommand.txt
+
+
+
+
 
 RELATED LINKS
     https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1
+```

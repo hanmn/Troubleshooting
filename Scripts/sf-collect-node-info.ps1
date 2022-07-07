@@ -71,6 +71,11 @@ upload to workspace sfgather* dir or zip
     example command to query diagnostic information remotely from two machines.
     files will be copied back to machine where script is being executed.
 
+.EXAMPLE
+    .\sf-collect-node-info.ps1 -runCommand "dir c:\windows -recurse"
+    example to run custom command on machine after data collection
+    output will be captured in runCommand.txt
+
 .PARAMETER apiVersion
     api version for testing fabricgateway endpoint with service fabric rest api calls.
 
@@ -90,6 +95,9 @@ upload to workspace sfgather* dir or zip
 .PARAMETER externalUrl
     url to use for network connectivity tests.
 
+.PARAMETER netmonMin
+    minutes to run network trace at end of collection after all jobs run.
+
 .PARAMETER networkTestAddress
     remote machine for service fabric tcp port test.
 
@@ -105,6 +113,9 @@ upload to workspace sfgather* dir or zip
 
 .PARAMETER noOs
     bypass OS information collection.
+
+.PARAMETER noSF
+    bypass service fabric information collection.
 
 .PARAMETER perfmonMin
     minutes to run basic perfmon at end of collection after all jobs run.
@@ -122,6 +133,10 @@ upload to workspace sfgather* dir or zip
     this will only work if proper connectivity, authentication, and OS health exists.
     if there are errors connecting, run script instead individually on each node.
     to resolve remote connectivity issues, verify tcp port connectivity for ports, review, winrm, firewall, and nsg configurations.
+
+.PARAMETER runCommand
+    command to run at end of collection.
+    command needs to runnable from 'invoke-expression'
 
 .PARAMETER startTime
     start time in normal dateTime formatting.
@@ -142,29 +157,31 @@ upload to workspace sfgather* dir or zip
 [CmdletBinding()]
 param(
     [string]$workdir,
+    [switch]$certInfo,
     [string]$eventLogNames = "System$|Application$|wininet|dns|Fabric|http|Firewall|Azure",
     [string]$externalUrl = "bing.com",
     [dateTime]$startTime = (get-date).AddDays(-7),
     [dateTime]$endTime = (get-date),
+    [switch]$modifyFirewall,
+    [int]$netmonMin,
     [string]$networkTestAddress = $env:computername,
     [int]$perfmonMin,
-    [int]$timeoutMinutes = $perfmonMin + 15,
+    [object]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985),
+    [int]$timeoutMinutes = [Math]::Max($perfmonMin,$netmonMin) + 15,
     [string]$apiversion = "6.2-preview", #"6.0"
-    [int[]]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985),
     [string[]]$remoteMachines,
     [switch]$noAdmin,
     [switch]$noEventLogs,
     [switch]$noOs,
     [switch]$noNet,
-    [switch]$certInfo,
+    [switch]$noSF,
     [switch]$quiet,
-    [switch]$modifyFirewall
+    [string]$runCommand
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Continue"
 $timer = get-date
-$scriptUrl = 'https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
 $currentWorkDir = get-location
 $osVersion = [version]([string]((wmic os get Version) -match "\d"))
 $legacy = ($osVersion.major -lt 10)
@@ -181,6 +198,8 @@ $serviceFabricInstallReg = "HKLM:\software\microsoft\service fabric"
 $warnonZoneCrossingReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 $disableWarnOnZoneCrossing = $false
 $firewallsDisabled = $false
+$global:allparams = @{}
+[string]$scriptUrl = 'https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
 
 # to bypass self-signed cert validation check
 add-type @"
@@ -205,6 +224,7 @@ function main()
     write-warning "to troubleshoot this issue, this script may collect sensitive information similar to other microsoft diagnostic tools."
     write-warning "information may contain items such as ip addresses, process information, user names, or similar."
     write-warning "information in directory / zip can be reviewed before uploading to workspace."
+    write-warning "see: https://github.com/Azure/Service-Fabric-Trou-Guides/blob/master/Cluster/SF%20collect%20node%20info.md"
 
     if (!$workDir -and $remoteMachines)
     {
@@ -300,28 +320,32 @@ function main()
 
             write-host "adding job for $($machine)"
             [void]$jobs.Add((Invoke-Command -JobName $machine -AsJob -ComputerName $machine -scriptblock {
-                        param($scriptUrl = $args[0], $machine = $args[1], $networkTestAddress = $args[2], $certInfo = $args[3], $sfCollectInfoDir = $args[4])
+                        param($scriptUrl = $args[0], $machine = $args[1], $sfCollectInfoDir = $args[2], $allParams = $args[3])
                         $parentWorkDir = "$($env:systemroot)\temp"
                         $workDir = "$($parentWorkDir)\$($sfCollectInfoDir)$($machine)"
                         $scriptPath = "$($parentWorkDir)\$($scriptUrl -replace `".*/`",`"`")"
-                
-                        if ($certInfo)
-                        {
-                            $certInfo = "-certInfo "
-                        }
-                        else
-                        {
-                            $certInfo = ""
-                        }
 
                         if (!(test-path $scriptPath))
                         {
                             (new-object net.webclient).downloadfile($scriptUrl, $scriptPath)
                         }
-             
-                        start-process -filepath "powershell.exe" -ArgumentList "-File $($scriptPath) $($certInfo)-quiet -noadmin -networkTestAddress $($networkTestAddress) -workDir $($workDir)" -Wait -NoNewWindow
+
+                        [text.stringbuilder]$sb = new-object text.stringbuilder
+                        foreach($item in $allParams.GetEnumerator())
+                        {
+                            if($item.key -imatch "quiet" -or $item.key -imatch "noadmin" -or $item.key -imatch "workdir")
+                            {
+                                continue
+                            }
+
+                            $sb.Append("-$($item.key) $($item.value) ")
+                        }
+                        
+                        $arguments = "-File $($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
+                        write-host "powershell.exe $($arguments)"
+                        start-process -filepath "powershell.exe" -ArgumentList $arguments -Wait -NoNewWindow
                         write-host ($error | out-string)
-                    } -ArgumentList @($scriptUrl, $machine, $networkTestAddress, $certInfo, $sfCollectInfoDir)))
+                    } -ArgumentList @($scriptUrl,$machine, $sfCollectInfoDir, $global:allparams)))
         }
 
         monitor-jobs
@@ -392,18 +416,6 @@ function process-machine()
 {
     write-host "processing machine"
     
-    if (!$legacy)
-    {
-        add-job -jobName "windows update" -scriptBlock {
-            param($workdir = $args[0]) 
-            Get-WindowsUpdateLog -LogPath "$($workdir)\windowsupdate.log.txt"
-        } -arguments $workdir
-    }
-    else
-    {
-        copy-item "$env:systemroot\windowsupdate.log" "$($workdir)\windowsupdate.log.txt"
-    }
-
     if (!$noEventLogs)
     {
         add-job -jobName "event logs" -scriptBlock {
@@ -428,6 +440,18 @@ function process-machine()
 
     if(!$noOs)
     {
+        if (!$legacy)
+        {
+            add-job -jobName "windows update" -scriptBlock {
+                param($workdir = $args[0]) 
+                Get-WindowsUpdateLog -LogPath "$($workdir)\windowsupdate.log.txt"
+            } -arguments $workdir
+        }
+        else
+        {
+            copy-item "$env:systemroot\windowsupdate.log" "$($workdir)\windowsupdate.log.txt"
+        }
+
         add-job -jobName "check machinekeys" -scriptBlock {
             param($workdir = $args[0])
             $machineKeys = "C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys"
@@ -569,47 +593,65 @@ function process-machine()
     #
     # service fabric information
     #
-
-    write-host "service fabric reg"
-    Invoke-Expression "reg.exe query `"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Service Fabric`" /s > $($workDir)\serviceFabric.reg.txt"
-    Invoke-Expression "reg.exe query HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\ServiceFabricNodeBootStrapAgent /s > $($workDir)\serviceFabricNodeBootStrapAgent.reg.txt"
-
-    if ((test-path $serviceFabricInstallReg))
+    if(!$noSF)
     {
-        enumerate-serviceFabric
-    }
-    else
-    {
-        write-warning "service fabric is *not* installed on this machine!"
+        write-host "service fabric reg"
+        Invoke-Expression "reg.exe query `"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Service Fabric`" /s > $($workDir)\serviceFabric.reg.txt"
+        Invoke-Expression "reg.exe query HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\ServiceFabricNodeBootStrapAgent /s > $($workDir)\serviceFabricNodeBootStrapAgent.reg.txt"
+
+        if ((test-path $serviceFabricInstallReg))
+        {
+            enumerate-serviceFabric
+        }
+        else
+        {
+            write-warning "service fabric is *not* installed on this machine!"
+        }
     }
 
     write-host "waiting for $($jobs.Count) jobs to complete"
-
     monitor-jobs
 
-    if ($perfmonMin)
+    if ($perfmonMin -gt 0)
     {
-        $Counters = @(
-            "\\$($env:computername)\processor(_total)\*",
-            "\\$($env:computername)\memory\available mbytes",
-            "\\$($env:computername)\memory\pool paged bytes",
-            "\\$($env:computername)\memory\pool nonpaged bytes",
-            "\\$($env:computername)\network adapter(*)\packets/sec",
-            "\\$($env:computername)\network adapter(*)\current bandwidth",
-            "\\$($env:computername)\physicaldisk(*)\% idle time",
-            "\\$($env:computername)\physicaldisk(*)\current disk queue length",
-            "\\$($env:computername)\process(*)\% processor time"
-        )
-        
-        out-file -InputObject "timestamp,path,value" -FilePath "$($workDir)\PerfMonCounters.csv"
+        add-job -jobName "perfmon" -scriptBlock {
+            param($workdir = $args[0], $perfmonMin = $args[1])
+            $command = "Logman.exe create counter sfnodediag -o $($workdir)\PerfCounters.blg -f bincirc -v mmddhhmm -max 300 -c " `
+                + '"\Memory\*"  ' `
+                + '"\.NET CLR Memory(*)\*"  ' `
+                + '"\Network Interface(*)\*"  ' `
+                + '"\Netlogon(*)\*"  ' `
+                + '"\Paging File(*)\*"  ' `
+                + '"\PhysicalDisk(*)\*"  ' `
+                + '"\Processor(*)\*"  ' `
+                + '"\Process(*)\*"  ' `
+                + '"\Server\*"  ' `
+                + '"\System\*"  ' `
+                + "-si 00:00:01"
+            invoke-expression $command
+            invoke-expression "logman.exe start sfnodediag"
+            start-sleep -seconds ($perfmonMin * 60)
+            invoke-expression "logman.exe stop sfnodediag"
+            invoke-expression "logman.exe delete sfnodediag"
+        } -arguments @($workdir,$perfmonMin)
+    }
 
-        foreach ($counter in (Get-Counter -Counter $Counters -MaxSamples ($perfmonMin / 60)).CounterSamples)
-        {
-            foreach($sample in $counter.CounterSamples)
-            {           
-                out-file -InputObject "$($sample.TimeStamp),$($sample.Path),$($sample.CookedValue)" -FilePath "$($workDir)\PerfMonCounters.csv"
-            }
-        } 
+    if ($netmonMin -gt 0)
+    {
+        add-job -jobName "netmon" -scriptBlock {
+            param($workdir = $args[0], $netmonMin = $args[1])
+            Invoke-Expression "netsh trace start capture=yes overwrite=yes maxsize=1024 tracefile=$($workdir)\net.etl filemode=circular > $($workdir)\netmon.txt"
+            start-sleep -seconds ($netmonMin * 60)
+            Invoke-Expression "netsh trace stop >> $($workdir)\netmon.txt"
+        } -arguments @($workdir,$netmonMin)
+    }
+
+    if ($runCommand)
+    {
+        add-job -jobName "runCommand" -scriptBlock {
+            param($workdir = $args[0], $runCommand = $args[1])
+            Invoke-Expression "$($runCommand) > $($workdir)\runCommand.txt"
+        } -arguments @($workdir,$runCommand)
     }
 
     write-host "formatting xml files"
@@ -618,6 +660,8 @@ function process-machine()
         # format xml in output
         read-xml -xmlFile $file.FullName -format
     }
+
+    monitor-jobs
 
     $global:zipFile = compress-file $workDir
 }
@@ -804,6 +848,61 @@ function rest-query($cert, $url)
 
 try
 {
+    # arrays on command line easier to pass as strings
+    if(@($ports).count -le 1)
+    {
+        [object[]]$ports = $ports.Replace(" ",",").Split(",")
+    }
+
+    # create argument list with all values including defaults
+    foreach($param in $MyInvocation.MyCommand.Parameters.GetEnumerator())
+    {
+        $error.clear()
+        Write-Debug "checking parameter $($param)"
+        Write-Debug "checking parameter type $($param.value.ParameterType)"
+        # remove remoteMachines
+        if($param.key -imatch "remoteMachines")
+        {
+            continue
+        }
+
+        $paramValue = get-variable -ValueOnly -Name $param.key -ErrorAction SilentlyContinue
+        if($error)
+        {
+            write-debug "error $($error | out-string)"
+            $error.Clear()
+            continue
+        }
+
+        # remove switches unless true
+        if($param.Value.ParameterType -imatch "switch" -and $paramValue.Ispresent -eq $false)
+        {
+            continue
+        }
+
+        # remove empty strings for now
+        if($param.Value.ParameterType -imatch "string" -and !$paramValue)
+        {
+            continue
+        }
+
+        # join arrays passed as string due to command line issues with arrays
+        if($param.Value.ParameterType.IsArray -and $paramValue)
+        {
+            if($paramValue.count -le 1)
+            {
+                [object[]]$paramValue = $paramValue.Replace(" ",",").Split(",")
+            }
+
+            #$paramvalue = (get-variable -ValueOnly -Name $param.key -ErrorAction SilentlyContinue) -join ","
+            #$paramValue = "`'$($arr)`'"
+        }
+        
+        $global:allparams.Add($param.key, "`"$($paramValue)`"")
+    }
+
+    write-host "arguments:"
+    write-host ($global:allparams | out-string)
     main
 }
 catch
