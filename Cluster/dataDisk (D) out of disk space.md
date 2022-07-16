@@ -31,7 +31,7 @@ We used windirsat.exe utility to looked all disk usage and still cannot see why 
 ![cid:image007.jpg\@01D2DADE.E2491180](../media/outofdiskspace007.jpg)
 
 ## **Question**
-Where is those 23 GB disk space in standalone SF cluster FabricDataRoot drive?
+Where is 23 GB disk space in standalone SF cluster FabricDataRoot drive?
 
 ## **Answer**
 The scenario is that the volume that holds the service fabric work directory will run out of disk space however if one adds up the sizes of all the files on the disk, the used space is not accounted for. This will only happen on Server 2012 R2 and earlier; Server 2016 does not have this issue. The cause of the issue is a bug in NTFS where NTFS will reserve free disk clusters when an app (typically an Anti-Virus app such as System Center) does memory mapped reads on a file written with non-cached I/O. This happens in Service Fabric as the dedicated logs are sparse file written using non-cached I/O. Below are the relevant details as explained by the NTFS team:
@@ -81,8 +81,23 @@ We started to see disk space warning on our cluster.  After investigating where 
 ## **Answer**
 Yes, you can configure the Disagnostics setting for MaxDiskQuotaInMB which controls Disk quota in MB for Windows Fabric log files
 
+## **Question**
+Our D: (azure %temp% drive used for Service Fabric Data Root) drive is full. How can we see what folders at taking up the most space?
+
+## **Answer**
+There are multiple tools to report on drive and path usage.
+[directory-treesize.ps1](http://aka.ms/directory-treesize.ps1) is a powershell script in technet gallery that will quickly enumerate drive from powershell prompt. Example commands:
+```powershell
+(new-object net.webclient).downloadfile("http://aka.ms/directory-treesize.ps1","$(get-location)\directory-treesize.ps1");
+.\directory-treesize.ps1 d:\ -showPercent -detail -minSizeGB 0
+```
+![](../media/outofdiskspace008.png)
+
 ## **More Info**
-Azure Cluster: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-using-resource-manager-templates
+Azure Cluster:  https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-using-resource-manager-templates
 
 Standalone Cluster:
 https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-for-standalone-clusters
+
+Directory Treesize:
+https://gallery.technet.microsoft.com/Windows-PowerShell-067cfed9?redir=0
