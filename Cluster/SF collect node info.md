@@ -82,11 +82,11 @@ SYNOPSIS
     powershell script to collect service fabric node diagnostic data
 
     To download and execute, run the following commands on each sf node in admin powershell:
-    iwr('https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1') -UseBasicParsing|iex
+    iwr('https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1') -UseBasicParsing|iex
 
     To download and execute with arguments:
-    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1");
-    .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
+    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1","c:\sf-collect-node-info.ps1");
+    c:\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
 
     upload to workspace sfgather* dir or zip
 
