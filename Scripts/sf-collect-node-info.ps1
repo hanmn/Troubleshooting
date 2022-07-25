@@ -152,7 +152,7 @@ upload to workspace sfgather* dir or zip
     default is $env:temp
 
 .LINK
-    https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1
+    https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1
 #>
 [CmdletBinding()]
 param(
@@ -199,7 +199,7 @@ $warnonZoneCrossingReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Intern
 $disableWarnOnZoneCrossing = $false
 $firewallsDisabled = $false
 $global:allparams = @{}
-[string]$scriptUrl = 'https://raw.githubusercontent.com/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
+[string]$scriptUrl = 'https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
 
 # to bypass self-signed cert validation check
 add-type @"
