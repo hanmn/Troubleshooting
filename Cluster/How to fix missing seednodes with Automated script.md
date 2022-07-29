@@ -125,8 +125,10 @@ As you can see in this example, there are 5 nodes configured as seed nodes, with
 ```
 - Disabling _sys_3 and _sys_4 with the RemoveNode intent will cause a series of cluster configuration upgrades to start, which will attempt to move the **seed node** status from _sys_3 and _sys_4 and apply this status to other existing nodes.  In our example the best candidates (nodes not already seed nodes) will be the only possible nodes left which are _sys_5 and _sys_6.
 
-    - You will see the _sys_3 and _sys_4 node status in Disab[**ling**] state for some time while the upgrades go through, you must wait patiently until the Status is "**Disabled**"
-    - Call Get-ServiceFabricClusterUpgrade to check the progress
+    NOTE: **VERY IMPORTANT** 
+    - You will see the _sys_3 and _sys_4 node status in Disab[**ling**] state for some time while the upgrades go through, you **must wait** patiently until the Status is "**Disabled**", failure to wait at this step can cause the configuration upgrade to fail which may leave the cluster in an unrecovereable state.
+    
+    - Call **Get-ServiceFabricClusterUpgrade** to check the progress and wait until all nodes are **Disabled** or Down.
 
     ![Cluster Map showing _sys_3 and _sys_4 Disabling](../media/twoseednode005.PNG)
 

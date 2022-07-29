@@ -3,6 +3,7 @@ Param(
     [string] [Parameter(Mandatory=$true)] $Location,
     [string] [Parameter(Mandatory=$true)] $ResourceGroup,
     [string] [Parameter(Mandatory=$true)] $VaultName,
+    [string] [Parameter(Mandatory=$true)] $CertificateName,
     [string] [Parameter(Mandatory=$true)] $CommonName
 )
 
@@ -25,7 +26,7 @@ function Check-Session () {
 $ErrorActionPreference = "Stop"
 
 Check-Session
-Set-AzureRmContext -SubscriptionId $subscriptionId -ErrorAction Stop
+Select-AzureRmSubscription -SubscriptionId $subscriptionId -ErrorAction Stop
 
 New-AzureRmResourceGroup -Name $ResourceGroup -Location $location -Force
 
@@ -33,7 +34,7 @@ if(!(Get-AzureRmResource -ResourceName $VaultName -ResourceGroupName $ResourceGr
   New-AzureRmKeyVault -VaultName $VaultName -ResourceGroupName $ResourceGroup  -Location $Location -EnabledForDeployment
 }
 
-$policy = New-AzureKeyVaultCertificatePolicy -SubjectName $CommonName -IssuerName Self -ValidityInMonths 12
+$policy = New-AzureKeyVaultCertificatePolicy -DnsName $CommonName -IssuerName Self -ValidityInMonths 12
 Add-AzureKeyVaultCertificate -VaultName $VaultName -Name $CertificateName -CertificatePolicy $policy
 
 Write-Host "operation complete"

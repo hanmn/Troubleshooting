@@ -1,4 +1,6 @@
-# dataDisk (D:\\) out of disk space
+# Service Fabric nodes out of disk space
+
+* There are several possible causes
 
 ## **Question and Symptom:**
 
@@ -70,3 +72,17 @@ In the above case there are 0x28e4 reserved clusters and each cluster is 4096 by
 The mitigation for this would be to dismount the volume and then remount it. In general this would not be practical so an easier mitigation would be to reboot the node. A good way for the customer to resolve the issue is to have them exclude \*.sflog files from their AV real time scanning process or upgrade to Server 2016. Note that other AV products other than System Center might show this issue as well.
 
 Also note that when looking at disk space usage it can be confusing to look at the \*.sflog files as they are sparse files and will typically show a nominal file size of 256GB. To see the actual disk space used you need to look at the compressed file size (this is in the properties in explorer).
+
+## **Question**
+We started to see disk space warning on our cluster.  After investigating where the space was being used we found the Logs and Traces folder was the main offender.
+
+* Is it possible to limit how much space a node can use for Logs and Traces?
+
+## **Answer**
+Yes, you can configure the Disagnostics setting for MaxDiskQuotaInMB which controls Disk quota in MB for Windows Fabric log files
+
+## **More Info**
+Azure Cluster: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-using-resource-manager-templates
+
+Standalone Cluster:
+https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-for-standalone-clusters
