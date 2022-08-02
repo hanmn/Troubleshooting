@@ -2,10 +2,7 @@
 .SYNOPSIS
 powershell script to collect service fabric node diagnostic data
 
-To download and execute, run the following commands on each sf node in admin powershell:
-iwr('https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1') -UseBasicParsing|iex
-
-To download and execute with arguments:
+To download and execute:
 (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1","c:\sf-collect-node-info.ps1");
 c:\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
 
@@ -167,7 +164,7 @@ param(
     [string]$networkTestAddress = $env:computername,
     [int]$perfmonMin,
     [object]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985),
-    [int]$timeoutMinutes = [Math]::Max($perfmonMin,$netmonMin) + 15,
+    [int]$timeoutMinutes = [Math]::Max($perfmonMin, $netmonMin) + 15,
     [string]$apiversion = "6.2-preview", #"6.0"
     [string[]]$remoteMachines,
     [switch]$noAdmin,
@@ -183,8 +180,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Continue"
 $timer = get-date
 $currentWorkDir = get-location
-$osVersion = [version]([string]((wmic os get Version) -match "\d"))
-$legacy = ($osVersion.major -lt 10)
+$osInfo = (get-wmiobject -Class Win32_OperatingSystem -Namespace root\cimv2)
+$legacy = ([version]$osInfo.Version).major -lt 10
+$workstation = $osInfo.ProductType -eq 1
 $parentWorkDir = $null
 $jobs = new-object collections.arraylist
 $logFile = $Null
@@ -331,9 +329,9 @@ function main()
                         }
 
                         [text.stringbuilder]$sb = new-object text.stringbuilder
-                        foreach($item in $allParams.GetEnumerator())
+                        foreach ($item in $allParams.GetEnumerator())
                         {
-                            if($item.key -imatch "quiet" -or $item.key -imatch "noadmin" -or $item.key -imatch "workdir")
+                            if ($item.key -imatch "quiet" -or $item.key -imatch "noadmin" -or $item.key -imatch "workdir")
                             {
                                 continue
                             }
@@ -345,7 +343,7 @@ function main()
                         write-host "powershell.exe $($arguments)"
                         start-process -filepath "powershell.exe" -ArgumentList $arguments -Wait -NoNewWindow
                         write-host ($error | out-string)
-                    } -ArgumentList @($scriptUrl,$machine, $sfCollectInfoDir, $global:allparams)))
+                    } -ArgumentList @($scriptUrl, $machine, $sfCollectInfoDir, $global:allparams)))
         }
 
         monitor-jobs
@@ -438,7 +436,7 @@ function process-machine()
         } -arguments @($workdir, $parentWorkdir, $eventLogNames, $startTime, $endTime, $eventScriptFile)
     }
 
-    if(!$noOs)
+    if (!$noOs)
     {
         if (!$legacy)
         {
@@ -490,7 +488,14 @@ function process-machine()
         Invoke-Expression "reg.exe query HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall /s /v DisplayName > $($workDir)\installed-apps.reg.txt"
     
         write-host "features"
-        Get-WindowsFeature | Where-Object "InstallState" -eq "Installed" | out-file "$($workdir)\windows-features.txt"
+        if ($workstation)
+        {
+            Invoke-Expression "dism /online /get-features | out-file $($workdir)\windows-features.txt"
+        }
+        else
+        {
+            Get-WindowsFeature | Where-Object "InstallState" -eq "Installed" | out-file "$($workdir)\windows-features.txt"
+        }
     
         add-job -jobName ".net reg" -scriptBlock {
             param($workdir = $args[0])
@@ -523,7 +528,7 @@ function process-machine()
         } -arguments @($workdir)
     }
 
-    if(!$noNet)
+    if (!$noNet)
     {
         add-job -jobName "network port tests" -scriptBlock {
             param($workdir = $args[0], $networkTestAddress = $args[1], $ports = $args[2])
@@ -593,7 +598,7 @@ function process-machine()
     #
     # service fabric information
     #
-    if(!$noSF)
+    if (!$noSF)
     {
         write-host "service fabric reg"
         Invoke-Expression "reg.exe query `"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Service Fabric`" /s > $($workDir)\serviceFabric.reg.txt"
@@ -633,7 +638,7 @@ function process-machine()
             start-sleep -seconds ($perfmonMin * 60)
             invoke-expression "logman.exe stop sfnodediag"
             invoke-expression "logman.exe delete sfnodediag"
-        } -arguments @($workdir,$perfmonMin)
+        } -arguments @($workdir, $perfmonMin)
     }
 
     if ($netmonMin -gt 0)
@@ -643,7 +648,7 @@ function process-machine()
             Invoke-Expression "netsh trace start capture=yes overwrite=yes maxsize=1024 tracefile=$($workdir)\net.etl filemode=circular > $($workdir)\netmon.txt"
             start-sleep -seconds ($netmonMin * 60)
             Invoke-Expression "netsh trace stop >> $($workdir)\netmon.txt"
-        } -arguments @($workdir,$netmonMin)
+        } -arguments @($workdir, $netmonMin)
     }
 
     if ($runCommand)
@@ -651,7 +656,7 @@ function process-machine()
         add-job -jobName "runCommand" -scriptBlock {
             param($workdir = $args[0], $runCommand = $args[1])
             Invoke-Expression "$($runCommand) > $($workdir)\runCommand.txt"
-        } -arguments @($workdir,$runCommand)
+        } -arguments @($workdir, $runCommand)
     }
 
     write-host "formatting xml files"
@@ -849,25 +854,25 @@ function rest-query($cert, $url)
 try
 {
     # arrays on command line easier to pass as strings
-    if(@($ports).count -le 1)
+    if (@($ports).count -le 1)
     {
-        [object[]]$ports = $ports.Replace(" ",",").Split(",")
+        [object[]]$ports = $ports.Replace(" ", ",").Split(",")
     }
 
     # create argument list with all values including defaults
-    foreach($param in $MyInvocation.MyCommand.Parameters.GetEnumerator())
+    foreach ($param in $MyInvocation.MyCommand.Parameters.GetEnumerator())
     {
         $error.clear()
         Write-Debug "checking parameter $($param)"
         Write-Debug "checking parameter type $($param.value.ParameterType)"
         # remove remoteMachines
-        if($param.key -imatch "remoteMachines")
+        if ($param.key -imatch "remoteMachines")
         {
             continue
         }
 
         $paramValue = get-variable -ValueOnly -Name $param.key -ErrorAction SilentlyContinue
-        if($error)
+        if ($error)
         {
             write-debug "error $($error | out-string)"
             $error.Clear()
@@ -875,23 +880,23 @@ try
         }
 
         # remove switches unless true
-        if($param.Value.ParameterType -imatch "switch" -and $paramValue.Ispresent -eq $false)
+        if ($param.Value.ParameterType -imatch "switch" -and $paramValue.Ispresent -eq $false)
         {
             continue
         }
 
         # remove empty strings for now
-        if($param.Value.ParameterType -imatch "string" -and !$paramValue)
+        if ($param.Value.ParameterType -imatch "string" -and !$paramValue)
         {
             continue
         }
 
         # join arrays passed as string due to command line issues with arrays
-        if($param.Value.ParameterType.IsArray -and $paramValue)
+        if ($param.Value.ParameterType.IsArray -and $paramValue)
         {
-            if($paramValue.count -le 1)
+            if ($paramValue.count -le 1)
             {
-                [object[]]$paramValue = $paramValue.Replace(" ",",").Split(",")
+                [object[]]$paramValue = $paramValue.Replace(" ", ",").Split(",")
             }
 
             #$paramvalue = (get-variable -ValueOnly -Name $param.key -ErrorAction SilentlyContinue) -join ","
