@@ -47,8 +47,8 @@ upload to workspace sfgather* dir or zip
 .NOTES
     File Name  : sf-collect-node-info.ps1
     Author     : microsoft service fabric support
-    Version    : 180904 original
-    History    : 
+    Version    : 180921 tested on 2k12 oobe
+    History    : 180904 original
 
 .EXAMPLE
     .\sf-collect-node-info.ps1
@@ -244,7 +244,12 @@ function main()
     new-item $workdir -ItemType Directory
     Set-Location $parentworkdir
     $logFile = "$($workdir)\sf-collect-node-info.log"
-    Start-Transcript -Path $logFile -Force
+
+    if(!$legacy)
+    {
+        Start-Transcript -Path $logFile -Force
+    }
+
     write-host "starting $(get-date)"
 
     if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -484,6 +489,10 @@ function process-machine()
             Get-Service | format-list * | out-file "$($workdir)\services.txt"
         } -arguments @($workdir)
     
+        write-host "etw / logman sessions / traces"
+        logman -ets | out-file "$($workdir)\logman-ets.txt"
+        logman | out-file "$($workdir)\logman.txt"
+        
         write-host "installed applications"
         Invoke-Expression "reg.exe query HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall /s /v DisplayName > $($workDir)\installed-apps.reg.txt"
     
@@ -541,7 +550,7 @@ function process-machine()
 
         add-job -jobName "check external connection" -scriptBlock {
             param($workdir = $args[0], $externalUrl = $args[1])
-            [net.httpWebResponse](Invoke-WebRequest $externalUrl -UseBasicParsing).BaseResponse | out-file "$($workdir)\network-external-test.txt" 
+            [net.httpWebResponse](Invoke-WebRequest $externalUrl ).BaseResponse | out-file "$($workdir)\network-external-test.txt"
         } -arguments @($workdir, $externalUrl)
 
         add-job -jobName "resolve-dnsname" -scriptBlock {
@@ -688,11 +697,11 @@ function compress-file($dir)
         remove-item $zipFile -Force
     }
 
-    Stop-Transcript | out-null
-
     if (!$legacy)
     {
+        Stop-Transcript | out-null
         Compress-archive -path $dir -destinationPath $zipFile -Force
+        Start-Transcript -Path $logFile -Force -Append | Out-Null
     }
     else
     {
@@ -701,7 +710,6 @@ function compress-file($dir)
         [void][System.IO.Compression.ZipFile]::CreateFromDirectory($dir, $zipFile, $compressionLevel, $false)
     }
 
-    Start-Transcript -Path $logFile -Force -Append | Out-Null
     $global:zipFile = $zipFile
     write-debug "zip dir after: $(tree /a /f $dir | out-string)"
     return $zipFile
@@ -740,10 +748,13 @@ function enumerate-serviceFabric()
         write-host "sfrp url:$($sfrpUrl)"
         out-file -InputObject $sfrpUrl "$($workdir)\sfrp-response.txt"
         $ucert = ($upgradeServiceParams | Where-Object Name -eq "X509FindValue").Value
-        $sfrpResponse = Invoke-WebRequest $sfrpUrl -UseBasicParsing -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+
+        add-job -jobName "sfrp check" -scriptBlock {
+        param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2])
+        $sfrpResponse = Invoke-WebRequest $sfrpUrl  -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
         write-host "sfrp response: $($sfrpresponse)"
         out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
-
+        } -arguments @($workdir, $sfrpUrl, $ucert)
 
         $httpGwEpt = $xml.ClusterManifest.NodeTypes.FirstChild.Endpoints.HttpGatewayEndpoint
         $clusterCertThumb = $xml.ClusterManifest.NodeTypes.FirstChild.Certificates.ClientCertificate.X509FindValue
@@ -841,7 +852,7 @@ function rest-query($cert, $url)
     {
         $result = $null
         write-host "rest query: $($url)" -foregroundcolor cyan
-        $result = Invoke-RestMethod -Method Get -Certificate $cert -Uri $url -UseBasicParsing | format-list * | Out-String
+        $result = Invoke-RestMethod -Method Get -Certificate $cert -Uri $url  | format-list * | Out-String
         write-host "rest result: `n$($result)"
         return $result
     }
@@ -931,6 +942,11 @@ finally
     get-job | remove-job -Force
     write-host "finished. total minutes: $(((get-date) - $timer).TotalMinutes.tostring("F2"))"
     write-debug "errors during script: $($error | out-string)"
-    Stop-Transcript
+
+    if(!$legacy)
+    {
+        Stop-Transcript
+    }
+
     write-host "upload zip to workspace:$($global:zipFile)" -ForegroundColor Cyan
 }
