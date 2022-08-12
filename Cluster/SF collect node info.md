@@ -405,3 +405,407 @@ NOTES
 RELATED LINKS
     https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1
 ```
+# Example output directory file structure:
+```
+PS C:\temp> tree /a /f C:\Users\CLOUDA~1\AppData\Local\Temp\2\sfColInfo-NT0000000
+Folder PATH listing
+Volume serial number is 000000A6 20A7:59B7
+C:\USERS\CLOUDA~1\APPDATA\LOCAL\TEMP\2\SFCOLINFO-NT0000000
+|   connected-nodes.txt
+|   dir-fabricdataroot.txt
+|   dir-fabricroot.txt
+|   dir-machinekeys.txt
+|   dotnet.reg.txt
+|   drivers.txt
+|   drives.txt
+|   dumplist-c.txt
+|   dumplist-d.txt
+|   firewall-config.txt
+|   firewallrules.reg.txt
+|   hotfixes.txt
+|   installed-apps.reg.txt
+|   ipconfig.txt
+|   logman-ets.txt
+|   logman.txt
+|   netshssl.txt
+|   netstat.txt
+|   netTcpConnection.txt
+|   network-external-test.txt
+|   nslookup.txt
+|   os-info.txt
+|   policies.reg.txt
+|   process-summary.txt
+|   processes-fabric.txt
+|   processes.txt
+|   resolve-dnsname.txt
+|   rest-eventsApplications.txt
+|   rest-eventsCluster.txt
+|   rest-eventsNodes.txt
+|   rest-eventsPartition.txt
+|   rest-eventsServices.txt
+|   rest-getClusterHealth.txt
+|   rest-imageStore.txt
+|   rest-nodes.txt
+|   schannel.reg.txt
+|   service-summary.txt
+|   serviceFabric.reg.txt
+|   serviceFabricNodeBootStrapAgent.reg.txt
+|   services.txt
+|   sfrp-response.txt
+|   windows-features.txt
+|   windowsupdate.log.txt
+|   winrm-config.txt
+|   
++---event-logs
+|       event-log-manager-output.txt
+|       events-all.csv
+|       NT0000000-Application.csv
+|       NT0000000-Microsoft-ServiceFabric-Admin.csv
+|       NT0000000-Microsoft-ServiceFabric-Operational.csv
+|       NT0000000-Microsoft-Windows-Windows-Firewall-With-Advanced-Security-Firewall.csv
+|       NT0000000-Microsoft-WindowsAzure-Diagnostics-GuestAgent.csv
+|       NT0000000-Microsoft-WindowsAzure-Diagnostics-Heartbeat.csv
+|       NT0000000-Microsoft-WindowsAzure-Status-GuestAgent.csv
+|       NT0000000-Microsoft-WindowsAzure-Status-Plugins.csv
+|       NT0000000-System.csv
+|       
++---packages
+|   \---Plugins
+|       +---Microsoft.Azure.Diagnostics.IaaSDiagnostics
+|       |   \---1.11.3.12
+|       |       |   config.txt
+|       |       |   DiagnosticsPlugin.exe.config
+|       |       |   DiagnosticsPluginLauncher.exe.config
+|       |       |   HandlerEnvironment.json
+|       |       |   HandlerManifest.json
+|       |       |   manifest.xml
+|       |       |   
+|       |       +---ApplicationInsightsProfiler
+|       |       |       ApplicationInsightsProfiler.exe.config
+|       |       |       
+|       |       +---Monitor
+|       |       |   \---x64
+|       |       |       |   MonAgent-Pkg-Manifest.xml
+|       |       |       |   
+|       |       |       +---Extensions
+|       |       |       |   +---ApplicationInsightsExtension
+|       |       |       |   |   |   ApplicationInsightsExtension.exe.config
+|       |       |       |   |   |   Microsoft.AI.ServerTelemetryChannel.xml
+|       |       |       |   |   |   Microsoft.ApplicationInsights.xml
+|       |       |       |   |   |   Microsoft.Diagnostics.Tracing.EventSource.xml
+|       |       |       |   |   |   Microsoft.Threading.Tasks.Extensions.Desktop.xml
+|       |       |       |   |   |   Microsoft.Threading.Tasks.Extensions.xml
+|       |       |       |   |   |   Microsoft.Threading.Tasks.xml
+|       |       |       |   |   |   Newtonsoft.Json.xml
+|       |       |       |   |   |   System.IO.xml
+|       |       |       |   |   |   System.Runtime.xml
+|       |       |       |   |   |   System.Threading.Tasks.xml
+|       |       |       |   |   |   
+|       |       |       |   |   \---Resources
+|       |       |       |   \---MetricsExtension
+|       |       |       |           MonAgent-Pkg-Manifest.xml
+|       |       |       |           
+|       |       |       +---procdump
+|       |       |       |   +---x64
+|       |       |       |   \---x86
+|       |       |       \---schema
+|       |       |           +---1.0
+|       |       |           \---2.0
+|       |       +---RuntimeSettings
+|       |       |       1.settings
+|       |       |       
+|       |       +---schema
+|       |       |       wad11JsonSchema.json
+|       |       |       
+|       |       +---Status
+|       |       |       HeartBeat.Json
+|       |       |       
+|       |       \---StatusMonitor
+|       \---Microsoft.Azure.ServiceFabric.ServiceFabricNode
+|           \---1.1.0.2
+|               |   config.txt
+|               |   HandlerEnvironment.json
+|               |   HandlerManifest.json
+|               |   ServiceFabricExtensionHandler.exe.config
+|               |   ThirdPartyNotices.txt
+|               |   
+|               +---ProductPackage
+|               +---RuntimeSettings
+|               |       1.settings
+|               |       
+|               +---Service
+|               |   |   Checksum.txt
+|               |   |   current.config
+|               |   |   InfrastructureManifest.template.xml
+|               |   |   ServiceFabricNodeBootstrapAgent.exe.config
+|               |   |   ThirdPartyNotices.txt
+|               |   |   VERSION.txt
+|               |   |   
+|               |   \---ProductPackage
+|               +---Status
+|               |       HeartBeat.Json
+|               |       
+|               \---UpgradeService
+|                       Checksum.txt
+|                       current.config
+|                       ServiceFabricNodeBootstrapUpgradeAgent.exe.config
+|                       ThirdPartyNotices.txt
+|                       VERSION.txt
+|                       
++---SvcFab
+|   |   clusterManifest.xml
+|   |   FabricHostSettings.xml
+|   |   
+|   +---IB
+|   +---ImageBuilderProxy
+|   +---Log
+|   |   +---AppInstanceData
+|   |   |   +---Etl
+|   |   |   \---Table
+|   |   +---ApplicationCrashDumps
+|   |   +---ArchivedOperationalTraces
+|   |   +---ArchivedQueryTraces
+|   |   +---ArchivedTraces
+|   |   +---Containers
+|   |   +---CrashDumps
+|   |   +---OperationalTraces
+|   |   +---PerformanceCountersBinary
+|   |   +---PerformanceCountersBinaryArchive
+|   |   +---PerformanceCounters_ServiceFabricPerfCounter
+|   |   +---QueryTraces
+|   |   +---Traces
+|   |   \---work
+|   |       +---0
+|   |       |   \---0
+|   |       +---temp
+|   |       +---WFab
+|   |       |   +---0
+|   |       |   |   +---0
+|   |       |   |   |   \---Log
+|   |       |   |   |       +---Bootstrap
+|   |       |   |   |       +---Fabric
+|   |       |   |   |       \---Lease
+|   |       |   |   \---1
+|   |       |   |       \---AFU
+|   |       |   |           \---LMap
+|   |       |   |               +---Bootstrap
+|   |       |   |               +---Fabric
+|   |       |   |               \---Lease
+|   |       |   +---1
+|   |       |   |   \---0
+|   |       |   |       \---AFU
+|   |       |   |           \---LMap
+|   |       |   \---2
+|   |       |       \---0
+|   |       |           \---AFU
+|   |       |               \---LMap
+|   |       +---WFDynMan
+|   |       \---WFEtwMan
+|   +---ReplicatorLog
+|   +---_App
+|   |   \---__FabricSystem_App4294967295
+|   |       |   App.1.0.xml
+|   |       |   BRS.Manifest.Current.xml
+|   |       |   BRS.Package.1.0.xml
+|   |       |   DnsService.Manifest.Current.xml
+|   |       |   DnsService.Package.1.0.xml
+|   |       |   FAS.Manifest.Current.xml
+|   |       |   FAS.Package.1.0.xml
+|   |       |   FAS.Package.Current.xml
+|   |       |   FileStoreService.Manifest.Current.xml
+|   |       |   FileStoreService.Package.1.0.xml
+|   |       |   FileStoreService.Package.Current.xml
+|   |       |   IS.Manifest.Current.xml
+|   |       |   IS.Package.1.0.xml
+|   |       |   RM.Manifest.Current.xml
+|   |       |   RM.Package.1.0.xml
+|   |       |   RMS.Manifest.Current.xml
+|   |       |   RMS.Package.1.0.xml
+|   |       |   TVS.Manifest.Current.xml
+|   |       |   TVS.Package.1.0.xml
+|   |       |   UOS.Manifest.Current.xml
+|   |       |   UOS.Package.1.0.xml
+|   |       |   US.Manifest.Current.xml
+|   |       |   US.Package.1.0.xml
+|   |       |   US.Package.Current.xml
+|   |       |   
+|   |       +---BRS.Code.Current
+|   |       +---DnsService.Code.Current
+|   |       +---FAS.Code.Current
+|   |       +---FileStoreService.Code.Current
+|   |       +---IS.Code.Current
+|   |       +---log
+|   |       +---RM.Code.Current
+|   |       +---RMS.Code.Current
+|   |       +---temp
+|   |       +---TVS.Code.Current
+|   |       +---UOS.Code.Current
+|   |       +---US.Code.Current
+|   |       \---work
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617332559082
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617333180865
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617336462127
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617336462128
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617336618359
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617336618360
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617339118347
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617339118348
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617341305969
+|   |           +---00000000000000000000000000005000_131819617113459839_131819617341305970
+|   |           +---00000000000000000000000000005000_131819617113459839_131819653339122794
+|   |           +---00000000000000000000000000005000_131819617113459839_131819653339122795
+|   |           +---00000000000000000000000000005000_131819617113459839_131819653339278925
+|   |           +---00000000000000000000000000005000_131819617113459839_131819653339278926
+|   |           +---FS
+|   |           |   \---P_00000000-0000-0000-0000-000000003000
+|   |           |       \---R_131819617111897350
+|   |           +---P_51b3d66d-275d-43c6-b668-7a5f33b5386b
+|   |           |   \---R_131819617170022352
+|   |           +---Staging
+|   |           |   \---131819617111897350
+|   |           |       \---960b0369-682a-4d0d-b241-b541e902091d
+|   |           \---Store
+|   |               \---131819617111897350
+|   |                   +---6.3.176.9494_1
+|   |                   |       131819616815894166_8589934592_1.ClusterManifest.xml
+|   |                   |       
+|   |                   \---WindowsFabricStore
+|   |                           131819616815894166_8589934592_4.ClusterManifest.1.xml
+|   |                           
+|   \---_nt0_0
+|       \---Fabric
+|           |   ClusterManifest.1.xml
+|           |   ClusterManifest.current.xml
+|           |   Fabric.Package.1.0.xml
+|           |   Fabric.Package.1.1.xml
+|           |   Fabric.Package.current.xml
+|           |   
+|           +---Fabric.Config.1.0
+|           |       Settings.xml
+|           |       
+|           +---Fabric.Config.1.131819617921315472
+|           |       Settings.xml
+|           |       
+|           +---Fabric.Data
+|           |       InfrastructureManifest.xml
+|           |       
+|           \---work
+|               +---CM
+|               |   \---P_00000000-0000-0000-0000-000000002000
+|               |       \---R_131819617111897350
+|               +---EventsReaderTmpOutput
+|               +---FileTransfer
+|               +---FM
+|               |   \---P_00000000-0000-0000-0000-000000000001
+|               |       \---R_131819616751206190
+|               +---ImageCache
+|               +---NS
+|               |   +---P_00000000-0000-0000-0000-000000001000
+|               |   |   \---R_131819617111897350
+|               |   +---P_00000000-0000-0000-0000-000000001001
+|               |   |   \---R_131819617111897350
+|               |   \---P_00000000-0000-0000-0000-000000001002
+|               |       \---R_131819617111897350
+|               \---RA
+\---windowsAzure
+    +---Applications
+    +---CollectGuestLogsTemp
+    |       629c62ef-f008-44a0-9269-11c2037fd69f.zip.json
+    |       
+    +---Config
+    |       f23968ac-9066-43da-863c-2d4ab096c18f.f23968ac-9066-43da-863c-2d4ab096c18f._nt0_0.1.xml
+    |       
+    +---Logs
+    |   |   AgentRuntime.log
+    |   |   MonitoringAgent.log
+    |   |   NetAgent-2018.09.20-23.59.28.503.log
+    |   |   Telemetry.log
+    |   |   TransparentInstaller.log
+    |   |   WaAppAgent.log
+    |   |   
+    |   +---AggregateStatus
+    |   |       aggregatestatus.json
+    |   |       aggregatestatus_20180921025640005.json
+    |   |       aggregatestatus_20180921025655241.json
+    |   |       aggregatestatus_20180921025710266.json
+    |   |       aggregatestatus_20180921025725363.json
+    |   |       aggregatestatus_20180921025740457.json
+    |   |       aggregatestatus_20180921025755488.json
+    |   |       aggregatestatus_20180921025810519.json
+    |   |       aggregatestatus_20180921025825550.json
+    |   |       aggregatestatus_20180921025840582.json
+    |   |       aggregatestatus_20180921025855629.json
+    |   |       
+    |   +---Plugins
+    |   |   +---Microsoft.Azure.Diagnostics.IaaSDiagnostics
+    |   |   |   \---1.11.3.12
+    |   |   |       |   CommandExecution.log
+    |   |   |       |   CommandExecution_20180921000112370.log
+    |   |   |       |   DiagnosticsPlugin.log
+    |   |   |       |   DiagnosticsPluginLauncher.log
+    |   |   |       |   
+    |   |   |       \---WAD0107
+    |   |   |           +---Configuration
+    |   |   |           |       Checkpoint.txt
+    |   |   |           |       EventSource_Manifest_13c2a97d-71da-5ab5-47cb-1497aec602e1_Pid_2704.xml
+    |   |   |           |       EventSource_Manifest_13c2a97d-71da-5ab5-47cb-1497aec602e1_Ver_11.backup.xml
+    |   |   |           |       EventSource_Manifest_13c2a97d-71da-5ab5-47cb-1497aec602e1_Ver_11.xml
+    |   |   |           |       MaConfig.xml
+    |   |   |           |       MonAgentHost.1.log
+    |   |   |           |       
+    |   |   |           +---Package
+    |   |   |           |   \---Agent
+    |   |   |           +---Packets
+    |   |   |           +---Status
+    |   |   |           \---Tables
+    |   |   \---Microsoft.Azure.ServiceFabric.ServiceFabricNode
+    |   |       \---1.1.0.2
+    |   |               CommandExecution.log
+    |   |               CommandExecution_20180920235941450.log
+    |   |               InfrastructureManifest.xml
+    |   |               TempClusterManifest.xml
+    |   |               VCRuntimeInstall-20180920235850548.log
+    |   |               VCRuntimeInstall-20180920235850548_0_vcRuntimeMinimum_x64.log
+    |   |               VCRuntimeInstall-20180920235850548_1_vcRuntimeAdditional_x64.log
+    |   |               VCRuntimeInstall-20180920235938349.log
+    |   |               VCRuntimeInstall-20180920235938349_000_vcRuntimeMinimum_x64.log
+    |   |               VCRuntimeInstall-20180920235938349_001_vcRuntimeAdditional_x64.log
+    |   |               
+    |   \---VFPlugin
+    |           VFPlugin-2018.09.20-23.59.29.143.log
+    |           
+    +---Packages
+    |   |   CollectVMHealth.exe.config
+    |   |   CommonAgentConfig.config
+    |   |   PackageInformation.txt
+    |   |   TransparentInstaller.dll.config
+    |   |   WaAppAgent.exe.config
+    |   |   
+    |   +---GuestAgent
+    |   |   |   IISConfigurator-Ipv4only.exe.config
+    |   |   |   IISConfigurator-Ipv6andIpv4.exe.config
+    |   |   |   IpAddressAssignment.exe.config
+    |   |   |   ProviderGuids.txt
+    |   |   |   WindowsAzureGuestAgent.exe.config
+    |   |   |   
+    |   |   \---FindVolume
+    |   |           DATALOSS_WARNING_README.txt
+    |   |           
+    |   \---Telemetry
+    |           WindowsAzureTelemetryService.exe.config
+    |           
+    \---WindowsAzureNetAgent_1.0.0.118
+        |   HandlerEnvironment.json
+        |   
+        \---WindowsAzureNetAgent
+            +---Plugins
+            |   \---VFPlugin
+            |       |   manifest.xml
+            |       |   
+            |       \---Code
+            \---RuntimeSettings
+                    0.settings
+                    
+
+PS C:\temp> 
+```
