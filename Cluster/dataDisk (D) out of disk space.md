@@ -93,6 +93,30 @@ There are multiple tools to report on drive and path usage.
 ```
 ![](../media/outofdiskspace008.png)
 
+## **Question**
+How can I summarize the disk usage on Linux systems?
+
+## **Answer**
+
+```Bash
+    sudo du -sh /* | sort -nr | head -n 20
+```
+
+or limit to /mnt/sfroot/ folder
+
+```Bash
+    sudo du -sh /mnt/sfroot/* | sort -nr | head -n 20
+
+    108M    /mnt/sfroot/log
+    20K     /mnt/sfroot/
+    12K     /mnt/sfroot/FabricHostSettings.xml
+    4.0K    /mnt/sfroot/_sf_docker_pid
+    3.5G    /mnt/sfroot/_sys_0
+    3.0G    /mnt/sfroot/_App
+    0       /mnt/sfroot/targetinformationfileaccess.lock
+
+```
+
 ## **More Info**
 Azure Cluster:  https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-using-resource-manager-templates
 
