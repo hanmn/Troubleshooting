@@ -3,7 +3,7 @@
 ## How to configure Service Fabric or Applications to use a specific TLS version
 
 - Option 1 - Machine wide configuration
-    Set HKEY\_LOCAL\_MACHINE\\SOFTWARE\\Microsoft\\.NETFramework\\v4.0.30319 \\SchUseStrongCrypto to true/1 will force (System.Net)[https://docs.microsoft.com/en-us/dotnet/api/system.net?view=netframework-4.7.2] **CLIENT** to use TLS 1.2 and disable Md5, RC4, 3DES cipher algorithm as those ciphers were considered as week cipher. 
+    Set HKEY\_LOCAL\_MACHINE\\SOFTWARE\\Microsoft\\.NETFramework\\v4.0.30319 \\SchUseStrongCrypto to true/1 will force [System.Net](https://docs.microsoft.com/en-us/dotnet/api/system.net?view=netframework-4.7.2) **CLIENT** to use TLS 1.2 and disable Md5, RC4, 3DES cipher algorithm as those ciphers were considered as week cipher. 
 
 - Option 2 - Application level configuration
     - Update yourapp.exe.config, for example FabricUS.exe.config if the process is using .Net Framework 4.6 and above
