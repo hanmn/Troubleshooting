@@ -749,12 +749,18 @@ function enumerate-serviceFabric()
         out-file -InputObject $sfrpUrl "$($workdir)\sfrp-response.txt"
         $ucert = ($upgradeServiceParams | Where-Object Name -eq "X509FindValue").Value
 
+        # todo determine if standalone
         add-job -jobName "sfrp check" -scriptBlock {
         param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2])
         $sfrpResponse = Invoke-WebRequest $sfrpUrl  -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
         write-host "sfrp response: $($sfrpresponse)"
         out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
         } -arguments @($workdir, $sfrpUrl, $ucert)
+
+        add-job -jobName "sfrp repair check" -scriptBlock {
+        param($workdir = $args[0])
+        Get-ServiceFabricRepairTask -State Active Azure | out-file "$($workdir)\sfrp-repair.txt"
+        } -arguments @($workdir)
 
         $httpGwEpt = $xml.ClusterManifest.NodeTypes.FirstChild.Endpoints.HttpGatewayEndpoint
         $clusterCertThumb = $xml.ClusterManifest.NodeTypes.FirstChild.Certificates.ClientCertificate.X509FindValue
