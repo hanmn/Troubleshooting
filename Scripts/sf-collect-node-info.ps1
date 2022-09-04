@@ -49,7 +49,13 @@ upload to workspace sfgather* dir or zip
     Author     : microsoft service fabric support
     Version    : 180921 tested on 2k12 oobe
     History    : 180904 original
-
+I would say
+docker images
+The following not as important:
+docker network ls (although we expect it list out the default 3
+docker ps
+docker inspect <containerid>
+get-itemproperty exception on warnonzone
 .EXAMPLE
     .\sf-collect-node-info.ps1
     default command to collect event logs, process, service, os information for last 7 days.
@@ -155,7 +161,7 @@ upload to workspace sfgather* dir or zip
 param(
     [string]$workdir,
     [switch]$certInfo,
-    [string]$eventLogNames = "System$|Application$|wininet|dns|Fabric|http|Firewall|Azure",
+    [string]$eventLogNames = "System$|Application$|wininet|dns|Fabric|http|Firewall|Azure|insight",
     [string]$externalUrl = "bing.com",
     [dateTime]$startTime = (get-date).AddDays(-7),
     [dateTime]$endTime = (get-date),
@@ -245,7 +251,7 @@ function main()
     Set-Location $parentworkdir
     $logFile = "$($workdir)\sf-collect-node-info.log"
 
-    if(!$legacy)
+    if (!$legacy)
     {
         Start-Transcript -Path $logFile -Force
     }
@@ -264,13 +270,14 @@ function main()
     }
 
     
-    $disableSecuritySetting = (Get-ItemProperty -Path $warnonZoneCrossingReg -Name "WarnonZoneCrossing")
+    $disableSecuritySetting = (Get-ItemProperty -Path $warnonZoneCrossingReg -Name "WarnonZoneCrossing" -ErrorAction SilentlyContinue)
     if (!$disableSecuritySetting -or $disableSecuritySetting.WarnonZoneCrossing -eq 1)
     {
         New-ItemProperty -Path $warnonZoneCrossingReg -Name "WarnonZoneCrossing" -Value 0 -PropertyType DWORD -Force | Out-Null
         $disableWarnOnZoneCrossing = $true
     }
 
+    $error.Clear()
     write-host "remove old jobs"
     get-job | remove-job -Force
 
@@ -484,7 +491,7 @@ function process-machine()
             get-hotfix | out-file "$($workdir)\hotfixes.txt"
             Get-process | out-file "$($workdir)\process-summary.txt"
             Get-process | format-list * | out-file "$($workdir)\processes.txt"
-            get-process | Where-Object ProcessName -imatch "fabric" | out-file "$($workdir)\processes-fabric.txt"
+            get-process | Where-Object ProcessName -imatch "fabric|FileStoreService|imagebuilder|docker" | out-file "$($workdir)\processes-fabric.txt"
             Get-service | out-file "$($workdir)\service-summary.txt"
             Get-Service | format-list * | out-file "$($workdir)\services.txt"
         } -arguments @($workdir)
@@ -751,15 +758,15 @@ function enumerate-serviceFabric()
 
         # todo determine if standalone
         add-job -jobName "sfrp check" -scriptBlock {
-        param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2])
-        $sfrpResponse = Invoke-WebRequest $sfrpUrl  -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
-        write-host "sfrp response: $($sfrpresponse)"
-        out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
+            param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2])
+            $sfrpResponse = Invoke-WebRequest $sfrpUrl  -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+            write-host "sfrp response: $($sfrpresponse)"
+            out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
         } -arguments @($workdir, $sfrpUrl, $ucert)
 
         add-job -jobName "sfrp repair check" -scriptBlock {
-        param($workdir = $args[0])
-        Get-ServiceFabricRepairTask -State Active Azure | out-file "$($workdir)\sfrp-repair.txt"
+            param($workdir = $args[0])
+            Get-ServiceFabricRepairTask -State Active Azure | out-file "$($workdir)\sfrp-repair.txt"
         } -arguments @($workdir)
 
         $httpGwEpt = $xml.ClusterManifest.NodeTypes.FirstChild.Endpoints.HttpGatewayEndpoint
@@ -901,6 +908,10 @@ try
         {
             continue
         }
+        elseif ($param.Value.ParameterType -imatch "switch")
+        {
+            $paramValue = $Null
+        }
 
         # remove empty strings for now
         if ($param.Value.ParameterType -imatch "string" -and !$paramValue)
@@ -920,7 +931,14 @@ try
             #$paramValue = "`'$($arr)`'"
         }
         
-        $global:allparams.Add($param.key, "`"$($paramValue)`"")
+        if($paramValue)
+        {
+            $global:allparams.Add($param.key, "`"$($paramValue)`"")
+        }
+        else
+        {
+            $global:allparams.Add($param.key, $paramValue)
+        }
     }
 
     write-host "arguments:"
@@ -946,13 +964,15 @@ finally
 
     set-location $currentWorkDir
     get-job | remove-job -Force
-    write-host "finished. total minutes: $(((get-date) - $timer).TotalMinutes.tostring("F2"))"
     write-debug "errors during script: $($error | out-string)"
 
-    if(!$legacy)
+    if (!$legacy)
     {
         Stop-Transcript
     }
-
+    
+    Set-Clipboard -Value $global:zipFile
+    write-host "zip path added to clipboard:$($global:zipFile)" -ForegroundColor Cyan
     write-host "upload zip to workspace:$($global:zipFile)" -ForegroundColor Cyan
+    write-host "finished. total minutes: $(((get-date) - $timer).TotalMinutes.tostring("F2"))"
 }
