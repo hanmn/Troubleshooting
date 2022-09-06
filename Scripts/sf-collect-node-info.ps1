@@ -191,17 +191,18 @@ $legacy = ([version]$osInfo.Version).major -lt 10
 $workstation = $osInfo.ProductType -eq 1
 $parentWorkDir = $null
 $jobs = new-object collections.arraylist
-$logFile = $Null
+$logFile = $null
 $global:zipFile = $null
-$trustedHosts = $Null
-$winrmClientInfo = $Null
-$eventScriptFile = $Null
+$trustedHosts = $null
+$winrmClientInfo = $null
+$eventScriptFile = $null
 $sfCollectInfoDir = "sfColInfo-"
 $restTimeoutSec = 15
 $serviceFabricInstallReg = "HKLM:\software\microsoft\service fabric"
 $warnonZoneCrossingReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 $disableWarnOnZoneCrossing = $false
 $firewallsDisabled = $false
+$useBasicParsing = [bool](get-command invoke-webrequest).Parameters.UseBasicParsing
 $global:allparams = @{}
 [string]$scriptUrl = 'https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
 
@@ -469,6 +470,11 @@ function process-machine()
             Invoke-Expression "icacls $($machineKeys) /C /T | out-file -Append $($workdir)\dir-machinekeys.txt"
         } -arguments @($workdir)
 
+        add-job -jobName "check for docker" -scriptBlock {
+            param($workdir = $args[0])
+            get-childitem -Recurse -Path "c:\" -Filter "*.*dmp" | out-file "$($workdir)\docker-info.txt"
+        } -arguments @($workdir)
+
         add-job -jobName "check for dump file c" -scriptBlock {
             param($workdir = $args[0])
             get-childitem -Recurse -Path "c:\" -Filter "*.*dmp" | out-file "$($workdir)\dumplist-c.txt"
@@ -556,9 +562,17 @@ function process-machine()
         } -arguments @($workdir, $networkTestAddress, $ports)
 
         add-job -jobName "check external connection" -scriptBlock {
-            param($workdir = $args[0], $externalUrl = $args[1])
-            [net.httpWebResponse](Invoke-WebRequest $externalUrl ).BaseResponse | out-file "$($workdir)\network-external-test.txt"
-        } -arguments @($workdir, $externalUrl)
+            param($workdir = $args[0], $externalUrl = $args[1], $useBasicParsing = $args[2])
+            if($useBasicParsing)
+            {
+                [net.httpWebResponse](Invoke-WebRequest $externalUrl -UseBasicParsing).BaseResponse | out-file "$($workdir)\network-external-test.txt"
+            }
+            else
+            {
+                [net.httpWebResponse](Invoke-WebRequest $externalUrl).BaseResponse | out-file "$($workdir)\network-external-test.txt"
+            }
+
+        } -arguments @($workdir, $externalUrl, $useBasicParsing)
 
         add-job -jobName "resolve-dnsname" -scriptBlock {
             param($workdir = $args[0], $networkTestAddress = $args[1], $externalUrl = $args[2])
@@ -758,11 +772,19 @@ function enumerate-serviceFabric()
 
         # todo determine if standalone
         add-job -jobName "sfrp check" -scriptBlock {
-            param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2])
-            $sfrpResponse = Invoke-WebRequest $sfrpUrl  -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+            param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2], $useBasicParsing = $args[3])
+            if($useBasicParsing)
+            {
+                $sfrpResponse = Invoke-WebRequest $sfrpUrl -UseBasicParsing -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+            }
+            else
+            {
+                $sfrpResponse = Invoke-WebRequest $sfrpUrl -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+            }
+
             write-host "sfrp response: $($sfrpresponse)"
             out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
-        } -arguments @($workdir, $sfrpUrl, $ucert)
+        } -arguments @($workdir, $sfrpUrl, $ucert, $useBasicParsing)
 
         add-job -jobName "sfrp repair check" -scriptBlock {
             param($workdir = $args[0])
@@ -855,7 +877,7 @@ function read-xml($xmlFile, [switch]$format)
     }
     catch
     {
-        return $Null
+        return $null
     }
 }
 
@@ -865,13 +887,22 @@ function rest-query($cert, $url)
     {
         $result = $null
         write-host "rest query: $($url)" -foregroundcolor cyan
-        $result = Invoke-RestMethod -Method Get -Certificate $cert -Uri $url  | format-list * | Out-String
+
+        if($useBasicParsing)
+        {
+            $result = Invoke-RestMethod -Method Get -Certificate $cert -Uri $url -UseBasicParsing | format-list * | Out-String
+        }
+        else
+        {
+            $result = Invoke-RestMethod -Method Get -Certificate $cert -Uri $url | format-list * | Out-String
+        }
+        
         write-host "rest result: `n$($result)"
         return $result
     }
     catch
     {
-        return $Null
+        return $null
     }
 }
 
@@ -910,7 +941,7 @@ try
         }
         elseif ($param.Value.ParameterType -imatch "switch")
         {
-            $paramValue = $Null
+            $paramValue = $null
         }
 
         # remove empty strings for now
