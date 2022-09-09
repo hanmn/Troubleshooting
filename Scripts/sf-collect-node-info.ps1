@@ -165,7 +165,6 @@ param(
     [string]$externalUrl = "bing.com",
     [dateTime]$startTime = (get-date).AddDays(-7),
     [dateTime]$endTime = (get-date),
-    [switch]$modifyFirewall,
     [int]$netmonMin,
     [string]$networkTestAddress = $env:computername,
     [int]$perfmonMin,
@@ -201,7 +200,6 @@ $restTimeoutSec = 15
 $serviceFabricInstallReg = "HKLM:\software\microsoft\service fabric"
 $warnonZoneCrossingReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 $disableWarnOnZoneCrossing = $false
-$firewallsDisabled = $false
 $useBasicParsing = [bool](get-command invoke-webrequest).Parameters.UseBasicParsing
 $global:allparams = @{}
 [string]$scriptUrl = 'https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
@@ -308,13 +306,6 @@ function main()
         {
             $adminPath = "\\$($machine)\admin$\temp"
 
-            if (!(Test-path $adminPath) -and $modifyFirewall)
-            {
-                write-warning "unable to connect to remote machine $($machine). attempting to disable firewall remotely..."
-                Invoke-Command -ComputerName $machine -ScriptBlock { Set-NetFirewallProfile -Profile Public -Enabled False } 
-                $firewallsDisabled = $true
-            }
-
             if (!(Test-path $adminPath))
             {
                 Write-Warning "unable to connect to $($machine) to start diagnostics. skipping!"
@@ -401,12 +392,6 @@ function main()
             else
             {
                 write-host "warning: unable to find diagnostic files in $($sourcePath)"
-            }
-
-            if ($firewallsDisabled)
-            {
-                write-host "re-enabling firewall on $($machine)"
-                Invoke-Command -ComputerName $machine -ScriptBlock { Set-NetFirewallProfile -Profile Public -Enabled True } 
             }
         }
 
