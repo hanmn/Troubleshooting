@@ -49,13 +49,7 @@ upload to workspace sfgather* dir or zip
     Author     : microsoft service fabric support
     Version    : 180921 tested on 2k12 oobe
     History    : 180904 original
-I would say
-docker images
-The following not as important:
-docker network ls (although we expect it list out the default 3
-docker ps
-docker inspect <containerid>
-get-itemproperty exception on warnonzone
+
 .EXAMPLE
     .\sf-collect-node-info.ps1
     default command to collect event logs, process, service, os information for last 7 days.
@@ -457,7 +451,21 @@ function process-machine()
 
         add-job -jobName "check for docker" -scriptBlock {
             param($workdir = $args[0])
-            get-childitem -Recurse -Path "c:\" -Filter "*.*dmp" | out-file "$($workdir)\docker-info.txt"
+            $error.clear()
+            (docker version)
+            
+            if($error)
+            {
+                $error.Clear()
+                write-host "docker not installed"
+                return
+            }
+            
+            docker version | out-file "$($workdir)\docker-info.txt"
+            docker images | out-file "$($workdir)\docker-info.txt"
+            docker network ls | out-file -Append "$($workdir)\docker-info.txt"
+            docker ps | out-file -Append "$($workdir)\docker-info.txt"
+            #docker inspect <containerid> | out-file -Append "$($workdir)\docker-info.txt"
         } -arguments @($workdir)
 
         add-job -jobName "check for dump file c" -scriptBlock {
