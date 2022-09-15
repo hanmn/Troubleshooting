@@ -47,8 +47,10 @@ upload to workspace sfgather* dir or zip
 .NOTES
     File Name  : sf-collect-node-info.ps1
     Author     : microsoft service fabric support
-    Version    : 180921 tested on 2k12 oobe
-    History    : 180904 original
+    Version    : 181029 fix -UseBasicParsing, add docker enumeration, tested on server core 1803
+    History    :
+                180921 tested on 2k12 oobe
+                180904 original
 
 .EXAMPLE
     .\sf-collect-node-info.ps1
