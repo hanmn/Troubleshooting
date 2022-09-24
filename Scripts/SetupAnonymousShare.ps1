@@ -1,5 +1,5 @@
 ﻿#
-# Example configuring a Standalone cluster Diagnostics Share on non-domain joined nodes \\node1\DiagnosticsStore
+# Example configuring a Standalone cluster Diagnostics Share (anonymous share) on non-domain joined nodes \\node1\DiagnosticsStore
 #
 # "diagnosticsStore": 
 # {
@@ -11,9 +11,10 @@
 #
 # Instructions: 
 # 1. Execute this script on node1 to create and configure the share
-# 2. Update cluster configuration (this step is required even if the connection string configured already)
+# 2. Update cluster diagnostics configuration (this step is required even if the connection string configured already)
 #    a. edit ClusterConfig.X509.MultiMachine.json and increment the config version, e.g. "clusterConfigurationVersion": "1.0.1",
-#    b. start a configuration upgrade:  Start-ServiceFabricClusterConfigurationUpgrade -ClusterConfigPath .\ClusterConfig.X509.MultiMachine.json
+#    b. edit ClusterConfig.X509.MultiMachine.json and configure the diagnosticsStore connectionstring property,
+#    c. start a configuration upgrade:  Start-ServiceFabricClusterConfigurationUpgrade -ClusterConfigPath .\ClusterConfig.X509.MultiMachine.json
 #
 
 # enable Guest account
