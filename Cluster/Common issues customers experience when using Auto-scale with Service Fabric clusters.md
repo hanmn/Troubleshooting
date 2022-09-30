@@ -14,11 +14,13 @@
 
     - Missing seed nodes can cause various issues including failed runtime upgrades, failed application upgrades, and failed configuration upgrades. 
 
-    - Deleting more than two (2) seed nodes is not a recoverable scenario, you will need to rebuild the cluster.
+    - Deleting more than half of the configured seed nodes [based on what the Reliability tier requires](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-capacity#the-reliability-characteristics-of-the-cluster) is not a recoverable scenario, you will need to rebuild the cluster.
 
         - [How to Fix one missing seednode](./How%20to%20Fix%20one%20missing%20seednode.md)
 
         - [How to Fix two missing seednode](./How%20to%20Fix%20two%20missing%20seednode.md)
+        
+        - [How to fix missing seednodes using the Automation Script FixMissingSeednode.ps1](./How%20to%20fix%20missing%20seednodes%20with%20Automated%20script.md)
 
 
 ![SFX Seed node identification](../media/Autoscale001.PNG)
@@ -36,6 +38,7 @@
 
         -   It is possible on the Start (**Reallocate**), the VMMS will come up with a new IP address, in which case Service Fabric Resource Provider will no longer recognize the node(s) and the cluster will be down. 
 
+    - Regardless of any durability level, Deallocation operation on VM Scale Set will destroy the cluster
 
 ## **Best Practices**
 
