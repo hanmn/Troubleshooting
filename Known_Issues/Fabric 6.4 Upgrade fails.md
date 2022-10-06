@@ -32,3 +32,10 @@ During the upgrade you may see some warning/error messages in Service Fabric exp
 https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-backuprestoreservice-quickstart-azurecluster
 https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-backuprestoreservice-quickstart-standalonecluster
 
+## Additional information
+
+To preserve uptime, by default, we move replicas to new nodes before removing the old ones.  If during the **upgrade retry** you notice a second replica is getting created where the primary was successfully upgraded but the secondary replica in a different UD is now crashing ("Replica had multiple failures during close on NODE2. The application host has crashed.") you may need to manually drop the secondary replica, which will allow the upgrade to proceed.
+
+```PowerShell
+Remove-ServiceFabricReplica -NodeName NODE2 -PartitionId 00000000-0000-0000-0000-000000007000 -ForceRemove -ReplicaOrInstanceId 131882584176175732
+```
