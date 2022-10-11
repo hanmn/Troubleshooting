@@ -2,7 +2,7 @@
 
 A known issue with the Data Collection Agent has been idetentified which can potentially degrade Node health in a Service Fabric cluster.  During initialization of the Service Fabric agents, DCA may fail to create the agents for some legitimate reasons.  If this happens DCA raises the health warning that you see and goes on with rest of the processing. The Service Fabric team is working to improve this experience in a future version, however currently the only workaround is to restart the Fabric services on these nodes manually. 
 
-    ![FabricDCA_001](../media/FabricDCA001.png)
+![FabricDCA_001](../media/FabricDCA001.png)
 
 ## Symptoms
 - Unhealthy Nodes
