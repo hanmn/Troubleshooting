@@ -1,9 +1,10 @@
 # FabricDCA.exe Process High Memory and CPU usage
 
 ## Background information:
-	With the introduction of containers in Service fabric a feature was added to collect logs from these containers through FabricDCA (Data Collection Agent).
 
-	The initial feature was found to be leaking handles and other objects related to the containers on the DCA side.   This has been fixed with release of 6.3 CU2 (6.3.187.9494). 
+With the introduction of containers in Service fabric a feature was added to collect logs from these containers through FabricDCA (Data Collection Agent).
+
+The initial feature was found to be leaking handles and other objects related to the containers on the DCA side.   This has been fixed with release of 6.3 CU2 (6.3.187.9494). 
 
 ## Symptoms
 - Nodes performance degration due to high memory and CPU usage
