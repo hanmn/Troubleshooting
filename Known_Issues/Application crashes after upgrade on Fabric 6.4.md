@@ -1,4 +1,4 @@
-# Application Upgrade fails for application with dependency  on wastorage.dll
+# Application with dependency  on wastorage.dll crashes on Service Fabric runtime 6.4.617.9590
 
 An known issue on clusters with 6.4.617.9590 runtime has been identified which causes applications with a dependency on wastorage.dll to crash.
 
