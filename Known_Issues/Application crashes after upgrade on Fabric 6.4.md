@@ -13,7 +13,7 @@ An known issue on clusters with 6.4.617.9590 runtime has been identified which c
 
 ## Root Cause Analysis
 - Service Fabric Clusters running on the 6.4.617.9590 runtime have wastorage.dll added in our runtime dependencies, therefore we will automatically strip wastorage.dll from applications packages being deployed.
-- If the version of wastorage.dll in the customers application package doesn’t match the Service Fabric runtime's version (**#VERSION_TO_BE_ADDED_HERE**) the customers application will crash continuously.
+- If the version of wastorage.dll in the customers application package doesn’t match the Service Fabric runtime's version of wastorage.dll(3.2.2) the customers application will crash continuously.
 - Analysis of the exception (crash dump analysis) will show it is failing to load wastorage.dll.
 
 ## Possible Mitigations
