@@ -1,6 +1,6 @@
 # Application with dependency  on wastorage.dll crashes on Service Fabric runtime 6.4.617.9590
 
-An known issue on clusters with 6.4.617.9590 runtime has been identified which causes applications with a dependency on wastorage.dll to crash.
+An known issue on Windows clusters with 6.4.617.9590 runtime has been identified which causes applications with a dependency on wastorage.dll to crash.
 
 ## Symptoms
 - Application crash due to dependency load failure for wastorage.dll.
@@ -22,3 +22,5 @@ An known issue on clusters with 6.4.617.9590 runtime has been identified which c
 
 ## Additional information
 The Service Fabric team is planning to fix this in 6.4 CU1
+
+**Update:** A fix is being rolled out in 6.4.621.9590: https://blogs.msdn.microsoft.com/azureservicefabric/2018/12/12/azure-service-fabric-6-4-refresh-for-windows-clusters/
