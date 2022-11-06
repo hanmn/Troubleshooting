@@ -4,8 +4,9 @@ An issue has been identified which is known to cause the Fabric 6.4 runtime upgr
 
 ## Symptoms
 During the upgrade you may see some warning/error messages in Service Fabric explorer similar to the following:
-
-- Assert or Coding error with message 00000000-0000-0000-0000-000000007000@131873117199500233@fabric:/StateManager: Below type used in Reliable Collection urn:RetentionStore/dataStore could not be loaded. This commonly indicates that the user application is not backwards/forwards compatible. Common compatibility bugs that lead to this error are adding a new type or changing an assembly name without two phase upgrade, or removing a type. If this was caused by user's backwards/forwards compatibility bug, one way to mitigate the issue is to force the upgrade through without safety checks.
+```code
+Assert or Coding error with message 00000000-0000-0000-0000-000000007000@131873117199500233@fabric:/StateManager: Below type used in Reliable Collection urn:RetentionStore/dataStore could not be loaded. This commonly indicates that the user application is not backwards/forwards compatible. Common compatibility bugs that lead to this error are adding a new type or changing an assembly name without two phase upgrade, or removing a type. If this was caused by user's backwards/forwards compatibility bug, one way to mitigate the issue is to force the upgrade through without safety checks.
+```
 
 ## Mitigation
 
