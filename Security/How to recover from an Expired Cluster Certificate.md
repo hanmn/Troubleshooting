@@ -1,14 +1,20 @@
 # [Article Purpose]
-This article will demonstrate how to recover from an Expired **self-signed** cluster certificate on clusters running 6.5 CU3 or later (version 6.5.xxx or higher)
+This article will demonstrate how to enable the Service Fabric cluster security setting **AcceptExpiredPinnedClusterCertificate**  to recover from an Expired **self-signed** cluster certificate, on clusters running 6.5 CU3 or later (version 6.5.xxx or higher)
 
 ## [Security Statement]
 *replace with verbiage from SF team*
 
-    The main concern with accepting expired certificates applies to CA-issued ones: certs would be listed on only one CRL update following expiration, after which their record is purged. A compromised (or otherwise revoked certificate) would have its revocation status lost as soon as it is purged from its corresponding CRL after expiration, and so accepting it indefinitely opens the risk of trusting a compromised cert. 
-
-    Self-signed certs, being just key containers, do not present this risk. Therefore AzSec is ok with accepting expired self-signed certificates declared by thumbprint for client authentication. 
-
-    This article only applys to cluster configured with x509 **self signed certs**, using thumbprints, and will have no effect for clusters using clusters configured us CA Signed certs (x509 auth) or for cluster configured to use Common Name using CA signed certificates.
+    The main concern with accepting expired certificates applies to CA-issued ones: certs would be listed on
+    only one CRL update following expiration, after which their record is purged. A compromised (or otherwise 
+    revoked certificate) would have its revocation status lost as soon as it is purged from its corresponding 
+    CRL after expiration, and so accepting it indefinitely opens the risk of trusting a compromised cert. 
+    
+    Self-signed certs, being just key containers, do not present this risk. Therefore AzSec is ok with 
+    accepting expired self-signed certificates declared by thumbprint for client authentication. 
+    
+    This article only applys to cluster configured with x509 **self signed certs**, using thumbprints, and 
+    will have no effect for clusters using clusters configured us CA Signed certs (x509 auth) or for cluster 
+    configured to use Common Name using CA signed certificates.
 
 *replace with verbiage from SF team*
 
