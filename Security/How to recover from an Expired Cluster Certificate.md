@@ -19,8 +19,10 @@ This article will demonstrate how to enable the Service Fabric cluster security 
 *replace with verbiage from SF team*
 
 ## [Symptoms] 
-   * Cluster will show 'Upgrade Service not reachable' warning message
-   * Unable to see the SF Nodes in the Portal or SFX
+   * Cluster status will show 'Upgrade Service not reachable' in Azure Portal
+   * The Nodes and Application will no longer be visible in the SF Nodes in the Portal
+   * Service Fabric Explorer may be unavailble
+   * No longer able to connect to cluster using cmdlet such as Connect-ServiceFabricCluster
    * 403 Web Exceptions in  
    '%SystemRoot%\System32\Winevt\Logs\Application.evtx'  event log from 'ServiceFabricNodeBootrapperAgent' resource
     * Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource
