@@ -27,13 +27,7 @@ This article will demonstrate how to enable the Service Fabric cluster security 
    '%SystemRoot%\System32\Winevt\Logs\Application.evtx'  event log from 'ServiceFabricNodeBootrapperAgent' resource
     * Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource
 
-## [Verify Certificate Expired Status on Node]
-   * RDP to any node
-        * Open the Certificate Mgr for 'Local Computer' and check below details
-        * Make sure certificate is ACL'd to network service
-        * Verify the Certificate Expiry [Not After], if it is expired, follow below steps
-
-## [Fix Expired Cert steps]
+## [Expired Cert, steps to enable setting AcceptExpiredPinnedClusterCertificate and recover cluster]
 
 1. RDP into node 0 for the primary NodeType of the cluster
     
