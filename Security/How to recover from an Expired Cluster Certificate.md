@@ -1,5 +1,5 @@
 # [Article Purpose]
-This article will demonstrate how to enable the Service Fabric cluster security setting **AcceptExpiredPinnedClusterCertificate**  to recover a cluster which has collapsed due to an Expired **self-signed** cluster certificate.
+This article will demonstrate how to enable the Service Fabric cluster security setting **AcceptExpiredPinnedClusterCertificate** to recover a cluster which has collapsed due to an Expired **self-signed** cluster certificate.
 
 ## [Applys to]
 Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher), secured with **self-signed** certificates declared by thumbprint.
@@ -27,7 +27,12 @@ This feature requires explicit opt-in, and is only applicable on clusters secure
 ## [Security Statement]
 
 ```statement
-The mitigation you are attempting would enable the use of an expired certificate to secure the cluster. This mitigation is only effective in clusters secured with self-signed certificates declared by thumbprint. Allowing expired certificates in this scenario does not constitute a security risk, because the security of the cluster in this case is provided by the key associated with the certificate, and not by a trusted issuer or another authority. However, Service Fabric cannot ignore the expiration of the certificate without explicit user consent. 
+The mitigation you are attempting would enable the use of an expired certificate to secure the cluster. This
+mitigation is only effective in clusters secured with self-signed certificates declared by thumbprint.
+Allowing expired certificates in this scenario does not constitute a security risk, because the security of
+the cluster in this case is provided by the key associated with the certificate, and not by a trusted
+issuer or another authority. However, Service Fabric cannot ignore the expiration of the certificate
+without explicit user consent. 
 ```
 
 ## [Symptoms] 
