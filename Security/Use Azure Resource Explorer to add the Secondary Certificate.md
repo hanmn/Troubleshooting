@@ -14,7 +14,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
     >c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
-### Azure Resource Explorer 
+### Azure Resource Explorer virtual machine scaleset
 2. In <https://resources.azure.com>, navigate to the virtual machine scaleset configured for the cluster:  
 ```
     subscriptions
