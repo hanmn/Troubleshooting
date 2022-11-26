@@ -10,9 +10,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 #### 1. Create a new certificate and Upload to Key Vault. There are multiple methods to do this depending on intent and configuration, some are listed below. Choose one of the below that meets configuration and security requirements:
 
-    >a. Create with any reputable CA  
-    >b. Generate Selfsigned certs using Azure Portal -> Key Vault.  
-    >c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
+  > a. Create with any reputable CA  
+  > b. Generate Selfsigned certs using Azure Portal -> Key Vault.  
+  > c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
 ### Azure Resource Explorer virtual machine scaleset
 
@@ -232,7 +232,7 @@ Succeeded
 
 #### 15. Click PUT and Wait for the update to complete. This step typically **does** take a while up to an hour.
 
-    ![Click PUT](../media/resourcemgr7.png)
+![Click PUT](../media/resourcemgr7.png)
 
 #### 16. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
 
