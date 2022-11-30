@@ -131,19 +131,15 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![Click PUT](../media/resourcemgr7.png)
 
-#### 7. In Azure Portal, the virtual machine scaleset resource 'status' will change to 'Updating'.  **Wait** until 'status' changes to 'Succeeded before proceeding to next steps of updating the Service Fabric cluster settings (step 10.). This step typically **does not** take more than a couple of minutes:
+#### 7. **Wait** for the virtual machine scaleset Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scaleset.
 
-![WordCount
-Virtual machine scale set
-p Search (Ctr/+/)
-Overview
-Status
-Succeeded
-](../media/resourcemgr4.png)
+![GET](../media/resourcemgr2.png)
+![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
 #### 8. **Perform steps 2 - 8 for each nodetype (virtual machine scale set)**
 
 ### Azure Resource Explorer service fabric cluster
+
 #### 9. In <https://resources.azure.com>, navigate to the service fabric cluster:
 ```
     subscriptions
@@ -194,13 +190,13 @@ Succeeded
 
 ![Click PUT](../media/resourcemgr7.png)
 
-#### 13. **Wait** for the SF cluster Updating the secondary certificate to complete
+#### 13. **Wait** for the SF cluster Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery cluster.
 
-![Azure Portal •  Service Fabric cluster  • status  • Updating user certificate](../media/resourcemgr6.png)
+![resources.azure.com cluster provisioningstate succeeded](../media/resourcemgr6.png)
 
 * FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
 
-#### 14. Swap the values of "certificate" and "certificateSecondary" properties in the VMMS resource
+#### 14. Swap the values of "certificate" and "certificateSecondary" properties in the Virtual Machine ScaleSet resource
 
 ```json
 "virtualMachineProfile": {
@@ -230,11 +226,15 @@ Succeeded
             },
 ```
 
-#### 15. Click PUT and Wait for the update to complete. This step typically **does** take a while up to an hour.
+#### 15. Click PUT and Wait for the update to complete. 
 
 ![Click PUT](../media/resourcemgr7.png)
 
-#### 16. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
+#### 16. **Wait** for the scaleset Updating the primary and secondary certificate swap to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scaleset.
+
+![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
+
+#### 17. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
 
 ```json
   "type": "Microsoft.ServiceFabric/clusters",
@@ -253,13 +253,17 @@ Succeeded
     },
 ```
 
-#### 17. Click PUT and Wait for the update to complete. This step typically **does** take a while up to an hour.
+#### 18. Click PUT and Wait for the update to complete. This step typically **does** take a while up to an hour.
 
 ![Click PUT](../media/resourcemgr7.png)
 
+#### 19. **Wait** for the SF cluster Updating the primary and secondary certificate swap to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery cluster.
+
+![resources.azure.com cluster provisioningstate succeeded](../media/resourcemgr6.png)
+
 ### Azure Portal
 
-#### 18. When the cluster updates are complete, verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
+#### 20. When the cluster updates are complete, verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
 
 ![Manifest](../media/resourcemgr8.png)
 
@@ -267,4 +271,4 @@ Succeeded
 
     ![Portal -> Cluster -> Security](../media/resourcemgr9.png)
 
-* Feel free to delete the old certificate at this point (now in the Secondary)
+* Old certificate now configured as the Secondary can be deleted.
