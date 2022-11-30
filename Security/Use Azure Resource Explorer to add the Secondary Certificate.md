@@ -141,6 +141,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 ### Azure Resource Explorer service fabric cluster
 
 #### 9. In <https://resources.azure.com>, navigate to the service fabric cluster:
+
 ```
     subscriptions
     └───%subscription name%
@@ -151,6 +152,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                         └───clusters
                             └───%cluster name%
 ```
+
 ![Azure Resource Explorer](../media/resourcemgr10.png)
 
 #### 10. Click "Read/Write" permission and "Edit" to edit configuration.
@@ -198,6 +200,17 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 #### 14. Swap the values of "certificate" and "certificateSecondary" properties in the Virtual Machine ScaleSet resource
 
+```
+    subscriptions
+    └───%subscription name%
+        └───resourceGroups
+            └───%resource group name%
+                └───providers
+                    └───Microsoft.Compute
+                        └───virtualMachineScaleSets
+                            └───%virtual machine scaleset name%
+```
+
 ```json
 "virtualMachineProfile": {
       "osProfile": {
@@ -235,6 +248,17 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
 #### 17. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
+
+```
+    subscriptions
+    └───%subscription name%
+        └───resourceGroups
+            └───%resource group name%
+                └───providers
+                    └───Microsoft.ServiceFabric
+                        └───clusters
+                            └───%cluster name%
+```
 
 ```json
   "type": "Microsoft.ServiceFabric/clusters",
