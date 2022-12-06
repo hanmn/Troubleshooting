@@ -299,8 +299,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ## Troubleshooting
 
-### resources.azure.com
-#### Exclamation or warning errors while performing "PUT" or "PATCH". To troubleshoot errors while modifying a resource configuration, for example, an exclamation or warning icon is temporarily displayed, scroll to the bottom of the page and review the error:
+### Exclamation / warning error in resources.azure.com while performing "PUT" or "PATCH". 
+
+#### To troubleshoot errors while modifying a resource configuration, for example, an exclamation or warning icon is temporarily displayed, scroll to the bottom of the page and review the error:
 
 ![resources.azure.com error icon](../media/resourcemgr12.png)
 ![resources.azure.com error icon](../media/resourcemgr13.png)
