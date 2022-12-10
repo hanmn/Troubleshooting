@@ -295,7 +295,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![Portal -> Cluster -> Security](../media/resourcemgr9.png)
 
-* Old certificate now configured as the Secondary can be deleted.
+### NOTE: Best practice is to use same sequence of steps above to remove secondary certificae configuration when certificate is expired or no longer needed. 
 
 ## Troubleshooting
 
