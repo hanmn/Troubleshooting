@@ -136,7 +136,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 ![GET](../media/resourcemgr2.png)
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
-#### 8. **Perform steps 2 - 8 for each nodetype (virtual machine scale set)**
+#### 8. **Perform steps 2 - 7 for each nodetype (virtual machine scale set)**
 
 ### Azure Resource Explorer service fabric cluster
 
@@ -160,7 +160,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 ![Read/Write](../media/resourcemgr3.png)  
 ![Edit](../media/resourcemgr2.png)
 
-#### 11. Modify **"properties / certificate / thumbprintSecondary"**, to add (deploy) the new certificate configuration to each of the nodes in the cluster. Note: in the 'Edit' view, if **"thumbprintSecondary"** is not configued, a template placeholder will be the editor with value of "(String)". Replace "(String)" with thumbprint value.
+#### 11. Modify **"properties / certificate / thumbprintSecondary"**, to add (deploy) the new certificate configuration to each of the nodes in the cluster.  
+
+#### Note: in the 'Edit' view, if **"thumbprintSecondary"** is not configued, a template placeholder will be the editor with value of "(String)". Replace "(String)" with thumbprint value.
 
 ```json
 {
