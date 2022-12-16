@@ -192,13 +192,13 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 #### 12. At top of page, click PUT. This step typically **does** take a while up to an hour.
 
+#### FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
+
 ![Click PUT](../media/resourcemgr7.png)
 
 #### 13. **Wait** for the SF cluster Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery cluster.
 
 ![resources.azure.com cluster provisioningstate succeeded](../media/resourcemgr6.png)
-
-* FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
 
 #### 14. In <https://resources.azure.com>, navigate to the virtual machine scaleset configured for the cluster:
 
@@ -251,7 +251,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
-#### 18. In <https://resources.azure.com>, navigate to the service fabric cluster:
+#### 18. Perform steps 14 - 17 for each nodetype (virtual machine scale set)
+
+#### 19. In <https://resources.azure.com>, navigate to the service fabric cluster:
 
 ```
     subscriptions
@@ -264,7 +266,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                             └───%cluster name%
 ```
 
-#### 19. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
+#### 20. Swap the "certificate" values in "thumbprint" and "thumbprintSecondary" for the ServiceFabric Cluster resource
 
 ```json
   "type": "Microsoft.ServiceFabric/clusters",
@@ -283,17 +285,17 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
     },
 ```
 
-#### 20. Click PUT and Wait for the update to complete. This step typically **does** take a while up to an hour.
+#### 21. Click PUT and Wait for the update to complete. This step typically **does** take a while up to an hour.
 
 ![Click PUT](../media/resourcemgr7.png)
 
-#### 21. **Wait** for the SF cluster Updating the primary and secondary certificate swap to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery cluster.
+#### 22. **Wait** for the SF cluster Updating the primary and secondary certificate swap to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery cluster.
 
 ![resources.azure.com cluster provisioningstate succeeded](../media/resourcemgr6.png)
 
 ### Azure Portal
 
-#### 22. When the cluster updates are complete, verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
+#### 23. When the cluster updates are complete, verify the certificate thumbprints have swapped by checking from Service Fabric Explorer -> Cluster -> Manifest
 
 ![Manifest](../media/resourcemgr8.png)
 
