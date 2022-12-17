@@ -200,6 +200,8 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![resources.azure.com cluster provisioningstate succeeded](../media/resourcemgr6.png)
 
+### Azure Resource Explorer virtual machine scaleset
+
 #### 14. In <https://resources.azure.com>, navigate to the virtual machine scaleset configured for the cluster:
 
 ```
@@ -252,6 +254,8 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
 #### 18. Perform steps 14 - 17 for each nodetype (virtual machine scale set)
+
+### Azure Resource Explorer service fabric cluster
 
 #### 19. In <https://resources.azure.com>, navigate to the service fabric cluster:
 
