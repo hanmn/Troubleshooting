@@ -14,9 +14,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
   > b. Generate Selfsigned certs using Azure Portal -> Key Vault.  
   > c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
-### Azure Resource Explorer virtual machine scaleset
+### Azure Resource Explorer virtual machine scale set
 
-#### 2. In <https://resources.azure.com>, navigate to the virtual machine scaleset configured for the cluster:  
+#### 2. In <https://resources.azure.com>, navigate to the virtual machine scale set configured for the cluster:  
 
 ```
     subscriptions
@@ -26,7 +26,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                 └───providers
                     └───Microsoft.Compute
                         └───virtualMachineScaleSets
-                            └───%virtual machine scaleset name%
+                            └───%virtual machine scale set name%
 ```
 
 ![Azure Resource Explorer](../media/resourcemgr1.png)
@@ -131,7 +131,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![Click PUT](../media/resourcemgr7.png)
 
-#### 7. **Wait** for the virtual machine scaleset Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scaleset.
+#### 7. **Wait** for the virtual machine scale set Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scale set.
 
 ![GET](../media/resourcemgr2.png)
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
@@ -200,9 +200,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![resources.azure.com cluster provisioningstate succeeded](../media/resourcemgr6.png)
 
-### Azure Resource Explorer virtual machine scaleset
+### Azure Resource Explorer virtual machine scale set
 
-#### 14. In <https://resources.azure.com>, navigate to the virtual machine scaleset configured for the cluster:
+#### 14. In <https://resources.azure.com>, navigate to the virtual machine scale set configured for the cluster:
 
 ```
     subscriptions
@@ -212,10 +212,10 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                 └───providers
                     └───Microsoft.Compute
                         └───virtualMachineScaleSets
-                            └───%virtual machine scaleset name%
+                            └───%virtual machine scale set name%
 ```
 
-#### 15. Swap the values of "certificate" and "certificateSecondary" properties in the Virtual Machine ScaleSet resource
+#### 15. Swap the values of "certificate" and "certificateSecondary" properties in the Virtual Machine scale set resource
 
 ```json
 "virtualMachineProfile": {
@@ -249,7 +249,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![Click PUT](../media/resourcemgr7.png)
 
-#### 17. **Wait** for the scaleset Updating the primary and secondary certificate swap to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scaleset.
+#### 17. **Wait** for the scale set Updating the primary and secondary certificate swap to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scale set.
 
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
