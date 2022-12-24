@@ -11,12 +11,12 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 #### 1. Create a new certificate and Upload to Key Vault. There are multiple methods to do this depending on intent and configuration, some are listed below. Choose one of the below that meets configuration and security requirements:
 
   > a. Create with any reputable CA  
-  > b. Generate Selfsigned certs using Azure Portal -> Key Vault.  
-  > c. Create and Upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
+  > b. Generate self-signed certs using Azure Portal -> Key Vault.  
+  > c. Create and upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
 ### Azure Resource Explorer virtual machine scale set
 
-#### 2. In <https://resources.azure.com>, navigate to the virtual machine scale set configured for the cluster:  
+#### 2. In <https://resources.azure.com>, navigate to the virtual machine scale set configured for the cluster:
 
 ```
     subscriptions
@@ -160,9 +160,9 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 ![Read/Write](../media/resourcemgr3.png)  
 ![Edit](../media/resourcemgr2.png)
 
-#### 11. Modify **"properties / certificate / thumbprintSecondary"**, to add (deploy) the new certificate configuration to each of the nodes in the cluster.  
+#### 11. Modify **"properties / certificate / thumbprintSecondary"**, to add (deploy) the new certificate configuration to each of the nodes in the cluster.
 
-#### Note: in the 'Edit' view, if **"thumbprintSecondary"** is not configued, a template placeholder will be the editor with value of "(String)". Replace "(String)" with thumbprint value.
+#### Note: in the 'Edit' view, if **"thumbprintSecondary"** is not configured, a template placeholder will be the editor with value of "(String)". Replace "(String)" with thumbprint value.
 
 ```json
 {
@@ -233,7 +233,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                         "x509StoreName": "My"
                     },
                     "certificateSecondary": {
-                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",                        
+                        "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
                         "x509StoreName": "My"
                     },
                 },
@@ -307,11 +307,11 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 ![Portal -> Cluster -> Security](../media/resourcemgr9.png)
 
-### NOTE: Best practice is to use same sequence of steps above to remove secondary certificae configuration when certificate is expired or no longer needed. 
+### NOTE: Best practice is to use same sequence of steps above to remove secondary certificate configuration when certificate is expired or no longer needed.
 
 ## Troubleshooting
 
-### Exclamation / warning error in resources.azure.com while performing "PUT" or "PATCH". 
+### Exclamation / warning error in resources.azure.com while performing "PUT" or "PATCH".
 
 #### To troubleshoot errors while modifying a resource configuration, for example, an exclamation or warning icon is temporarily displayed, scroll to the bottom of the page and review the error:
 
