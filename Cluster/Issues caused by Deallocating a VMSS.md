@@ -15,3 +15,7 @@ Two issues with the stop (Deallocate)
 
 - It is possible on the Start (Reallocate), the VMMS can come up with a new IP address, in which case Service Fabric Resource Provider will no longer recognize the node(s) and the cluster will be down.
 
+## **Other FAQ**
+Q. Will upgrading the durability of the cluster make Dealloation safer? (https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-capacity#the-durability-characteristics-of-the-cluster)
+
+A. **No**, Regardless of any durability level, Deallocation operation on VM Scale Set will destroy the cluster

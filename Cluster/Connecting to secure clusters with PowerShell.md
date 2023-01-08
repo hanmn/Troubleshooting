@@ -88,3 +88,12 @@ Test-NetConnection -ComputerName "contosocluster.westus2.cloudapp.azure.com" -Po
     NetRoute (NextHop) : 65.53.64.1
     TcpTestSucceeded : True
 ```
+
+## Connecting to Secure cluster using Service Fabric CLI (sfctl)
+    Reference: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cli#select-a-cluster
+
+    sfctl cluster select --endpoint https://testsecurecluster.com:19080 --pem ./client.pem --no-verify
+
+    The Service Fabric CLI supports client-side certificates as PEM (.pem extension) files. If you use PFX files from Windows, you must convert those certificates to PEM format. To convert a PFX file to a PEM file, use the following command:+ 
+
+    openssl pkcs12 -in certificate.pfx -out client.pem -nodes

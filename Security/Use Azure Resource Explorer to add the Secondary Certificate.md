@@ -1,4 +1,4 @@
-## Use Azure Resource Explorer <https://resources.azure.com> to add the Secondary Certificate
+## Use [https://resources.azure.com](https://resources.azure.com) to add and swap the Secondary Certificate
 
 Steps to add a secondary certificate to an existing Service Fabric cluster are located in [Add or remove certificates for a Service Fabric cluster in Azure](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-security-update-certs-azure#add-a-secondary-certificate-and-swap-it-to-be-the-primary-using-resource-manager-powershell). Adding a secondary cluster certificate cannot currently be performed in the Azure portal. You have to use Azure powershell for that.
 
@@ -235,7 +235,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                     "certificateSecondary": {
                         "thumbprint": "16A2561C8C691B9C683DB1CA06842E7FA85F6726",
                         "x509StoreName": "My"
-                    },
+                    }
                 },
                 "publisher": "Microsoft.Azure.ServiceFabric",
                 "type": "ServiceFabricNode",

@@ -8,6 +8,7 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
 - Operating System information
     - Drive configuration
     - Directory list of 'MachineKeys' folder
+    - Docker information
     - Process exceptions / dumps list
     - Installed Applications
     - Installed Windows Features
@@ -415,6 +416,7 @@ C:\USERS\CLOUDA~1\APPDATA\LOCAL\TEMP\2\SFCOLINFO-NT0000000
 |   dir-fabricdataroot.txt
 |   dir-fabricroot.txt
 |   dir-machinekeys.txt
+|   docker-info.txt
 |   dotnet.reg.txt
 |   drivers.txt
 |   drives.txt
