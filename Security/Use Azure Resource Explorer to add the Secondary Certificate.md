@@ -117,7 +117,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
                 "certificateSecondary": {
                   "thumbprint": "8934E0494979684F2627EE382B5AD84A8FAD6823",
                   "x509StoreName": "My"
-                },
+                }
             },
             "publisher": "Microsoft.Azure.ServiceFabric",
             "type": "ServiceFabricNode",
