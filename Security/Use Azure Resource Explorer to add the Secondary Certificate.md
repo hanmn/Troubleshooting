@@ -192,9 +192,10 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 
 #### 12. At top of page, click PUT. This step typically **does** take a while up to an hour.
 
-#### FAQ: [Why do cluster upgrades take so long](./Why%20do%20cluster%20upgrades%20take%20so%20long.md)
+* FAQ: [Why do cluster upgrades take so long](../Cluster/Why%20do%20cluster%20upgrades%20take%20so%20long.md)
 
 ![Click PUT](../media/resourcemgr7.png)
+
 
 #### 13. **Wait** for the SF cluster Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery cluster.
 
