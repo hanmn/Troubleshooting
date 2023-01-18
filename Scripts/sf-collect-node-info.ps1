@@ -997,7 +997,7 @@ finally
         Stop-Transcript
     }
     
-    Set-Clipboard -Value $global:zipFile
+    Set-Clipboard -Path $global:zipFile
     write-host "zip path added to clipboard:$($global:zipFile)" -ForegroundColor Cyan
     write-host "upload zip to workspace:$($global:zipFile)" -ForegroundColor Cyan
     write-host "finished. total minutes: $(((get-date) - $timer).TotalMinutes.tostring("F2"))"
