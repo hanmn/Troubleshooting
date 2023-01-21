@@ -64,7 +64,9 @@ To work-around this you can do either of the following:
     Name: eastjapan.servicefabric.azure.com
     Address: 104.41.187.29 
 
-## **Common related errors**
+## **Common related errors/symptoms**
+
+* New clusters with an over restrictive NSG ruleset will cause clusters to be stuck in 'WaitingForNodes' status.  
 
 If the Load Balancer (168.63.129.16) rule or the outbound SFRP endpoint rule is missing it can cause errors with the **fabric:/System/UpgradeService**
 
