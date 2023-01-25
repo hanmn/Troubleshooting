@@ -49,8 +49,8 @@ upload to workspace sfgather* dir or zip
     Author     : microsoft service fabric support
     Version    : 181029 fix -UseBasicParsing, add docker enumeration, tested on server core 1803
     History    :
-                180921 tested on 2k12 oobe
-                180904 original
+                190209 continue on event-log-manager.ps1 not available
+                181031 fix path for clipboard
 
 .EXAMPLE
     .\sf-collect-node-info.ps1
@@ -279,7 +279,17 @@ function main()
     # stage event-log-manager script
     if (!$noEventLogs -and !(test-path $eventScriptFile))
     {
-        (new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1", $eventScriptFile)
+        try 
+        {
+            (new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1", $eventScriptFile)
+        }
+        catch 
+        {
+            write-warning ($error | Out-String)
+            write-warning "unable to download $eventScriptFile. event logs will not be copied!"
+            $error.Clear()
+            $noEventLogs = $true            
+        }
     }
 
     if ($remoteMachines)
@@ -997,8 +1007,12 @@ finally
         Stop-Transcript
     }
     
-    Set-Clipboard -Path $global:zipFile
-    write-host "zip path added to clipboard:$($global:zipFile)" -ForegroundColor Cyan
-    write-host "upload zip to workspace:$($global:zipFile)" -ForegroundColor Cyan
+    if($global:zipFile)
+    {
+        Set-Clipboard -Path $global:zipFile
+        write-host "zip path added to clipboard:$($global:zipFile)" -ForegroundColor Cyan
+        write-host "upload zip to workspace:$($global:zipFile)" -ForegroundColor Cyan
+    }
+
     write-host "finished. total minutes: $(((get-date) - $timer).TotalMinutes.tostring("F2"))"
 }
