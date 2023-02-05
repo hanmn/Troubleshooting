@@ -70,7 +70,7 @@ https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%2
     SubscriptionName      : 
     CurrentStorageAccount :  
 
-6. Run SetupApplications script (download scripts: [MicrosoftAzureServiceFabric-AADHelpers](http://servicefabricsdkstorage.blob.core.windows.net/publicrelease/MicrosoftAzureServiceFabric-AADHelpers.zip) , 
+6. Run SetupApplications script (download scripts: [MicrosoftAzureServiceFabric-AADHelpers](https://github.com/robotechredmond/Azure-PowerShell-Snippets/tree/master/MicrosoftAzureServiceFabric-AADHelpers/AADTool) , 
 
     Right-click the zip file, select Properties, select the "Unblock" check box, and then click Apply.
     PS C:\MicrosoftAzureServiceFabric-AADHelpers> .\SetupApplications.ps1 -TenantId XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -ClusterName aadcluster -WebApplicationReplyUrl "https://mycluster.centralindia.cloudapp.azure.com:19080/Explorer/index.html"
