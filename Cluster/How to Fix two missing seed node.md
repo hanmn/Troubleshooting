@@ -1,4 +1,8 @@
-# How to recover two(2) missing seed nodes from a cluster
+# NOTE: This article is depreciated for clusters running 6.4 CU3 or later.  Recent changes to the Service Fabric Resource Provider will now automatically detect and repair missing seednodes.  Simply make sure there are an adequate number of nodes in your primary node to meet the Reliability requirements, and after 15 minutes the seed node configuration should repair itself.
+
+
+
+##  How to recover two(2) missing seed nodes from a cluster
 
 **Minimum requirement**: We need to have at least 3 seed nodes in a healthy state.
 - We **cannot** recover the seed node one by one as if there is any of seed node missing in a cluster, the upgrade will fail with PreSafetyCheck on EnsureSeedNodeQuorum.
