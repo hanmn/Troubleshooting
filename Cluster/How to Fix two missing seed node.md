@@ -1,4 +1,4 @@
-# NOTE: This article is depreciated for clusters running 6.4 CU3 or later.  Recent changes to the Service Fabric Resource Provider will now automatically detect and repair missing seednodes.  Simply make sure there are an adequate number of nodes in your primary node to meet the Reliability requirements, and after 15 minutes the seed node configuration should repair itself.
+# NOTE: This article is depreciated for clusters running 6.4 CU3 or later.  Recent changes to the Service Fabric Resource Provider will now automatically detect and repair missing seed nodes.  Simply make sure there are an adequate number of nodes in your primary nodetype to meet the Reliability requirements, and after 15 minutes the seed node configuration should repair itself.
 
 
 
