@@ -1,7 +1,3 @@
-How to troubleshoot failed Fabric upgrades
-
-Author blog reference, <https://blogs.msdn.microsoft.com/huizhu/2018/05/04/troubleshoot-service-fabric-cluster-upgrade-issues/>
-
 ## **Troubleshooting overview**
 We refer Service Fabric Cluster Upgrade as the Fabric Upgrade. Fabric Upgrade failures can be caused by multiple reasons, some common issues were listed below:
 
