@@ -5,10 +5,18 @@
 -   **Inbound** 19000 required for PowerShell management endpoint, Visual Studio (used by Client and Azure Portal) - management, status, and health report
 -   **Inbound** 19080 required for Service Fabric Explorer Http management endpoint - management, status, and health report
 -   **Inbound** 3389 (**Windows**) or 22 (**Linux**) required for RDP/SSH access to the nodes
+-   **Inbound** VnetInbound (*) - node to node communication should never be blocked
+    - Specifically 
+		- Federation/Lease Layer: 1025-1027
+		- Federation/Lease Layer: 19001 - 19010 
+		- Application Range: 20000-30000
+		- Ephemeral Range: 49152-65534
 -   **Inbound** 168.63.129.16 - <https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview>
--   **Outbound -** IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s) - see **SFRP endpoint** below
 
-If you have a **DenyAllInternetOutbound** Rule you may see issues with VMMS scale out operations, as new nodes will not be able to access http://download.microsoft.com, which has a highly variable IP address hosted by Akamai Technologies and therefore the node will be unable to download the .cab files required to self-configure and join the cluster.
+-   **Outbound** VnetOutbound (*) - node to node communication should never be blocked
+-   **Outbound** IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s) - see **SFRP endpoint** below
+-   **Outbound** Internet 443/80
+    If you have a **DenyAllInternetOutbound** Rule you may see issues with VMMS scale out operations, as new nodes will not be able to access http://download.microsoft.com, which has a highly variable IP address hosted by Akamai Technologies and therefore the node will be unable to download the .cab files required to self-configure and join the cluster.
 
 ```command
 C:\temp\>ping download.microsoft.com
