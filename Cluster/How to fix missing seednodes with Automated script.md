@@ -1,4 +1,8 @@
-# How to recover missing seed nodes from a cluster using the Automated script FixMissingSeednode.ps1
+# NOTE: This article is depreciated for clusters running 6.4 CU3 or later.  Recent changes to the Service Fabric Resource Provider will now automatically detect and repair missing seed nodes.  Simply make sure there are an adequate number of nodes in your primary nodetype to meet the Reliability requirements, and after 15 minutes the seed node configuration should repair itself.
+
+
+
+##  How to recover missing seed nodes from a cluster using the Automated script FixMissingSeednode.ps1
 
 **Minimum requirement**: We need to have at a [quorum of seed nodes](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-common-questions#what-is-the-minimum-size-of-a-service-fabric-cluster-why-cant-it-be-smaller) in a healthy state.
 - If you are missing **more** than one seednode you must repair/fake all the seed nodes using this procedure (steps 2-3) before kicking off the configuration upgrade (steps 6+). This is because if there are any seed nodes missing in a cluster, the upgrade will fail with PreSafetyCheck on EnsureSeedNodeQuorum.

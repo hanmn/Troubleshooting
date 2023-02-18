@@ -12,14 +12,103 @@
 
 ## [Fix Expired Cert steps] 
 
-1. Create new cert in different KeyVault - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1) 
+1. Create new certificate to replace the expired certificate (choose one)
 
-2. Deploy new cert to all nodes in VMSS - [Add_New_Cert_To_VMSS.ps1](../Scripts/Add_New_Cert_To_VMSS.ps1) 
+  > a. Create with any reputable CA  
+  > b. Generate self-signed certs using Azure Portal -> Key Vault.  
+  > c. Create and upload using PowerShell - [CreateKeyVaultAndCertificateForServiceFabric.ps1](../Scripts/CreateKeyVaultAndCertificateForServiceFabric.ps1)
 
+2. Deploy new cert to all nodes in VMSS, go to <https://resources.azure.com>, navigate to the virtual machine scale set configured for the cluster:
+
+```
+    subscriptions
+    └───%subscription name%
+        └───resourceGroups
+            └───%resource group name%
+                └───providers
+                    └───Microsoft.Compute
+                        └───virtualMachineScaleSets
+                            └───%virtual machine scale set name%
+```
+
+![Azure Resource Explorer](../media/resourcemgr1.png)
+
+3. Click "Read/Write" permission and "Edit" to edit configuration.
+
+![Read/Write](../media/resourcemgr3.png)  
+![Edit](../media/resourcemgr2.png)
+
+4. Modify **"virtualMachineProfile / osProfile / secrets"**, to add (deploy) the new certificate to each of the nodes in the nodetype. Choose one of the options below:
+
+> a. If the new certificate is in the **same Key Vault** as the Primary, add **"certificateUrl"** and **"certificate"** store to existing array of **"vaultCertificates"** as shown below:
+
+```json
+  "virtualMachineProfile": {
+    "osProfile": {
+    …
+      "secrets": [
+        {
+          "sourceVault": {
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault"
+        },
+        "vaultCertificates": [
+          {
+            "certificateUrl": "https://samplevault.vault.azure.net/secrets/clustercert001/d5eeaf025c7d435f81e7420393b442a9",
+            "certificateStore": "My"
+          },
+          {
+            "certificateUrl": "https://samplevault.vault.azure.net/secrets/clustercert002/77ff7688258a41f7b0afdd890eb4aa8c",
+            "certificateStore": "My"
+          }
+        ]
+      }
+    ]
+```
+
+> b. If the new certificate is in a **different Key Vault** as the Primary, add an additional secret to the array of **"secrets"** with **"sourceVault"** and **"vaultCertificates"** configuration as shown below:
+
+```json
+  "virtualMachineProfile": {
+    "osProfile": {
+    …
+    "secrets": [
+      {
+        "sourceVault": {
+          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault"
+        },
+        "vaultCertificates": [
+          {
+            "certificateUrl": "https://samplevault.vault.azure.net/secrets/clustercert001/d5eeaf025c7d435f81e7420393b442a9",
+            "certificateStore": "My"
+          }
+        ]
+      },
+      {
+        "sourceVault": {
+          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/sampleVaultGroup/providers/Microsoft.KeyVault/vaults/samplevault2"
+        },
+        "vaultCertificates": [
+          {
+            "certificateUrl": "https://samplevault2.vault.azure.net/secrets/clustercert002/77ff7688258a41f7b0afdd890eb4aa8c",
+            "certificateStore": "My"
+          }
+        ]
+      }
+    ]
+```
+
+5. At top of page, click PUT.
+
+![Click PUT](../media/resourcemgr7.png)
+
+6. **Wait** for the virtual machine scale set Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scale set.
+
+![GET](../media/resourcemgr2.png)
+![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
 ## For each node { 
 
-3. RDP into **each** VM and make sure the certificate is present and the private key is already ACL'd to 'Network Service'  
+7. RDP into **each** VM and make sure the certificate is present and the private key is already ACL'd to 'Network Service'  
 
     * Run certlm.msc 
 
@@ -31,7 +120,7 @@
 
  
 
-4. Stop both "Azure Service Fabric Node Bootstrap Agent" and "Microsoft Service Fabric Host Service" service (run in this exact order) 
+8. Stop both "Azure Service Fabric Node Bootstrap Agent" and "Microsoft Service Fabric Host Service" service (run in this exact order) 
 
     * net stop ServiceFabricNodeBootstrapAgent 
 
@@ -39,7 +128,7 @@
 
   
 
-5. Locate ClusterManifest.current in the SvcFab folder like "D:\SvcFab\_sys_0\Fabric\ClusterManifest.current.xml" according to actual datapath deployed, and copy to somewhere like D:\Temp\clusterManifest.xml 
+9. Locate ClusterManifest.current in the SvcFab folder like "D:\SvcFab\_sys_0\Fabric\ClusterManifest.current.xml" according to actual datapath deployed, and copy to somewhere like D:\Temp\clusterManifest.xml 
 
     * Modify the D:\Temp\clusterManifest.xml and update with new thumbprint. 
 
@@ -49,14 +138,14 @@
 
   
 
-6. Run following cmdlet to update the Service Fabric cluster, replace the SvcFab path according to the actual path.  Verify the Node version, use latest 
+10. Run following cmdlet to update the Service Fabric cluster, replace the SvcFab path according to the actual path.  Verify the Node version, use latest 
 
     ```PowerShell
     New-ServiceFabricNodeConfiguration -FabricDataRoot "D:\SvcFab" -FabricLogRoot "D:\SvcFab\Log" -ClusterManifestPath "D:\Temp\clusterManifest.xml" -InfrastructureManifestPath "D:\SvcFab\_sys_0\Fabric\Fabric.Data\InfrastructureManifest.xml"  
     ```
  
 
-7. Edit  "D:\SvcFab\\_sys_0\Fabric\Fabric.Package.current.xml" 
+11. Edit  "D:\SvcFab\\_sys_0\Fabric\Fabric.Package.current.xml" 
 
     * Note down the value for "ManifestVersion" attribute on line 2
 
@@ -71,7 +160,7 @@
     * Replace all occurrences of old cert with the new thumbprint 
 
 
-8. Start both services "Microsoft Service Fabric Host Service" and "Azure Service Fabric Node Bootstrap Agent" again **(run in this exact order)**
+12. Start both services "Microsoft Service Fabric Host Service" and "Azure Service Fabric Node Bootstrap Agent" again **(run in this exact order)**
 
     ```PowerShell
     net start FabricHostSvc 
@@ -79,13 +168,13 @@
     ```
  
 
-9. Open Task Manager and wait for a couple minutes to verify that **FabricGateway.exe** is running 
+13. Open Task Manager and wait for a couple minutes to verify that **FabricGateway.exe** is running 
 
 ## } 
 
  
 
-10. After all the nodes have been updated (or at least all the seed nodes), services should be restarting and when ready you see FabricGateway.exe running you can try to reconnect to the cluster over SFX and PowerShell from your development computer.  *(Make sure you have installed the new Cert to `CurrentUser\My`)*
+14. After all the nodes have been updated (or at least all the seed nodes), services should be restarting and when ready you see FabricGateway.exe running you can try to reconnect to the cluster over SFX and PowerShell from your development computer.  *(Make sure you have installed the new Cert to `CurrentUser\My`)*
 
 ```PowerShell
         $ClusterName= "clustername.cluster_region.cloudapp.azure.com:19000"
@@ -105,7 +194,7 @@
 **Note 2**: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not be updated with the new thumbprint.  To correct this Contact Azure support to **create a support ticket from the Azure Portal for this cluster** to request the final update to the SFRP record with the new thumbprint.
 
 
-11. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
+15. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
 
     * Go to https://resources.azure.com --> Resource Group --> providers --> Microsoft.Compute --> vmss 
 

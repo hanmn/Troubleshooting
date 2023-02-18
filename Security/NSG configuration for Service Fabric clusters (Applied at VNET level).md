@@ -1,14 +1,25 @@
 # NSG configuration for Service Fabric clusters (Applied at VNET level)
+For FQDN firewall's its recommended you use Azure Firewall.
+
+[Azure Firewall is a managed, cloud-based network security service that protects your Azure Virtual Network resources. It is a fully stateful firewall as a service with built-in high availability and unrestricted cloud scalability.](https://docs.microsoft.com/azure/firewall/overview); this enables the ability to limit outbound HTTP/S traffic to a specified list of fully qualified domain names (FQDN) including wild cards. This feature does not require SSL termination. Its recommended that you leverage Azure Firewall FQDN tags for Windows Updates, and to enable network traffic to Microsoft Windows Update endpoints can flow through your firewall.
 
 ## **The minimum rules are required for these ports on Service Fabric clusters:**
 -   **Inbound** \[application specific ports such as 80/443 or others as required by your services\]
 -   **Inbound** 19000 required for PowerShell management endpoint, Visual Studio (used by Client and Azure Portal) - management, status, and health report
 -   **Inbound** 19080 required for Service Fabric Explorer Http management endpoint - management, status, and health report
 -   **Inbound** 3389 (**Windows**) or 22 (**Linux**) required for RDP/SSH access to the nodes
+-   **Inbound** VnetInbound (*) - node to node communication should never be blocked
+    - Specifically 
+		- Federation/Lease Layer: 1025-1027
+		- Federation/Lease Layer: 19001 - 19010 
+		- Application Range: 20000-30000
+		- Ephemeral Range: 49152-65534
 -   **Inbound** 168.63.129.16 - <https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview>
--   **Outbound -** IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s) - see **SFRP endpoint** below
 
-If you have a **DenyAllInternetOutbound** Rule you may see issues with VMMS scale out operations, as new nodes will not be able to access http://download.microsoft.com, which has a highly variable IP address hosted by Akamai Technologies and therefore the node will be unable to download the .cab files required to self-configure and join the cluster.
+-   **Outbound** VnetOutbound (*) - node to node communication should never be blocked
+-   **Outbound** IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s) - see **SFRP endpoint** below
+-   **Outbound** Internet 443/80
+    If you have a **DenyAllInternetOutbound** Rule you may see issues with VMMS scale out operations, as new nodes will not be able to access http://download.microsoft.com, which has a highly variable IP address hosted by Akamai Technologies and therefore the node will be unable to download the .cab files required to self-configure and join the cluster; use Azure Firewall for securing outbound communications to download.microsoft.com.
 
 ```command
 C:\temp\>ping download.microsoft.com

@@ -61,6 +61,7 @@ There are multiple ways to run this script to collect information.
 # Instructions
 1. Copy the script files specified above to location where script will be executed. If network connectivity exists on machine where script will be executed, the following command can be used to download:
 ```powershell
+    (new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1","$(get-location)\event-log-manager.ps1");
     (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/S
     cripts/sf-collect-node-info.ps1","$(get-location)\sf-collect-node-info.ps1");
 ```
@@ -83,6 +84,7 @@ SYNOPSIS
     powershell script to collect service fabric node diagnostic data
 
     To download and execute with arguments:
+    (new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1","$(get-location)\event-log-manager.ps1");
     (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1","$(get-location)\sf-collect-node-info.ps1");
     .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
 
