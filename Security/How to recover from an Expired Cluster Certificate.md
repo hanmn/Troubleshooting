@@ -5,11 +5,11 @@ This article will demonstrate how to enable the Service Fabric cluster security 
 Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher), secured with **self-signed** certificates declared by thumbprint.
 
 ## [Background]
-Service Fabric supports auto-rollover of cluster certificates by allowing them to be declared by Subject Common Name. When coupled with certificates issued by a trusted Certification Authority, as well as a mechanism for refreshing the certificates on the nodes, this is the recommended way to secure a Service Fabric cluster, offering security and availability benefits. For clusters secured with certificates declared by thumbprint, rotation requires a cluster upgrade, which may pose additional risks or simply do not complete in time prior to the expiration of the certificate.
+Service Fabric supports auto-rollover of cluster certificates by allowing them to be declared by Subject Common Name. When coupled with certificates issued by a trusted Certification Authority, as well as a mechanism for refreshing the certificates on the nodes, this is the recommended way to secure a Service Fabric cluster, offering security and availability benefits. 
 
-To that end, Service Fabric now supports the possibility of allowing a cluster secured with Self-signed certificates declared by thumbprint, to use its cluster certificate past the certificate expiration (**Valid To**) date. The same feature also allows the recovery of a cluster that collapsed due to expired certificate. 
+For clusters secured with certificates declared by thumbprint, rotation requires a cluster upgrade, which may pose additional risks or simply do not complete in time prior to the expiration of the certificate.  Service Fabric now supports allowing a cluster secured with Self-signed certificates declared by thumbprint, to use its cluster certificate past the certificate expiration (**Valid To**) date. The feature allows the recovery of a cluster that collapsed due to expired certificate. 
 
-This feature requires explicit opt-in, and is only applicable on clusters secured with self-signed certificates declared by thumbprint. To enable this behavior and consent to enabling this feature, do the following:
+It requires explicit opt-in, and is only applicable on clusters secured with self-signed certificates declared by thumbprint. To enable this behavior and consent to enabling this feature, do the following:
 
 1)	Ensure that cluster is secured with self-signed certificates decalred by thumbprint.
 
