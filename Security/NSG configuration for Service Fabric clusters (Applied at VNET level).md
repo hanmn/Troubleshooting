@@ -14,6 +14,7 @@ For FQDN firewall's its recommended you use Azure Firewall.
 		- Federation/Lease Layer: 19001 - 19010 
 		- Application Range: 20000-30000
 		- Ephemeral Range: 49152-65534
+		- SMB: 445 and 139
 -   **Inbound** 168.63.129.16 - <https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview>
 
 -   **Outbound** VnetOutbound (*) - node to node communication should never be blocked
