@@ -9,6 +9,7 @@ https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-cre
 
     i. NOTE for internal Microsoft employees: if the cluster is configured in the Microsoft Tenant you must have IT authorize a Security Group to the "Admin" role
 https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%20support/Home.aspx
+(Or try https://microsoft.sharepoint.com/teams/CSEOAAD)
 
 ### FAQ
 
