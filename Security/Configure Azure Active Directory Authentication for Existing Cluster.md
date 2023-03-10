@@ -9,6 +9,7 @@ https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-cre
 
     i. NOTE for internal Microsoft employees: if the cluster is configured in the Microsoft Tenant you must have IT authorize a Security Group to the "Admin" role
 https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%20support/Home.aspx
+(Or try https://microsoft.sharepoint.com/teams/CSEOAAD)
 
 ### FAQ
 
@@ -46,6 +47,7 @@ https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%2
 
 
 ## Steps to configure AAD Auth on existing cluster from [http://portal.azure.com](http://portal.azure.com) 
+**Note**: This is only possible for Windows clusters. Linux clusters must be configured for AAD before being created.
 
 1. Create new AAD directory (or use your existing AAD - Note: you must be an Admin for your company) - 
     a. For testing I created a new Directory called sedeastaad
