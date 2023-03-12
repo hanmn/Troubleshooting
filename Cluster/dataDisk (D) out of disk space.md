@@ -2,6 +2,10 @@
 
 * There are several possible causes
 
+## Recommended SKU size minimums
+
+   [node type - capacity guidance](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-capacity#primary-node-type---capacity-guidance)
+
 ## **Question and Symptom:**
 
 We deployed a 5 nodes SF standalone cluster with following related settings. Note: D: drive is 40 GB hard drive dedicated for SF only and there is nothing put into D: before deployment.
