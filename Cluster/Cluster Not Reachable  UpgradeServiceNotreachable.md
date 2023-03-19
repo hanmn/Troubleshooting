@@ -28,7 +28,7 @@
 
 - fabric:/System/UpgradeService is unable to reach SFRP
     - Investigate why Stream Channel is broken, see [FUS Stream Architecture](./FUS%20Stream%20Architecture.md)
-    - NSG may be preventing the connection, see [Check for a Network Security Group](../Security/NSG%20configuration%20for%20Service%20Fabric%20clusters%20(Applied%20at%20VNET%20level).md)
+    - NSG may be preventing the connection, see [Check for a Network Security Group](../Security/NSG%20configuration%20for%20Service%20Fabric%20clusters%20Applied%20at%20VNET%20level.md)
 
 - TLS disabled
     - see [TLS Configuration](../Security/TLS%20Configuration.md)
