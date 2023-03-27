@@ -191,7 +191,7 @@
 
 **Note 1**: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running using the new certificate and SFX endpoint and PowerShell endpoints should be accessible. 
 
-**Note 2**: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not be updated with the new thumbprint.  To correct this Contact Azure support to **create a support ticket from the Azure Portal for this cluster** to request the final update to the SFRP record with the new thumbprint.
+**Note 2**: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not been updated with the new thumbprint.  To correct this Contact Azure support to **create a support ticket from the Azure Portal for this cluster** to request the final update to the SFRP record with the new thumbprint.
 
 
 15. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
