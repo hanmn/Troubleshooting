@@ -48,16 +48,29 @@ without explicit user consent.
 
 1. RDP into node 0 for the primary NodeType of the cluster
     
- 
-2. Open PowerShell ISE (verify it is running as Administrator)
-    * Download [FixExpiredCert-AEPCC.ps1](../Scripts/FixExpiredCert-AEPCC.ps1)
+2. Open a PowerShell prompt
 
+```PowerShell
+   C:\Users\sfadmin>powershell
+   Windows PowerShell
+   Copyright (C) Microsoft Corporation. All rights reserved.
+```
+
+2. Download [FixExpiredCert-AEPCC.ps1](../Scripts/FixExpiredCert-AEPCC.ps1)
+
+```PowerShell
+   (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/FixExpiredCert-AEPCC.ps1","$(get-location)\FixExpiredCert-AEPCC.ps1");
+```
 
 3. Run the FixExpiredCert-AEPCC.ps1 script 
 
-    * It should prompt for the RDP credentials and then remotely execute the necessary mitigation steps for the clusters Seed Nodes using Remote PowerShell
+```PowerShell
+   C:\Users\sfadmin> .\FixExpiredCert-AEPCC.ps1   
+```
 
-        Note: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script, changes are idempotent.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node.
+* It should prompt for the RDP credentials and then remotely execute the necessary mitigation steps for the clusters Seed Nodes using Remote PowerShell
+
+* **Note**: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script, changes are idempotent.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node.
  
 
 4. After executing the script the Service Fabric services should be restarting.  Once  ready (e.g. FabricGateway.exe is running) you should able to reconnect to the cluster over SFX and PowerShell from your development computer.
@@ -75,7 +88,7 @@ without explicit user consent.
             -StoreName My
 ```
 
-**Note 1**: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running again and the SFX endpoint and PowerShell endpoints should be accessible.  If you do not see this happening, review the Application event log and the Service Fabric Admin event logs to troubleshoot the reason.
+* **Note**: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running again and the SFX endpoint and PowerShell endpoints should be accessible.  If you do not see this happening, review the Application event log and the Service Fabric Admin event logs to troubleshoot the reason.
 
 
 ## [Additional References]
