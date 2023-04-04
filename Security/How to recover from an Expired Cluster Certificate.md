@@ -68,6 +68,13 @@ without explicit user consent.
    C:\Users\sfadmin> .\FixExpiredCert-AEPCC.ps1   
 ```
 
+of if dowloaded to local client machine run from rdp tsclient share
+
+```PowerShell
+   C:\Users\sfadmin> \\tsclient\c\Temp\FixExpiredCert-AEPCC.ps1   
+```
+
+
 * It should prompt for the RDP credentials and then remotely execute the necessary mitigation steps for the clusters Seed Nodes using Remote PowerShell
 
 * **Note**: If there are any errors or issues when running the script you can attempt to fix\correct these and just rerun the script, changes are idempotent.  In some cases if there are many nodes and you know the mitigation was already successful on some nodes before the script failed then you can remove those from the nodeIpArray to speed things up, but there is no harm if the mitigation is run multiple times on the same node.
