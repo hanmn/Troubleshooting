@@ -1,3 +1,9 @@
+# [UPDATE 10/05/2019] 
+Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher), secured with self-signed certificates declared by thumbprint can now follow this much simpler process.
+
+* [Fix Expired Cluster Certificate](../Security/How%20to%20recover%20from%20an%20Expired%20Cluster%20Certificate.md)
+
+
 ## [Symptom] 
    * Cluster will show 'Upgrade Service not reachable' warning message 
    * Unable to see the SF Nodes in the Portal or SFX 
