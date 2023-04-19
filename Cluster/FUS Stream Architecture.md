@@ -30,5 +30,5 @@ FUS Stream Architecture - (fabric:/system/UpgradeService)
 - If the connection was blocked by NSG usually we'll see the evidence from Cluster Traces
 - FabricUS.exe communication with SFRP will be in the SFRP Traces 
 
-- For full details on NSG configuration for Service Fabric clusters, see [Check for a Network Security Group](../Security/NSG%20configuration%20for%20Service%20Fabric%20clusters%20(Applied%20at%20VNET%20level).md)
+- For full details on NSG configuration for Service Fabric clusters, see [Check for a Network Security Group](../Security/NSG%20configuration%20for%20Service%20Fabric%20clusters%20Applied%20at%20VNET%20level.md)
 

@@ -16,9 +16,9 @@
 
     - Deleting more than half of the configured seed nodes [based on what the Reliability tier requires](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-capacity#the-reliability-characteristics-of-the-cluster) is not a recoverable scenario, you will need to rebuild the cluster.
 
-        - [How to Fix one missing seednode](./How%20to%20Fix%20one%20missing%20seednode.md)
+        - [How to Fix one missing seednode](./How%20to%20Fix%20one%20missing%20seed%20node.md)
 
-        - [How to Fix two missing seednode](./How%20to%20Fix%20two%20missing%20seednode.md)
+        - [How to Fix two missing seednode](./How%20to%20Fix%20two%20missing%20seed%20node.md)
         
         - [How to fix missing seednodes using the Automation Script FixMissingSeednode.ps1](./How%20to%20fix%20missing%20seednodes%20with%20Automated%20script.md)
 
