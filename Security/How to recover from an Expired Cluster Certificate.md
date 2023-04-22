@@ -17,7 +17,7 @@ It requires explicit opt-in, and is only applicable on clusters secured with sel
 
 ```xml
     <Section Name="Security">
-        <Parameter Name=" AcceptExpiredPinnedClusterCertificate " Value="true" />
+        <Parameter Name="AcceptExpiredPinnedClusterCertificate" Value="true" />
     </Section>
 ```
 
