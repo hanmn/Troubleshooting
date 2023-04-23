@@ -68,7 +68,7 @@ without explicit user consent.
    C:\Users\sfadmin> .\FixExpiredCert-AEPCC.ps1   
 ```
 
-of if dowloaded to local client machine run from rdp tsclient share
+or if dowloaded to local client machine run from rdp tsclient share
 
 ```PowerShell
    C:\Users\sfadmin> \\tsclient\c\Temp\FixExpiredCert-AEPCC.ps1   
