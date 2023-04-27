@@ -2,7 +2,7 @@
 This article will demonstrate how to enable the Service Fabric cluster security setting **AcceptExpiredPinnedClusterCertificate** to recover a cluster which has collapsed due to an Expired **self-signed** cluster certificate.
 
 ## [Applys to]
-Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher), secured with **self-signed** certificates declared by thumbprint.
+**Windows** Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher), secured with **self-signed** certificates declared by thumbprint.
 
 ## [Background]
 Service Fabric supports auto-rollover of cluster certificates by allowing them to be declared by Subject Common Name. When coupled with certificates issued by a trusted Certification Authority, as well as a mechanism for refreshing the certificates on the nodes, this is the recommended way to secure a Service Fabric cluster, offering security and availability benefits. 
