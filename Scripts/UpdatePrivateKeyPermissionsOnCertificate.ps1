@@ -2,7 +2,7 @@
 # ------------------------------------------------------------
 # Copyright (c) Microsoft Corporation.  All rights reserved.
 # Licensed under the MIT License (MIT). See License.txt in the repo root for license information.
-# Feedback : pkc@microsoft.com
+# Feedback : sedwards@microsoft.com
 # ------------------------------------------------------------
 
 <#
@@ -83,12 +83,27 @@ function fixNodes
                         #get the container name
                         $cert = get-item $FullyQualifiedThumbprint 
                         $uniqueKeyContainerName = $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
-                                # Specify the user, the permissions and the permission type                        $permission = "$("NETWORK SERVICE")","FullControl","Allow"                        $accessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $permission
-                                # Location of the machine related keys                        $keyPath = Join-Path -Path $env:ProgramData -ChildPath "\Microsoft\Crypto\RSA\MachineKeys"                        $keyName = $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName                        $keyFullPath = Join-Path -Path $keyPath -ChildPath $keyName
-                                # Get the current acl of the private key                        $acl = (Get-Item $keyFullPath).GetAccessControl('Access')
-                                # Add the new ace to the acl of the private key                        $acl.SetAccessRule($accessRule)
-                                # Write back the new acl                        Set-Acl -Path $keyFullPath -AclObject $acl -ErrorAction Stop
-                                # Observe the access rights currently assigned to this certificate.                        get-acl $keyFullPath| fl 
+        
+                        # Specify the user, the permissions and the permission type
+                        $permission = "$("NETWORK SERVICE")","FullControl","Allow"
+                        $accessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $permission
+        
+                        # Location of the machine related keys
+                        $keyPath = Join-Path -Path $env:ProgramData -ChildPath "\Microsoft\Crypto\RSA\MachineKeys"
+                        $keyName = $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
+                        $keyFullPath = Join-Path -Path $keyPath -ChildPath $keyName
+        
+                        # Get the current acl of the private key
+                        $acl = (Get-Item $keyFullPath).GetAccessControl('Access')
+        
+                        # Add the new ace to the acl of the private key
+                        $acl.SetAccessRule($accessRule)
+        
+                        # Write back the new acl
+                        Set-Acl -Path $keyFullPath -AclObject $acl -ErrorAction Stop
+        
+                        # Observe the access rights currently assigned to this certificate.
+                        get-acl $keyFullPath| fl 
                             
                         Write-Host "Updated ACL for : " $FullyQualifiedThumbprint 
                     
