@@ -35,7 +35,7 @@ This contains the Security related TSG's surfaced in the Azure Portal during sup
 * [Change the RDP password for your nodetype (VMSS)](./Change%20the%20RDP%20password%20for%20VMSS.md)
 * [Desired State Configuration example - ACL a certificate using DSC](./DSC%20-%20ACL%20a%20certificate%20using%20Desired%20State%20Configuration.md)
 * [How to clean up Fabric firewall rules](./How%20to%20clean%20up%20Fabric%20firewall%20rules.md)
-* [Minimum NSG requirements for Service Fabric](./NSG%20configuration%20for%20Service%20Fabric%20clusters%20(Applied%20at%20VNET%20level).md)
+* [Minimum NSG requirements for Service Fabric](./NSG%20configuration%20for%20Service%20Fabric%20clusters%20Applied%20at%20VNET%20level.md)
 * [Recommended AV (Antivirus) software exclusions for Service Fabric clusters](./Recommended%20AV%20(Antivirus)%20software%20exclusions%20for%20Service%20Fabric%20clusters.md)
 * [TLS Configuration](./TLS%20Configuration.md)
 
