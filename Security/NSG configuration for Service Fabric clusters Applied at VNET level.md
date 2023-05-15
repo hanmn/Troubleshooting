@@ -9,9 +9,9 @@ For FQDN firewall's its recommended you use Azure Firewall.
 -   **Inbound** 19080 required for Service Fabric Explorer Http management endpoint - management, status, and health report
 -   **Inbound** 3389 (**Windows**) or 22 (**Linux**) required for RDP/SSH access to the nodes
 -   **Inbound** VnetInbound (*) - node to node communication should never be blocked
-    - Specifically 
+    - Specifically (* these are the default ports used by SF, your configuration may be different)
 		- Federation/Lease Layer: 1025-1027
-		- Federation/Lease Layer: 19001 - 19010 
+		- Federation/Lease Layer: 19001 - 19010 (For Standalone SF clusters)
 		- Application Range: 20000-30000
 		- Ephemeral Range: 49152-65534
 		- SMB: 445 and 139
