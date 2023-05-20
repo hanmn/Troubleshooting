@@ -69,7 +69,7 @@ Add 'provisionAfterExtensions' array with 'CustomScriptExtension' in 'properties
 ## Reference
 
 Below are diffs from changes using template.json generated from portal after adding CustomScriptExecution and extension sequencing.
-The powershell script [../Scripts/install-dotnet-48.ps1]() is an example script that installs dotnet framework 4.8 dependency.
+The powershell script [../Scripts/install-dotnet-48.ps1](../Scripts/install-dotnet-48.ps1) is an example script that installs dotnet framework 4.8 dependency.
 
 ### template.json
 
