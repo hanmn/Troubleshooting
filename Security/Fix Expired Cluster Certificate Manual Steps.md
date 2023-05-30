@@ -124,15 +124,22 @@ Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher
 
     * If RDP to each node is not feasible, alternatively you can automate through [Desired State Configuration](https://docs.microsoft.com/en-us/powershell/dsc/azuredsc "https://docs.microsoft.com/en-us/powershell/dsc/azuredsc")
 
- 
+
 
 8. Stop both "Azure Service Fabric Node Bootstrap Agent" and "Microsoft Service Fabric Host Service" service (run in this exact order) 
 
-    * net stop ServiceFabricNodeBootstrapAgent 
+    * net stop ServiceFabricNodeBootstrapAgent
 
-    * net stop FabricHostSvc 
+    * net stop FabricHostSvc
 
-  
+There is a race condition where sometimes `FabricInstallerService.exe` is stuck in a crashing loop. If this is the case first launch `Services.msc` and identify 3 Services:
+
+- FabricInstallerService
+- FabricHostService
+- ServiceFabricNodeBootstrapAgent
+
+Then, set all services to startup type `Disabled`, and reboot the machine. On reboot `FabricInstallerService.exe` should never run. Continue along with the TSG.
+
 
 9. Locate ClusterManifest.current in the SvcFab folder like "D:\SvcFab\_sys_0\Fabric\ClusterManifest.current.xml" according to actual datapath deployed, and copy to somewhere like D:\Temp\clusterManifest.xml 
 
@@ -172,7 +179,14 @@ Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher
     net start FabricHostSvc 
     net start ServiceFabricNodeBootstrapAgent 
     ```
- 
+
+If you previously encountered a race condition where `FabricInstallerService.exe` was crashing you can use `Services.msc` to reset the following services to these startup types. Be sure to set:
+
+- FabricInstallerService -> Manual
+- FabricHostService -> Automatic
+- ServiceFabricNodeBootstrapAgent -> Automatic
+
+
 
 13. Open Task Manager and wait for a couple minutes to verify that **FabricGateway.exe** is running 
 

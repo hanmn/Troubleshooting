@@ -95,8 +95,10 @@ or if dowloaded to local client machine run from rdp tsclient share
             -StoreName My
 ```
 
-* **Note**: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running again and the SFX endpoint and PowerShell endpoints should be accessible.  If you do not see this happening, review the Application event log and the Service Fabric Admin event logs to troubleshoot the reason.
+* **Note**: Please give the cluster 5-10 minutes to reconfigure.  Generally speaking you will see Fabric.exe startup in the Task Manager and a few minutes later FabricGateway.exe will start when the nodes have finished reconfiguration.  At this point the cluster should be running again and the PowerShell endpoints should be accessible.  If you do not see this happening, review the Application event log and the Service Fabric Admin event logs to troubleshoot the reason.  
 
+5. Once the cluster is back up and running, as verified over PowerShell, please follow this article to perform the certificate rollover.
+- [Use Azure Resource Manager to manually rollover the cluster certifiate](./Use%20Azure%20Resource%20Explorer%20to%20add%20the%20Secondary%20Certificate.md)
 
 ## [Additional References]
 
@@ -106,4 +108,4 @@ or if dowloaded to local client machine run from rdp tsclient share
 
 [Manually roll over a Service Fabric cluster certificate](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-rollover-cert-cn)
 
-[Use Azure Resource Manager to manually rollover the cluster certifiate](./Use%20Azure%20Resource%20Explorer%20to%20add%20the%20Secondary%20Certificate.md)
+
