@@ -9,7 +9,7 @@ Service Fabric supports auto-rollover of cluster certificates by allowing them t
 
 For clusters secured with certificates declared by thumbprint, rotation requires a cluster upgrade, which may pose additional risks or simply do not complete in time prior to the expiration of the certificate.  Service Fabric now supports allowing a cluster secured with Self-signed certificates declared by thumbprint, to use its cluster certificate past the certificate expiration (**Valid To**) date. The feature allows the recovery of a cluster that collapsed due to expired certificate. 
 
-It requires explicit opt-in, and is only applicable on clusters secured with self-signed certificates declared by thumbprint. To enable this behavior and consent to enabling this feature, do the following:
+It requires explicit opt-in, and is only applicable on clusters secured with self-signed certificates declared by thumbprint. You can use the script below to enable this setting automatically.  To **manually** enable this behavior and consent to enabling this feature, do the following:
 
 1)	Ensure that cluster is secured with self-signed certificates decalred by thumbprint.
 
@@ -44,7 +44,7 @@ without explicit user consent.
    '%SystemRoot%\System32\Winevt\Logs\Application.evtx'  event log from 'ServiceFabricNodeBootrapperAgent' resource
     * Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource
 
-## [Expired Cert, steps to enable setting AcceptExpiredPinnedClusterCertificate and recover cluster]
+## Automated Script [Expired Cert, steps to enable setting AcceptExpiredPinnedClusterCertificate and recover cluster]
 
 1. RDP into node 0 for the primary NodeType of the cluster
     
