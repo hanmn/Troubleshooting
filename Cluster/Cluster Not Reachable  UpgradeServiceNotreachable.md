@@ -11,6 +11,7 @@
 - fabric:/System/UpgradeService (Upgrade service) is down
 - fabric:/System/UpgradeService is unable to reach to the regional Service Fabric Resource Provider (SFRP)
 - TLS 1.0/1.2 was disabled
+- Expired Certificate 
 
 ## **Mitigation Options**
 
