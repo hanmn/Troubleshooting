@@ -781,39 +781,51 @@ function enumerate-serviceFabric()
         write-host "reading $($clusterManifestFile)"    
         $xml = read-xml -xmlFile $clusterManifestFile
         $xml.clustermanifest
-        $seedNodes = $xml.ClusterManifest.Infrastructure.PaaS.Votes.Vote
-        write-host "seed nodes: $($seedNodes | format-list * | out-string)"
-        $nodeCount = $xml.ClusterManifest.Infrastructure.PaaS.Roles.Role.RoleNodeCount
-        write-host "node count:$($nodeCount)"
-        $clusterId = (($xml.ClusterManifest.FabricSettings.Section | Where-Object Name -eq "Paas").childnodes | where-object Name -eq "ClusterId").value
-        write-host "cluster id:$($clusterId)"
-        $upgradeServiceParams = ($xml.ClusterManifest.FabricSettings.Section | Where-Object Name -eq "UpgradeService").parameter
-        $sfrpUrl = ($upgradeServiceParams | Where-Object Name -eq "BaseUrl").Value
-        $sfrpUrl = "$($sfrpUrl)$($clusterId)"
-        write-host "sfrp url:$($sfrpUrl)"
-        out-file -InputObject $sfrpUrl "$($workdir)\sfrp-response.txt"
-        $ucert = ($upgradeServiceParams | Where-Object Name -eq "X509FindValue").Value
 
-        # todo determine if standalone
-        add-job -jobName "sfrp check" -scriptBlock {
-            param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2], $useBasicParsing = $args[3])
-            if ($useBasicParsing)
-            {
-                $sfrpResponse = Invoke-WebRequest $sfrpUrl -UseBasicParsing -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
-            }
-            else
-            {
-                $sfrpResponse = Invoke-WebRequest $sfrpUrl -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
-            }
+        try 
+        {
+            $seedNodes = $xml.ClusterManifest.Infrastructure.PaaS.Votes.Vote
+            write-host "azure service fabric cluster"
+            write-host "seed nodes: $($seedNodes | format-list * | out-string)"
 
-            write-host "sfrp response: $($sfrpresponse)"
-            out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
-        } -arguments @($workdir, $sfrpUrl, $ucert, $useBasicParsing)
+            $nodeCount = $xml.ClusterManifest.Infrastructure.PaaS.Roles.Role.RoleNodeCount
+            write-host "node count:$($nodeCount)"
+            $clusterId = (($xml.ClusterManifest.FabricSettings.Section | Where-Object Name -eq "Paas").childnodes | where-object Name -eq "ClusterId").value
+            write-host "cluster id:$($clusterId)"
+            $upgradeServiceParams = ($xml.ClusterManifest.FabricSettings.Section | Where-Object Name -eq "UpgradeService").parameter
+            $sfrpUrl = ($upgradeServiceParams | Where-Object Name -eq "BaseUrl").Value
+            $sfrpUrl = "$($sfrpUrl)$($clusterId)"
+            write-host "sfrp url:$($sfrpUrl)"
+            out-file -InputObject $sfrpUrl "$($workdir)\sfrp-response.txt"
+            $ucert = ($upgradeServiceParams | Where-Object Name -eq "X509FindValue").Value
 
-        add-job -jobName "sfrp repair check" -scriptBlock {
-            param($workdir = $args[0])
-            Get-ServiceFabricRepairTask -State Active Azure | out-file "$($workdir)\sfrp-repair.txt"
-        } -arguments @($workdir)
+            add-job -jobName "sfrp check" -scriptBlock {
+                param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2], $useBasicParsing = $args[3])
+                if ($useBasicParsing)
+                {
+                    $sfrpResponse = Invoke-WebRequest $sfrpUrl -UseBasicParsing -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+                }
+                else
+                {
+                    $sfrpResponse = Invoke-WebRequest $sfrpUrl -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
+                }
+
+                write-host "sfrp response: $($sfrpresponse)"
+                out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
+            } -arguments @($workdir, $sfrpUrl, $ucert, $useBasicParsing)
+
+            add-job -jobName "sfrp repair check" -scriptBlock {
+                param($workdir = $args[0])
+                Get-ServiceFabricRepairTask -State Active Azure | out-file "$($workdir)\sfrp-repair.txt"
+            } -arguments @($workdir)
+
+        }
+        catch
+        {
+            $seedNodes = $xml.ClusterManifest.Infrastructure.WindowsServer.NodeList.Node
+            write-host "seed nodes: $($seedNodes | format-list * | out-string)"
+            write-host "standalone service fabric cluster"
+        }
 
         $httpGwEpt = $xml.ClusterManifest.NodeTypes.FirstChild.Endpoints.HttpGatewayEndpoint
         $clusterCertThumb = $xml.ClusterManifest.NodeTypes.FirstChild.Certificates.ClientCertificate.X509FindValue
