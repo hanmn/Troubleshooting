@@ -48,10 +48,10 @@ upload to workspace sfgather* dir or zip
 .NOTES
     File Name  : sf-collect-node-info.ps1
     Author     : microsoft service fabric support
-    Version    : 181029 fix -UseBasicParsing, add docker enumeration, tested on server core 1803
+    Version    : 190522 add logic to use wevtutil.exe to export event logs if .\event-log-manager.ps1 script not available
     History    :
                 190209 continue on event-log-manager.ps1 not available
-                181031 fix path for clipboard
+                181029 fix -UseBasicParsing, add docker enumeration, tested on server core 1803
 
 .EXAMPLE
     .\sf-collect-node-info.ps1
@@ -192,13 +192,14 @@ $global:zipFile = $null
 $trustedHosts = $null
 $winrmClientInfo = $null
 $eventScriptFile = $null
+$wEvtUtilLogs = [collections.arraylist]@()
 $sfCollectInfoDir = "sfColInfo-"
 $restTimeoutSec = 15
 $serviceFabricInstallReg = "HKLM:\software\microsoft\service fabric"
 $warnonZoneCrossingReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 $disableWarnOnZoneCrossing = $false
 $useBasicParsing = [bool](get-command invoke-webrequest).Parameters.UseBasicParsing
-$global:allparams = @{}
+$global:allparams = @{ }
 [string]$scriptUrl = 'https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1'
 
 # to bypass self-signed cert validation check
@@ -287,9 +288,11 @@ function main()
         catch 
         {
             write-warning ($error | Out-String)
-            write-warning "unable to download $eventScriptFile. event logs will not be copied!"
+            write-warning "unable to download $eventScriptFile. using wEvtUtil.exe instead"
             $error.Clear()
-            $noEventLogs = $true            
+            #$noEventLogs = $true            
+            Remove-Item $eventScriptFile
+            $wEvtUtilLogs.AddRange((get-childItem -Path "$env:SystemRoot\system32\winevt\Logs" | Where-Object FullName -imatch $eventLogNames | Select-Object FullName))
         }
     }
 
@@ -320,7 +323,7 @@ function main()
                 continue
             }
 
-            if (!$noEventLogs)
+            if (!$noEventLogs -and !$wEvtUtilLogs)
             {
                 copy-item -path $eventScriptFile -Destination $adminPath -force
             }
@@ -422,23 +425,39 @@ function process-machine()
     if (!$noEventLogs)
     {
         add-job -jobName "event logs" -scriptBlock {
-            param($workdir = $args[0], $parentWorkdir = $args[1], $eventLogNames = $args[2], $startTime = $args[3], $endTime = $args[4], $eventScriptFile = $args[5])
-            $eventScriptFile = "$($parentWorkdir)\event-log-manager.ps1"
-            if (!(test-path $eventScriptFile))
-            {
-                (new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1", $eventScriptFile)
-            }
-
+            param($workdir = $args[0], $parentWorkdir = $args[1], $eventLogNames = $args[2], $startTime = $args[3], $endTime = $args[4], $eventScriptFile = $args[5], $wEvtUtilLogs = $args[6])
+            $eventScriptFile = "$parentWorkdir\$([io.path]::GetFileName($eventScriptFile))"
             $tempLocation = "$($workdir)\event-logs"
+
             if (!(test-path $tempLocation))
             {
                 New-Item -ItemType Directory -Path $tempLocation    
             }
 
-            $argList = "-File $($parentWorkdir)\event-log-manager.ps1 -eventLogNamePattern `"$($eventlognames)`" -eventStartTime `"$($startTime)`" -eventStopTime `"$($endTime)`" -eventDetails -merge -uploadDir `"$($tempLocation)`" -nodynamicpath"
-            write-host "event logs: starting command powershell.exe $($argList)"
-            start-process -filepath "powershell.exe" -ArgumentList $argList -Wait -WindowStyle Hidden -WorkingDirectory $tempLocation
-        } -arguments @($workdir, $parentWorkdir, $eventLogNames, $startTime, $endTime, $eventScriptFile)
+            if (!(test-path $eventScriptFile) -and $wEvtUtilLogs)
+            {
+                # not stored as file
+                wEvtUtil.exe export-log Application "$tempLocation\Application.evtx"
+                wEvtUtil.exe export-log System "$tempLocation\System.evtx"
+
+                foreach ($file in $wEvtUtilLogs)
+                {
+                    write-host "exporting file $($file.FullName)"
+                    write-host "wEvtUtil.exe export-log "$($file.FullName)" "$tempLocation\$([io.path]::GetFileName($file.FullName))" /logfile:true"
+                    wEvtUtil.exe export-log "$($file.FullName)" "$tempLocation\$([io.path]::GetFileName($file.FullName))" /logfile:true
+                }
+            }
+            elseif((test-path $eventScriptFile))
+            {
+                $argList = "-File $($parentWorkdir)\event-log-manager.ps1 -eventLogNamePattern `"$($eventlognames)`" -eventStartTime `"$($startTime)`" -eventStopTime `"$($endTime)`" -eventDetails -merge -uploadDir `"$($tempLocation)`" -nodynamicpath"
+                write-host "event logs: starting command powershell.exe $($argList)"
+                start-process -filepath "powershell.exe" -ArgumentList $argList -Wait -WindowStyle Hidden -WorkingDirectory $tempLocation
+            }
+            else 
+            {
+                write-host "error:unable to collect event logs"    
+            }
+        } -arguments @($workdir, $parentWorkdir, $eventLogNames, $startTime, $endTime, $eventScriptFile, $wEvtUtilLogs)
     }
 
     if (!$noOs)
@@ -467,7 +486,7 @@ function process-machine()
             $error.clear()
             (docker version)
             
-            if($error)
+            if ($error)
             {
                 $error.Clear()
                 write-host "docker not installed"
@@ -569,7 +588,7 @@ function process-machine()
 
         add-job -jobName "check external connection" -scriptBlock {
             param($workdir = $args[0], $externalUrl = $args[1], $useBasicParsing = $args[2])
-            if($useBasicParsing)
+            if ($useBasicParsing)
             {
                 [net.httpWebResponse](Invoke-WebRequest $externalUrl -UseBasicParsing).BaseResponse | out-file "$($workdir)\network-external-test.txt"
             }
@@ -779,7 +798,7 @@ function enumerate-serviceFabric()
         # todo determine if standalone
         add-job -jobName "sfrp check" -scriptBlock {
             param($workdir = $args[0], $sfrpUrl = $args[1], $ucert = $args[2], $useBasicParsing = $args[3])
-            if($useBasicParsing)
+            if ($useBasicParsing)
             {
                 $sfrpResponse = Invoke-WebRequest $sfrpUrl -UseBasicParsing -Certificate (Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object Thumbprint -eq $ucert)
             }
@@ -894,7 +913,7 @@ function rest-query($cert, $url)
         $result = $null
         write-host "rest query: $($url)" -foregroundcolor cyan
 
-        if($useBasicParsing)
+        if ($useBasicParsing)
         {
             $result = Invoke-RestMethod -Method Get -Certificate $cert -Uri $url -UseBasicParsing | format-list * | Out-String
         }
@@ -914,6 +933,7 @@ function rest-query($cert, $url)
 
 try
 {
+    # process command line arguments on recursive call
     # arrays on command line easier to pass as strings
     if (@($ports).count -le 1)
     {
@@ -968,7 +988,7 @@ try
             #$paramValue = "`'$($arr)`'"
         }
         
-        if($paramValue)
+        if ($paramValue)
         {
             $global:allparams.Add($param.key, "`"$($paramValue)`"")
         }
@@ -1008,7 +1028,7 @@ finally
         Stop-Transcript
     }
     
-    if($global:zipFile)
+    if ($global:zipFile)
     {
         Set-Clipboard -Path $global:zipFile
         write-host "zip path added to clipboard:$($global:zipFile)" -ForegroundColor Cyan
