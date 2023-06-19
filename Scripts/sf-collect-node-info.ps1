@@ -292,7 +292,7 @@ function main()
             $error.Clear()
             #$noEventLogs = $true            
             Remove-Item $eventScriptFile
-            $wEvtUtilLogs.AddRange((get-childItem -Path "$env:SystemRoot\system32\winevt\Logs" | Where-Object FullName -imatch $eventLogNames | Select-Object FullName))
+            $wEvtUtilLogs.AddRange((get-childItem -Path "$env:SystemRoot\system32\winevt\Logs" | Where-Object BaseName -imatch $eventLogNames | Select-Object FullName))
         }
     }
 
@@ -436,10 +436,6 @@ function process-machine()
 
             if (!(test-path $eventScriptFile) -and $wEvtUtilLogs)
             {
-                # not stored as file
-                wEvtUtil.exe export-log Application "$tempLocation\Application.evtx"
-                wEvtUtil.exe export-log System "$tempLocation\System.evtx"
-
                 foreach ($file in $wEvtUtilLogs)
                 {
                     write-host "exporting file $($file.FullName)"
