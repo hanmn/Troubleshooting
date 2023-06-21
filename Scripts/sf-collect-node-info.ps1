@@ -3,8 +3,11 @@
 powershell script to collect service fabric node diagnostic data
 
 To download and execute:
-(new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1","$(get-location)\event-log-manager.ps1");
-(new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1","$(get-location)\sf-collect-node-info.ps1");
+(new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1","$pwd\sf-collect-node-info.ps1");
+
+optional download for event logs:
+(new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1","$pwd\event-log-manager.ps1");
+
 .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
 
 upload to workspace sfgather* dir or zip
