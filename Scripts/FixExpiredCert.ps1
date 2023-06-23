@@ -4,11 +4,11 @@ Param(
     [ValidateNotNullOrEmpty()]
     [string] $clusterDataRootPath="D:\SvcFab",
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [ValidateNotNullOrEmpty()]
     [string]$oldThumbprint="replace with expired thumbprint",
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [ValidateNotNullOrEmpty()]
     [string]$newThumbprint="replace with new thumbprint",
 
@@ -16,7 +16,7 @@ Param(
     [ValidateNotNullOrEmpty()]
     [string]$certStoreLocation='Cert:\LocalMachine\My\',
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [ValidateNotNullOrEmpty()]
     [string[]]$nodeIpArray=@("10.0.0.4","10.0.0.5","10.0.0.6" )
 )
