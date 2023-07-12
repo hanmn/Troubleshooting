@@ -1,4 +1,4 @@
-# Service Fabric Windows File Locations
+# Service Fabric Ubuntu File Locations
 
 [Service Fabric Core File Locations](#Service-Fabric-Core-File-Locations)  
 [Service Fabric Event Logs](#Service-Fabric-Event-Logs)  
@@ -32,7 +32,7 @@ var/log/sfnode/sfnodelog | service fabric application event log
 
 File Path | Content
 ----------|----------
-/var/log/waagent.log | windows azure application agent log
+/var/log/waagent.log | azure agent log
 
 ## Service Fabric Extension Plugin
 
