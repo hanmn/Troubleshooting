@@ -58,8 +58,8 @@ File Path | Content
 ----------|----------
 C:\WindowsAzure\Logs | azure diagnostic logs
 C:\WindowsAzure\Logs\AggregateStatus\aggregatestatus.json | current azure node aggregated status
-C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\1.1.0.3\CommandExecution.log | service fabric extension startup log
-C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\1.1.0.3\TempClusterManifest.xml | node copy of cluster manifest for last start
+C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\\#.#.#.#\CommandExecution.log | service fabric extension startup log
+C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\\#.#.#.#\TempClusterManifest.xml | node copy of cluster manifest for last start
 C:\WindowsAzure\Logs\WaAppAgent.log | windows azure application agent log
 
 ## Service Fabric Extension Plugin (Azure deployments only)
@@ -67,10 +67,10 @@ C:\WindowsAzure\Logs\WaAppAgent.log | windows azure application agent log
 File Path | Content
 ----------|----------
 C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode | service fabric extension download, configuration, and status
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\RuntimeSettings\0.settings | service fabric extension configuration
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\Status\0.status | service fabric extension installation status
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\Status\HeartBeat.Json | service fabric node status
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\InstallUtil.InstallLog | service fabric extension installation log
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\RuntimeSettings\\#.settings | service fabric extension configuration
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\Status\\#.status | service fabric extension installation status
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\Status\HeartBeat.Json | service fabric node status
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\InstallUtil.InstallLog | service fabric extension installation log
 
 ## Docker Daemon Logs
 
