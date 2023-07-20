@@ -18,7 +18,7 @@ File Path | Content
 /mnt/resource/sfroot/log | default service fabric diagnostic log path
 /mnt/resource/sfroot/log/CrashDumps | service fabric (fabric*.exe) crash dump location
 /mnt/resource/sfroot/log/Traces | service fabric diagnostic trace temporary storage
-/mnt/resource/sfroot/< _node_name_# > | service fabric node configuration data path
+/mnt/resource/sfroot/<_node_name\_#> | service fabric node configuration data path
 
 ## Service Fabric Event Logs
 

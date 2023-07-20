@@ -22,8 +22,24 @@ D:\SvcFab\Log\\_sf_docker_logs | service fabric docker container logs
 D:\SvcFab\Log\CrashDumps | service fabric (fabric*.exe) crash dump location
 D:\SvcFab\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage unformatted
 D:\SvcFab\Log\work\WFab\0\Log | service fabric .dtr zip (csv) diagnostic trace temporary storage formatted files
-D:\SvcFab\\< _node_name_# > | service fabric node configuration data path
+D:\SvcFab\\<_node_name\_#> | service fabric node configuration data path
 D:\SvcFab\ReplicatorLog\replicatorshared.log | [sparse](https://docs.microsoft.com/en-us/windows/win32/fileio/sparse-files) (does not use size displayed) 8GB file that is required for cluster operations
+
+## Service Fabric Core File Locations Standalone
+
+File Path | Content
+----------|----------
+C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code | default service fabric core code installation path
+C:\ProgramData\SF | default application code, data, and log location
+C:\ProgramData\SF\clusterManifest.xml | service fabric cluster manifest file
+C:\ProgramData\SF\\<_node_name\_#>\work\Applications | default application code and data location
+C:\ProgramData\SF\Log | default service fabric diagnostic log path
+C:\ProgramData\SF\Log\\_sf_docker_logs | service fabric docker container logs
+C:\ProgramData\SF\Log\CrashDumps | service fabric (fabric*.exe) crash dump location
+C:\ProgramData\SF\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage unformatted
+C:\ProgramData\SF\Log\work\WFab\0\Log | service fabric .dtr zip (csv) diagnostic trace temporary storage formatted files
+C:\ProgramData\SF\\<_node_name\_#> | service fabric node configuration data path
+C:\ProgramData\SF\ReplicatorLog\replicatorshared.log | [sparse](https://docs.microsoft.com/en-us/windows/win32/fileio/sparse-files) (does not use size displayed) 8GB file that is required for cluster operations
 
 ## Service Fabric Core File Locations Development Cluster
 
@@ -38,7 +54,7 @@ C:\SFDevCluster\Log\\_sf_docker_logs | service fabric docker container logs
 C:\SFDevCluster\Log\CrashDumps | service fabric (fabric*.exe) crash dump location
 C:\SFDevCluster\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage unformatted
 C:\SFDevCluster\Log\work\WFab\0\Log | service fabric .dtr zip (csv) diagnostic trace temporary storage formatted files
-C:\SFDevCluster\Data\\< _node_name_# > | service fabric node configuration data path
+C:\SFDevCluster\Data\\<_node_name\_#> | service fabric node configuration data path
 C:\SFDevCluster\Data\ReplicatorLog\replicatorshared.log | [sparse](https://docs.microsoft.com/en-us/windows/win32/fileio/sparse-files) (does not use size displayed) 8GB file that is required for cluster operations
 
 ## Service Fabric Event Logs
