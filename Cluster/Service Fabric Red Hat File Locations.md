@@ -1,4 +1,4 @@
-# Service Fabric Red Hat File Locations
+# Service Fabric Red Hat File Locations (Preview)
 
 [Service Fabric Core File Locations](#Service-Fabric-Core-File-Locations)  
 [Service Fabric Event Logs](#Service-Fabric-Event-Logs)  
@@ -6,7 +6,7 @@
 [Service Fabric Extension Plugin](#Service-Fabric-Extension-Plugin)  
 [Docker Daemon Logs](#Docker-Daemon-Logs)  
 
-**The tables below list file locations for Service Fabric on Red Hat.**
+**The tables below list file locations for Service Fabric on Red Hat which is currently in Preview.**
 
 ## Service Fabric Core File Locations
 
