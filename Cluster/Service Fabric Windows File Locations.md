@@ -20,9 +20,26 @@ D:\SvcFab\\_App | default application code and data location
 D:\SvcFab\Log | default service fabric diagnostic log path
 D:\SvcFab\Log\\_sf_docker_logs | service fabric docker container logs
 D:\SvcFab\Log\CrashDumps | service fabric (fabric*.exe) crash dump location
-D:\SvcFab\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage
-D:\SvcFab\\< _node_name_# > | service fabric node configuration data path
+D:\SvcFab\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage unformatted
+D:\SvcFab\Log\work\WFab\0\Log | service fabric .dtr zip (csv) diagnostic trace temporary storage formatted files
+D:\SvcFab\\<_node_name\_#> | service fabric node configuration data path
 D:\SvcFab\ReplicatorLog\replicatorshared.log | [sparse](https://docs.microsoft.com/en-us/windows/win32/fileio/sparse-files) (does not use size displayed) 8GB file that is required for cluster operations
+
+## Service Fabric Core File Locations Standalone
+
+File Path | Content
+----------|----------
+C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code | default service fabric core code installation path
+C:\ProgramData\SF | default application code, data, and log location
+C:\ProgramData\SF\clusterManifest.xml | service fabric cluster manifest file
+C:\ProgramData\SF\\<_node_name\_#>\work\Applications | default application code and data location
+C:\ProgramData\SF\Log | default service fabric diagnostic log path
+C:\ProgramData\SF\Log\\_sf_docker_logs | service fabric docker container logs
+C:\ProgramData\SF\Log\CrashDumps | service fabric (fabric*.exe) crash dump location
+C:\ProgramData\SF\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage unformatted
+C:\ProgramData\SF\Log\work\WFab\0\Log | service fabric .dtr zip (csv) diagnostic trace temporary storage formatted files
+C:\ProgramData\SF\\<_node_name\_#> | service fabric node configuration data path
+C:\ProgramData\SF\ReplicatorLog\replicatorshared.log | [sparse](https://docs.microsoft.com/en-us/windows/win32/fileio/sparse-files) (does not use size displayed) 8GB file that is required for cluster operations
 
 ## Service Fabric Core File Locations Development Cluster
 
@@ -35,10 +52,10 @@ C:\SFDevCluster\Data\\_App | default application code and data location
 C:\SFDevCluster\Log | default service fabric diagnostic log path
 C:\SFDevCluster\Log\\_sf_docker_logs | service fabric docker container logs
 C:\SFDevCluster\Log\CrashDumps | service fabric (fabric*.exe) crash dump location
-C:\SFDevCluster\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage
-C:\SFDevCluster\Data\\< _node_name_# > | service fabric node configuration data path
+C:\SFDevCluster\Log\Traces | service fabric .etl ([ETW](https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing)) diagnostic trace temporary storage unformatted
+C:\SFDevCluster\Log\work\WFab\0\Log | service fabric .dtr zip (csv) diagnostic trace temporary storage formatted files
+C:\SFDevCluster\Data\\<_node_name\_#> | service fabric node configuration data path
 C:\SFDevCluster\Data\ReplicatorLog\replicatorshared.log | [sparse](https://docs.microsoft.com/en-us/windows/win32/fileio/sparse-files) (does not use size displayed) 8GB file that is required for cluster operations
-
 
 ## Service Fabric Event Logs
 
@@ -57,8 +74,8 @@ File Path | Content
 ----------|----------
 C:\WindowsAzure\Logs | azure diagnostic logs
 C:\WindowsAzure\Logs\AggregateStatus\aggregatestatus.json | current azure node aggregated status
-C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\1.1.0.3\CommandExecution.log | service fabric extension startup log
-C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\1.1.0.3\TempClusterManifest.xml | node copy of cluster manifest for last start
+C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\\#.#.#.#\CommandExecution.log | service fabric extension startup log
+C:\WindowsAzure\Logs\Plugins\ Microsoft.Azure.ServiceFabric.ServiceFabricNode\\#.#.#.#\TempClusterManifest.xml | node copy of cluster manifest for last start
 C:\WindowsAzure\Logs\WaAppAgent.log | windows azure application agent log
 
 ## Service Fabric Extension Plugin (Azure deployments only)
@@ -66,10 +83,10 @@ C:\WindowsAzure\Logs\WaAppAgent.log | windows azure application agent log
 File Path | Content
 ----------|----------
 C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode | service fabric extension download, configuration, and status
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\Service\current.config | service fabric extension configuration
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\Status\1.status | service fabric extension installation status
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\Status\HeartBeat.Json | service fabric node status
-C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ 1.1.0.3\InstallUtil.InstallLog | service fabric extension installation log
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\RuntimeSettings\\#.settings | service fabric extension configuration
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\Status\\#.status | service fabric extension installation status
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\Status\HeartBeat.Json | service fabric node status
+C:\Packages\Plugins\Microsoft.Azure.ServiceFabric.ServiceFabricNode\ #.#.#.#\InstallUtil.InstallLog | service fabric extension installation log
 
 ## Docker Daemon Logs
 
