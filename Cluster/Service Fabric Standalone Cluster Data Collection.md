@@ -17,6 +17,20 @@ StandaloneLogCollector.exe is a utility included in the Service Fabric Standalon
 5. Copy StandaloneLogCollector.exe to a path close to root for example c:\temp. this is to prevent [Directory Path is longer than 80 characters](#Directory-Path-is-longer-than-80-characters)
 6. Run StandaloneLogCollector.exe -? for command information
 
+## StandaloneLogCollector.exe parameters
+
+Parameter Name | Description
+---------------|------------
+Output|Output directory path. By default, it is generated beside the exe, and named in the format '{machine name}.{time stamp}'.
+StartUtcTime|Start UTC time of trace logs to collect. By default, it is 1 hour prior to the EndUtcTime. Format: MM/dd/yyyy HH:mm:ss.
+EndUtcTime|End UTC time of trace logs to collect. By default, it is now if StartUtcTime is not specified, and it is 1 hour after StartUtcTime if StartUtcTime is specified. Format: MM/dd/yyyy HH:mm:ss.
+IncludeLeaseLogs|Collect lease logs. By default, lease logs are not collected.
+Scope|The scope of the log collection. 'node' indicates collecting trace logs from the current node only. 'cluster' indicates collecting trace logs from all nodes. By default, it is 'cluster'.
+Mode|The execution workflow of the tool. 'Collect' collects but does not upload logs. 'Upload' uploads logs collected in a previous run. 'CollectAndUpload' collects and uploads logs in the same run. By default, it is 'CollectAndUpload'.
+StorageConnectionString|The Azure storage connection string provided by Microsoft support team, in the format of a SAS URL. Please add double quotes around the url string.
+ClusterConfigFilePath|The json cluster configuration file path. This parameter is needed when the cluster failed during setup and has not come up.
+IncludeCrashDumps|Collect crash dumps. By default, crash dumps are not collected.
+
 ## StandaloneLogCollector.exe single node collect commands
 
 StandaloneLogCollector single node commands are used when:  
@@ -28,7 +42,7 @@ StandaloneLogCollector single node commands are used when:
 * Cluster is not running
 * Cluster is not installing
 
-NOTE: It is always recommended to use the smallest timeframe possible that represents the issue as logging is extensive.
+NOTE: It is recommended to use the smallest timeframe possible that represents the issue as logging is extensive.
 
 ### node collect command
 
@@ -57,7 +71,7 @@ StandaloneLogCollector cluster node commands are used when:
 * random issues
 * when issue is not known
 
-NOTE: It is always recommended to use the smallest timeframe possible that represents the issue as logging is extensive especially when collecting from entire cluster.
+NOTE: It is recommended to use the smallest timeframe possible that represents the issue as logging is extensive especially when collecting from entire cluster.
 
 ### cluster collect command
 
@@ -75,6 +89,61 @@ NOTE: It is always recommended to use the smallest timeframe possible that repre
 
 ```powershell
 .\StandaloneLogCollector.exe -scope cluster -mode collectAndUpload -StartUtcTime "10/31/2019 20:00:00" -EndUtcTime "10/31/2019 22:30:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+```
+
+## StandaloneLogCollector.exe upload commands
+
+### cluster upload command to storage account
+
+```powershell
+.\StandaloneLogCollector.exe -mode upload -output c:\temp\collection1 -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+```
+
+### Node or cluster upload command to kusto or log analytics using collectsfdata.exe
+
+CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download utility from [CollectServiceFabricData]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -?.
+
+```text
+collectsfdata.exe --cacheLocation c:\temp\collection1 --kustoCluster "https://{{kusto cluster}}.{{ location }}.kusto.windows.net/{{ kusto database }} --kustoTable standalone_collection1
+
+```
+
+## Troubleshooting  
+
+### Error when trying to use scope 'cluster'
+
+If -scope cluster fails, try -scope node from the node(s) with issue and/or primary node with issue. There are multiple reasons for -scope cluster to fail including not having the diagnosticsstore configured or permissions set correctly. Depending on issue, logs may only be available locally on the node.
+
+### Error when trying to use mode 'upload' or 'collectandupload'
+
+If unable to use -mode *upload mode types, use -mode collect instead. After data has been copied into output folder, try using standalonelogcollector.exe -mode upload from another machine setting -output to the output folder. Or, if working with Microsoft support, zip output folder, and upload to case workspace.
+
+```text
+10/31/2019 2:59:40 PM,Error,MainWorkflow,Error: The remote server returned an error: (400) Bad Request.,Microsoft.WindowsAzure.Storage.StorageException: The remote server returned an error: (400) Bad Request. ---> System.Net.WebException: The remote server returned an error: (400) Bad Request.
+   at System.Net.HttpWebRequest.GetResponse()
+```
+
+### Directory Path is longer than 80 characters
+
+The trace path and filename length is long and can cause issues on machines where [LongPathsEnabled](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file) has not been set. Use a directory with a short name to prevent this error. Example: c:\temp
+
+```text
+The default output directory path 'C:\Users\user\Downloads\Microsoft.Azure.ServiceFabric.WindowsServer.6.5.676.9590\tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage\nt0000000.2019.10.26.11.48.15' is longer than 80 characters. Please specify a shorter path, like c:\myOutput
+```
+
+## Reference
+
+```text
+Usage: StandaloneLogCollector.exe -Output <output directory> -StartUtcTime <start utc time> -EndUtcTime <end utc time> -IncludeLeaseLogs -Scope <node, or cluster> -Mode <Collect, Upload, or CollectAndUpload> -StorageConnectionString <SAS URL> -ClusterConfigFilePath <Json Configuration file path> -IncludeCrashDumps
+
+Examples:
+
+  Example 1: StandaloneLogCollector.exe -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+  Example 2: StandaloneLogCollector.exe -Output c:\myOutput -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+  Example 3: StandaloneLogCollector.exe -StartUtcTime "01/27/2017 22:00:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+  Example 4: StandaloneLogCollector.exe -EndUtcTime "01/27/2017 23:00:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+  Example 5: StandaloneLogCollector.exe -Output c:\myOutput -StartUtcTime "01/27/2017 22:00:00" -EndUtcTime "01/27/2017 23:00:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+  Example 6: StandaloneLogCollector.exe -Output c:\myOutput -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken" -ClusterConfigFilePath c:\SAPackage\ClusterConfig.json  
 ```
 
 #### Example StandaloneLogCollector.exe cluster command output
@@ -121,15 +190,6 @@ Enter any key to continue.
 Please review the information in the log package before uploading it to Microsoft: C:\temp\standalonelogcollector\nt0000000.2019.10.31.14.36.48
 Press any key to complete.
 ```
-
-## StandaloneLogCollector.exe upload commands
-
-### cluster upload command to storage account
-
-```powershell
-.\StandaloneLogCollector.exe -mode upload -output c:\temp\collection1 -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
-```
-
 #### Example upload command output
 
 ```
@@ -149,65 +209,4 @@ Press any key to start data upload.
 10/31/2019 2:59:40 PM,Info,MainWorkflow,Log upload of TableLogUploader begins,
 10/31/2019 2:59:40 PM,Info,TaskManager,all 1 tasks succeed,
 10/31/2019 2:59:40 PM,Info,MainWorkflow,Workflow ends,
-```
-
-### Node or cluster upload command to kusto or log analytics using collectsfdata.exe
-
-CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download utility from [CollectServiceFabricData]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -?.
-
-```text
-collectsfdata.exe --cacheLocation c:\temp\collection1 --kustoCluster "https://{{kusto cluster}}.{{ location }}.kusto.windows.net/{{ kusto database }} --kustoTable standalone_collection1
-
-```
-
-## Troubleshooting  
-
-### Error when trying to use scope 'cluster'
-
-If -scope cluster fails, try -scope node from the node(s) with issue and/or primary node with issue. There are multiple reasons for -scope cluster to fail including not having the diagnosticsstore configured or permissions set correctly. Depending on issue, logs may only be available locally on the node.
-
-### Error when trying to use mode 'upload' or 'collectandupload'
-
-If unable to use -mode *upload mode types, use -mode collect instead. After data has been copied into output folder, try using standalonelogcollector.exe -mode upload from another machine setting -output to the output folder. Or, if working with Microsoft support, zip output folder, and upload to case workspace.
-
-```text
-10/31/2019 2:59:40 PM,Error,MainWorkflow,Error: The remote server returned an error: (400) Bad Request.,Microsoft.WindowsAzure.Storage.StorageException: The remote server returned an error: (400) Bad Request. ---> System.Net.WebException: The remote server returned an error: (400) Bad Request.
-   at System.Net.HttpWebRequest.GetResponse()
-```
-
-### Directory Path is longer than 80 characters
-
-The trace path and filename length is long and can cause issues on machines where [LongPathsEnabled](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file) has not been set. Use a directory with a short name to prevent this error. Example: c:\temp
-
-```text
-The default output directory path 'C:\Users\user\Downloads\Microsoft.Azure.ServiceFabric.WindowsServer.6.5.676.9590\tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage\nt0000000.2019.10.26.11.48.15' is longer than 80 characters. Please specify a shorter path, like c:\myOutput
-```
-
-## Reference
-
-```text
-Usage: StandaloneLogCollector.exe -Output <output directory> -StartUtcTime <start utc time> -EndUtcTime <end utc time> -IncludeLeaseLogs -Scope <node, or cluster> -Mode <Collect, Upload, or CollectAndUpload> -StorageConnectionString <SAS URL> -ClusterConfigFilePath <Json Configuration file path> -IncludeCrashDumps
-
-
-Parameters:
-
-  Output:                      Output directory path. By default, it is generated beside the exe, and named in the format '{machine name}.{time stamp}'.
-  StartUtcTime:                Start UTC time of trace logs to collect. By default, it is 1 hour prior to the EndUtcTime. Format: MM/dd/yyyy HH:mm:ss.
-  EndUtcTime:                  End UTC time of trace logs to collect. By default, it is now if StartUtcTime is not specified, and it is 1 hour after StartUtcTime if StartUtcTime is specified. Format: MM/dd/yyyy HH:mm:ss.
-  IncludeLeaseLogs:            Collect lease logs. By default, lease logs are not collected.
-  Scope:                       The scope of the log collection. 'node' indicates collecting trace logs from the current node only. 'cluster' indicates collecting trace logs from all nodes. By default, it is 'cluster'.
-  Mode:                        The execution workflow of the tool. 'Collect' collects but does not upload logs. 'Upload' uploads logs collected in a previous run. 'CollectAndUpload' collects and uploads logs in the same run. By default, it is 'CollectAndUpload'.
-  StorageConnectionString:     The Azure storage connection string provided by Microsoft support team, in the format of a SAS URL. Please add double quotes around the url string.
-  ClusterConfigFilePath:       The json cluster configuration file path. This parameter is needed when the cluster failed during setup and has not come up.
-  IncludeCrashDumps:           Collect crash dumps. By default, crash dumps are not collected.
-
-
-Examples:
-
-  Example 1: StandaloneLogCollector.exe -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
-  Example 2: StandaloneLogCollector.exe -Output c:\myOutput -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
-  Example 3: StandaloneLogCollector.exe -StartUtcTime "01/27/2017 22:00:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
-  Example 4: StandaloneLogCollector.exe -EndUtcTime "01/27/2017 23:00:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
-  Example 5: StandaloneLogCollector.exe -Output c:\myOutput -StartUtcTime "01/27/2017 22:00:00" -EndUtcTime "01/27/2017 23:00:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
-  Example 6: StandaloneLogCollector.exe -Output c:\myOutput -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken" -ClusterConfigFilePath c:\SAPackage\ClusterConfig.json  
 ```
