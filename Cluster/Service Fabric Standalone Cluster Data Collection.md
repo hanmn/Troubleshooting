@@ -101,7 +101,24 @@ NOTE: It is recommended to use the smallest timeframe possible that represents t
 
 ### Node or cluster upload command to kusto or log analytics using collectsfdata.exe
 
-CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download utility from [CollectServiceFabricData]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -?.
+CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download utility from [CollectServiceFabricData]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -?.  
+**NOTE: Kusto and Log Analytics are not free**
+
+#### command to upload to new log analytics workspace
+
+```text
+collectsfdata.exe --cacheLocation c:\temp\collection1 --azureSubscriptionId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --azureResourceGroup "lasfrg" --azureResourceGroupLocation "eastus" --logAnalyticsWorkspaceName "lasf" --logAnalyticsName standalone_collection1
+
+```
+
+#### command to upload to existing log analytics workspace
+
+```text
+collectsfdata.exe --cacheLocation c:\temp\collection1 --logAnalyticsId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --logAnalyticsKey xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --logAnalyticsName standalone_collection1
+
+```
+
+#### command to upload to existing kusto cluster
 
 ```text
 collectsfdata.exe --cacheLocation c:\temp\collection1 --kustoCluster "https://ingest-{{kusto cluster}}.{{location}}.kusto.windows.net/{{kusto database}} --kustoTable standalone_collection1
