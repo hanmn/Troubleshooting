@@ -104,7 +104,7 @@ NOTE: It is recommended to use the smallest timeframe possible that represents t
 CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download utility from [CollectServiceFabricData]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -?.
 
 ```text
-collectsfdata.exe --cacheLocation c:\temp\collection1 --kustoCluster "https://{{kusto cluster}}.{{ location }}.kusto.windows.net/{{ kusto database }} --kustoTable standalone_collection1
+collectsfdata.exe --cacheLocation c:\temp\collection1 --kustoCluster "https://ingest-{{kusto cluster}}.{{location}}.kusto.windows.net/{{kusto database}} --kustoTable standalone_collection1
 
 ```
 
