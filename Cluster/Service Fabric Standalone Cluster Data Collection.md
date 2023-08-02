@@ -11,11 +11,11 @@ StandaloneLogCollector.exe is a utility included in the Service Fabric Standalon
 ## StandaloneLogCollector.exe setup
 
 1. Logon to machine with Service Fabric installed and open administrative prompt
-2. Download StandaloneLogCollector.exe included in package [service fabric standalone package](https://go.microsoft.com/fwlink/?LinkId=730690)
-3. Expand downloaded zip .\Microsoft.Azure.ServiceFabric.WindowsServer.#.#.#.#.zip
-4. Expand embedded zip in 'Tools' extracted subdirectory .\Tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage.zip
-5. Copy StandaloneLogCollector.exe to a path close to root for example c:\temp. this is to prevent [Directory Path is longer than 80 characters](#Directory-Path-is-longer-than-80-characters)
-6. Run StandaloneLogCollector.exe -? for command information
+1. Download StandaloneLogCollector.exe included in package [service fabric standalone package](https://go.microsoft.com/fwlink/?LinkId=730690)
+1. Expand downloaded zip .\Microsoft.Azure.ServiceFabric.WindowsServer.#.#.#.#.zip
+1. Expand embedded zip in 'Tools' extracted subdirectory .\Tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage.zip
+1. Copy StandaloneLogCollector.exe to a path close to root for example c:\temp. this is to prevent [Directory Path is longer than 80 characters](#Directory-Path-is-longer-than-80-characters)
+1. Run StandaloneLogCollector.exe -? for command information
 
 ## StandaloneLogCollector.exe parameters
 
@@ -42,24 +42,33 @@ StandaloneLogCollector single node commands are used when:
 * Cluster is not running
 * Cluster is not installing
 
-NOTE: It is recommended to use the smallest timeframe possible that represents the issue as logging is extensive.
+NOTE: It is recommended to use the smallest time-frame possible that represents the issue as logging is extensive.
 
 ### node collect command
 
 ```powershell
-.\StandaloneLogCollector.exe -scope node -mode collect
+.\StandaloneLogCollector.exe -scope node -mode collect -accepteula
 ```
 
 ### node collect command with time range
 
 ```powershell
-.\StandaloneLogCollector.exe -scope node -mode collect -StartUtcTime "10/31/2019 20:00:00" -EndUtcTime "10/31/2019 22:30:00"
+.\StandaloneLogCollector.exe -scope node `
+  -mode collect `
+  -StartUtcTime "10/31/2019 20:00:00" `
+  -EndUtcTime "10/31/2019 22:30:00" `
+  -accepteula
 ```
 
 ### node collect command with time range to specific output path
 
 ```powershell
-.\StandaloneLogCollector.exe -scope node -mode collect -StartUtcTime "10/31/2019 20:00:00" -EndUtcTime "10/31/2019 22:30:00" -output c:\temp\collection1
+.\StandaloneLogCollector.exe -scope node `
+  -mode collect `
+  -StartUtcTime "10/31/2019 20:00:00" `
+  -EndUtcTime "10/31/2019 22:30:00" `
+  -output c:\temp\collection1 `
+  -accepteula
 ```
 
 ## StandaloneLogCollector.exe cluster collect commands
@@ -76,52 +85,87 @@ NOTE: It is recommended to use the smallest timeframe possible that represents t
 ### cluster collect command
 
 ```powershell
-.\StandaloneLogCollector.exe -scope cluster -mode collect
+.\StandaloneLogCollector.exe -scope cluster -mode collect -accepteula
 ```
 
 ### cluster collect command with time range
 
 ```powershell
-.\StandaloneLogCollector.exe -scope cluster -mode collect -StartUtcTime "10/31/2019 20:00:00" -EndUtcTime "10/31/2019 22:30:00"
+.\StandaloneLogCollector.exe -scope cluster `
+  -mode collect `
+  -StartUtcTime "10/31/2019 20:00:00" `
+  -EndUtcTime "10/31/2019 22:30:00" `
+  -accepteula
 ```
 
 ### cluster collect command with time range and upload to storage account
 
 ```powershell
-.\StandaloneLogCollector.exe -scope cluster -mode collectAndUpload -StartUtcTime "10/31/2019 20:00:00" -EndUtcTime "10/31/2019 22:30:00" -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+.\StandaloneLogCollector.exe -scope cluster `
+  -mode collectAndUpload `
+  -StartUtcTime "10/31/2019 20:00:00" `
+  -EndUtcTime "10/31/2019 22:30:00" `
+  -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken" `
+  -accepteula
 ```
 
 ## StandaloneLogCollector.exe upload commands
 
-### cluster upload command to storage account
+**NOTE: If working with Microsoft support, zip and upload the standalonecollector output directory to case workspace.**
+
+### Node or cluster upload command to storage account
 
 ```powershell
-.\StandaloneLogCollector.exe -mode upload -output c:\temp\collection1 -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
+.\StandaloneLogCollector.exe -mode upload `
+  -output c:\temp\collection1 `
+  -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken" `
+  -accepteula
 ```
 
 ### Node or cluster upload command to kusto or log analytics using collectsfdata.exe
 
-CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download utility from [CollectServiceFabricData]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -?.  
-**NOTE: Kusto and Log Analytics are not free**
+CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download latest [release]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") from git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -? or see [CollectServiceFabricData](https://github.com/microsoft/CollectServiceFabricData).  
 
-#### command to upload to new log analytics workspace
+**NOTE: Kusto and Log Analytics options are not free. See [Azure Monitor Pricing](https://azure.microsoft.com/en-us/pricing/details/monitor/) for Log Analytics and [Azure Data Explorer Pricing](https://azure.microsoft.com/is-is/pricing/details/data-explorer/) for Kusto**
 
-```text
-collectsfdata.exe --cacheLocation c:\temp\collection1 --azureSubscriptionId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --azureResourceGroup "lasfrg" --azureResourceGroupLocation "eastus" --logAnalyticsWorkspaceName "lasf" --logAnalyticsName standalone_collection1
+### example command to upload to new log analytics workspace
+
+```powershell
+.\collectsfdata.exe --cacheLocation 'c:\temp\collection1' `
+ --gatherType 'trace' `
+ --azureSubscriptionId 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' `
+ --azureResourceGroup 'lasfrg' `
+ --azureResourceGroupLocation 'eastus' `
+ --logAnalyticsWorkspaceName 'lasf' `
+ --logAnalyticsCreate $true `
+ --logAnalyticsName 'standalone_collection1' `
+ --saveConfiguration '.\collectsfdata.la.json' `
+ --useMemoryStream $false
 
 ```
 
-#### command to upload to existing log analytics workspace
+### example command to upload to existing log analytics workspace
 
-```text
-collectsfdata.exe --cacheLocation c:\temp\collection1 --logAnalyticsId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --logAnalyticsKey xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --logAnalyticsName standalone_collection1
+```powershell
+.\collectsfdata.exe --cacheLocation 'c:\temp\collection1' `
+ --gatherType 'trace' `
+ --logAnalyticsId 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' `
+ --logAnalyticsKey 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' `
+ --logAnalyticsName 'standalone_collection1' `
+ --unique $true `
+ --useMemoryStream $false
 
 ```
 
-#### command to upload to existing kusto cluster
+### example command to upload to existing kusto cluster
 
-```text
-collectsfdata.exe --cacheLocation c:\temp\collection1 --kustoCluster "https://ingest-{{kusto cluster}}.{{location}}.kusto.windows.net/{{kusto database}} --kustoTable standalone_collection1
+```powershell
+.\collectsfdata.exe --cacheLocation 'c:\temp\collection1' `
+ --gatherType 'trace' `
+ --kustoCluster 'https://ingest-{{kusto cluster}}.{{location}}.kusto.windows.net/{{kusto database}}' `
+ --kustoTable 'standalone_collection1' `
+ --unique $true `
+ --useMemoryStream $false
 
 ```
 
@@ -135,7 +179,7 @@ If -scope cluster fails, try -scope node from the node(s) with issue and/or prim
 
 If unable to use -mode *upload mode types, use -mode collect instead. After data has been copied into output folder, try using standalonelogcollector.exe -mode upload from another machine setting -output to the output folder. Or, if working with Microsoft support, zip output folder, and upload to case workspace.
 
-```text
+```powershell
 10/31/2019 2:59:40 PM,Error,MainWorkflow,Error: The remote server returned an error: (400) Bad Request.,Microsoft.WindowsAzure.Storage.StorageException: The remote server returned an error: (400) Bad Request. ---> System.Net.WebException: The remote server returned an error: (400) Bad Request.
    at System.Net.HttpWebRequest.GetResponse()
 ```
@@ -144,13 +188,13 @@ If unable to use -mode *upload mode types, use -mode collect instead. After data
 
 The trace path and filename length is long and can cause issues on machines where [LongPathsEnabled](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file) has not been set. Use a directory with a short name to prevent this error. Example: c:\temp
 
-```text
+```powershell
 The default output directory path 'C:\Users\user\Downloads\Microsoft.Azure.ServiceFabric.WindowsServer.6.5.676.9590\tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage\nt0000000.2019.10.26.11.48.15' is longer than 80 characters. Please specify a shorter path, like c:\myOutput
 ```
 
 ## Reference
 
-```text
+```powershell
 Usage: StandaloneLogCollector.exe -Output <output directory> -StartUtcTime <start utc time> -EndUtcTime <end utc time> -IncludeLeaseLogs -Scope <node, or cluster> -Mode <Collect, Upload, or CollectAndUpload> -StorageConnectionString <SAS URL> -ClusterConfigFilePath <Json Configuration file path> -IncludeCrashDumps
 
 Examples:
@@ -165,7 +209,7 @@ Examples:
 
 #### Example StandaloneLogCollector.exe cluster command output
 
-```text
+```powershell
 PS C:\temp\standalonelogcollector> .\StandaloneLogCollector.exe -scope cluster -mode collect
 
 The privacy statement for using Microsoft Azure Service Fabric Standalone Log Collector can be found on https://privacy.microsoft.com/en-US .
