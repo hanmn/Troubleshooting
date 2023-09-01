@@ -121,18 +121,7 @@ https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%2
 
 16. Once the update complete and if you try to access the Service Fabric Explorer, you will see an error like AADSTS50105 - "The signed in user is not assigned to a role for the application".
 
-17. To overcome this you must add users to a Role, go to App Registrations and select the Cluster 
+17. To overcome this you must add users to a Role, go to App Registrations and select the Cluster, then add your user to the Admin role
 
-18. Then go to Settings, select required permissions option, and click on Add.
-
-19. Select Windows Azure Active Directory option.
-
-20. Select All Application permissions and Delegated permissions.
-
-21. After adding all permissions, click on Grant Permissions option (this is next to the '+ Add' button). 
-    If you will miss this, you will probably see an error like 'Need Admin Approval'.
-
-22. Once you click on Grant Permissions, you will be able to access the SF Cluster via AAD.
-
-23. Now, try to access you cluster: https://mycluster.centralindia.cloudapp.azure.com:19080/Explorer 
+18. Now, try to access you cluster: https://mycluster.centralindia.cloudapp.azure.com:19080/Explorer 
     you will be able to access Service Fabric explorer from your AAD user.
