@@ -55,7 +55,7 @@ ForEach($nodeIpAddress in $nodeIpArray)
             if ($(Get-Process | ? ProcessName -like "*FabricInstaller*" | measure).Count -gt 0) {
                 Write-Warning "Found FabricInstaller running, may cause issues if not stopped, consult manual guide..."
                 Write-Host "Pausing (15s)..."
-                Start-Service -Seconds 15
+                Start-Sleep -Seconds 15
             }
 
             $bootstrapAgent = "ServiceFabricNodeBootstrapAgent"
