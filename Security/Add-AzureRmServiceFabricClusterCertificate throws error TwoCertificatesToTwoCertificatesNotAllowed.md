@@ -77,5 +77,5 @@ or
 2. From PowerShell run [Remove-AzureRmServiceFabricClusterCertificate](https://docs.microsoft.com/en-us/powershell/module/azurerm.servicefabric/Remove-AzureRmServiceFabricClusterCertificate)
 
 ```PowerShell
-    Remove-AzureRmServiceFabricClusterCertificate -ResourceGroupName 'Group1' -Name 'Contoso01SFCluster' -Thumbprint '16A2561C8C691B9C683DB1CA06842E7FA85F6726
+    Remove-AzureRmServiceFabricClusterCertificate -ResourceGroupName 'Group1' -Name 'Contoso01SFCluster' -Thumbprint '16A2561C8C691B9C683DB1CA06842E7FA85F6726'
 ```
