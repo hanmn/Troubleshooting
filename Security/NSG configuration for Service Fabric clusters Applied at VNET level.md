@@ -16,6 +16,7 @@ For FQDN firewall's its recommended you use Azure Firewall.
 		- Ephemeral Range: 49152-65534
 		- SMB: 445 and 139
 -   **Inbound** 168.63.129.16 - <https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-custom-probe-overview>
+				<https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16>
 
 -   **Outbound** VnetOutbound (*) - node to node communication should never be blocked
 -   **Outbound** IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s) - see **SFRP endpoint** below
