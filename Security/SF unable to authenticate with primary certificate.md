@@ -11,7 +11,7 @@
 
 ## **Resolution**
 - Use the certificate with furthest expiration date for authentication
-- Or you can revert to the old algorithm by using following command
+- Or you can revert to the old algorithm by using following command, which will cause the cluster to only use the primary certificate.  To use the newly added certificate you will need to manually swap the secondary cert and primary cert.
 
 ```PowerShell
 Set-AzureRmServiceFabricSetting -ResourceGroupName rgname -Name clustername -Section "Security" -Parameter "UseSecondaryIfNewer" -Value "false"
@@ -19,6 +19,9 @@ Set-AzureRmServiceFabricSetting -ResourceGroupName rgname -Name clustername -Sec
 
 ## **References**
 - <https://github.com/Azure/service-fabric-issues/issues/517>
+
+## **See Also**
+[Use Azure Resource Explorer to add the Secondary Certificate](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Security/Use%20Azure%20Resource%20Explorer%20to%20add%20the%20Secondary%20Certificate.md)
 
 
 Repro:
