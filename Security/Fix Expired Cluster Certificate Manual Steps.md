@@ -149,16 +149,18 @@ Then, set all services to startup type `Disabled`, and reboot the machine. On re
 
         Note: Any deployed applications using old cert for application encryption\ssl\etc will need to be redeployed with the updated thumbprint *after* the cluster is restored 
 
-  
+10. Locate InfrastructureManifest.xml in the SvcFab folder like "D:\SvcFab\_sys_0\Fabric\Fabric.Data\InfrastructureManifest.xml" 
 
-10. Run following cmdlet to update the Service Fabric cluster, replace the SvcFab path according to the actual path.  Verify the Node version, use latest 
+    * Replace all occurrences of old cert with the new thumbprint
+
+11. Run following cmdlet to update the Service Fabric cluster, replace the SvcFab path according to the actual path.  Verify the Node version, use latest 
 
     ```PowerShell
     New-ServiceFabricNodeConfiguration -FabricDataRoot "D:\SvcFab" -FabricLogRoot "D:\SvcFab\Log" -ClusterManifestPath "D:\Temp\clusterManifest.xml" -InfrastructureManifestPath "D:\SvcFab\_sys_0\Fabric\Fabric.Data\InfrastructureManifest.xml"  
     ```
  
 
-11. Edit  "D:\SvcFab\\_sys_0\Fabric\Fabric.Package.current.xml" 
+12. Edit  "D:\SvcFab\\_sys_0\Fabric\Fabric.Package.current.xml" 
 
     * Note down the value for "ManifestVersion" attribute on line 2
 
@@ -173,7 +175,7 @@ Then, set all services to startup type `Disabled`, and reboot the machine. On re
     * Replace all occurrences of old cert with the new thumbprint 
 
 
-12. Start both services "Microsoft Service Fabric Host Service" and "Azure Service Fabric Node Bootstrap Agent" again **(run in this exact order)**
+13. Start both services "Microsoft Service Fabric Host Service" and "Azure Service Fabric Node Bootstrap Agent" again **(run in this exact order)**
 
     ```PowerShell
     net start FabricHostSvc 
@@ -188,13 +190,13 @@ If you previously encountered a race condition where `FabricInstallerService.exe
 
 
 
-13. Open Task Manager and wait for a couple minutes to verify that **FabricGateway.exe** is running 
+14. Open Task Manager and wait for a couple minutes to verify that **FabricGateway.exe** is running 
 
 ## } 
 
  
 
-14. After all the nodes have been updated (or at least all the seed nodes), services should be restarting and when ready you see FabricGateway.exe running you can try to reconnect to the cluster over SFX and PowerShell from your development computer.  *(Make sure you have installed the new Cert to `CurrentUser\My`)*
+15. After all the nodes have been updated (or at least all the seed nodes), services should be restarting and when ready you see FabricGateway.exe running you can try to reconnect to the cluster over SFX and PowerShell from your development computer.  *(Make sure you have installed the new Cert to `CurrentUser\My`)*
 
 ```PowerShell
         $ClusterName= "clustername.cluster_region.cloudapp.azure.com:19000"
@@ -214,7 +216,7 @@ If you previously encountered a race condition where `FabricInstallerService.exe
 **Note 2**: The cluster will not display Nodes/applications/or reflect the new Thumbprint yet because the Service Fabric Resource Provider (SFRP) record for this cluster has not been updated with the new thumbprint.  To correct this Contact Azure support to **create a support ticket from the Azure Portal for this cluster** to request the final update to the SFRP record with the new thumbprint.
 
 
-15. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
+16. The last step will be to update the cluster ARM template to reflect the location of the new Cert / Keyvault 
 
     * Go to https://resources.azure.com --> Resource Group --> providers --> Microsoft.Compute --> vmss 
 
