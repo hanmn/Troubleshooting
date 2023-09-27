@@ -141,7 +141,7 @@ There is a race condition where sometimes `FabricInstallerService.exe` is stuck 
 Then, set all services to startup type `Disabled`, and reboot the machine. On reboot `FabricInstallerService.exe` should never run. Continue along with the TSG.
 
 
-9. Locate ClusterManifest.current in the SvcFab folder like "D:\SvcFab\_sys_0\Fabric\ClusterManifest.current.xml" according to actual datapath deployed, and copy to somewhere like D:\Temp\clusterManifest.xml 
+9. Locate ClusterManifest.current in the SvcFab folder like "D:\SvcFab\\_sys_0\Fabric\ClusterManifest.current.xml" according to actual datapath deployed, and copy to somewhere like D:\Temp\clusterManifest.xml 
 
     * Modify the D:\Temp\clusterManifest.xml and update with new thumbprint. 
 
