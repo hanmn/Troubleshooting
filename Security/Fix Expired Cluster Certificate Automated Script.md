@@ -109,6 +109,7 @@ Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher
 6. **Wait** for the virtual machine scale set Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scale set.
 
 ![GET](../media/resourcemgr2.png)
+
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
 7. RDP into node 0 for each NodeType in the cluster
