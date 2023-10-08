@@ -9,7 +9,7 @@ Service Fabric supports auto-rollover of cluster certificates by allowing them t
 
 For clusters secured with certificates declared by thumbprint, rotation requires a cluster upgrade, which may pose additional risks or simply do not complete in time prior to the expiration of the certificate.  Service Fabric now supports allowing a cluster secured with Self-signed certificates declared by thumbprint, to use its cluster certificate past the certificate expiration (**Valid To**) date. The feature allows the recovery of a cluster that collapsed due to expired certificate. 
 
-It requires explicit opt-in, and is only applicable on clusters secured with self-signed certificates declared by thumbprint. You can use the script below to enable this setting automatically.  To **manually** enable this behavior and consent to enabling this feature, do the following:
+It requires explicit opt-in, and is only applicable on clusters secured with self-signed certificates declared by thumbprint. You can use the script below to enable this setting automatically. If cluster certificate **is** still valid, to enable and consent to this behavior, do the following to prevent cluster outage:
 
 1)	Ensure that cluster is secured with self-signed certificates decalred by thumbprint.
 
