@@ -14,10 +14,12 @@ if($installedVersion -ge [version]("4.8")) {
 }
 
 $path = "$psscriptroot\ndp48-x86-x64-allos-enu.exe" 
-$path    
+$path
 
-"Downloading [$url]`nSaving at [$path]" 
-(new-object System.Net.WebClient).DownloadFile($url, $path) 
+if(!(test-path $path)) {
+    "Downloading [$url]`nSaving at [$path]" 
+    (new-object net.webClient).DownloadFile($url, $path) 
+}
 
 $argumentList = "/q /log $psscriptroot\install.log"
 if (!$restart) { $argumentList += " /norestart" }
