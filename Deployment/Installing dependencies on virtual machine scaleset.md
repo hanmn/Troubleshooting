@@ -20,7 +20,7 @@ Using an ARM Template with CSE and extension sequencing, a dependency can be ins
 
 > ### :exclamation:NOTE: It is critical to use 'PATCH' instead of 'PUT' if modifying a deployed cluster! Failure to do so will cause a cluster outage.
 
-### Example steps from resources.azure.com
+### Example steps for resources.azure.com
 
 #### Navigate to nodetype under 'providers' 'virtualMachineScaleSets'
 
@@ -29,6 +29,10 @@ Using an ARM Template with CSE and extension sequencing, a dependency can be ins
 #### Select 'Edit' at top of page to start editing
 
 ![](../media/resourcemgr2.png)
+
+![](../media/resourcemgr14.png)
+
+![](../media/resourcemgr15.png)
 
 #### When finished editing template, select 'PATCH'
 
