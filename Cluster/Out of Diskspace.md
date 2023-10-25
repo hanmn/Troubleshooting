@@ -97,8 +97,10 @@ Our D: (azure %temp% drive used for Service Fabric Data Root) drive is full. How
 There are multiple tools to report on drive and path usage.
 [directory-treesize.ps1](http://aka.ms/directory-treesize.ps1) is a powershell script in technet gallery that will quickly enumerate drive from powershell prompt. Example commands:
 ```powershell
-(new-object net.webclient).downloadfile("http://aka.ms/directory-treesize.ps1","$(get-location)\directory-treesize.ps1");
-.\directory-treesize.ps1 d:\ -showPercent -detail -minSizeGB 0
+    [net.servicePointManager]::Expect100Continue = $true;
+    [net.servicePointManager]::SecurityProtocol = [net.SecurityProtocolType]::Tls12;
+    (new-object net.webclient).downloadfile("http://aka.ms/directory-treesize.ps1","$pwd\directory-treesize.ps1");
+    .\directory-treesize.ps1 d:\ -showPercent -detail -minSizeGB 0 -logFile $pwd\dts.log
 ```
 ![](../media/outofdiskspace008.png)
 
