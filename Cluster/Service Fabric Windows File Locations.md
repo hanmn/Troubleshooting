@@ -1,6 +1,7 @@
 # Service Fabric Windows File Locations
 
 [Service Fabric Core File Locations](#Service-Fabric-Core-File-Locations)  
+[Service Fabric Core File Locations Standalone](#Service-Fabric-Core-File-Locations-Standalone)  
 [Service Fabric Core File Locations Development Cluster](#Service-Fabric-Core-File-Locations-Development-Cluster)  
 [Service Fabric Event Logs](#Service-Fabric-Event-Logs)  
 [Guest Agent Logs (Azure deployments only)](#Guest-Agent-Logs-Azure-deployments-only)  
