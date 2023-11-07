@@ -631,6 +631,11 @@ function process-machine()
             Get-NetTCPConnection | Where-Object RemotePort -eq 1026 | out-file "$($workdir)\connected-nodes.txt"
         } -arguments @($workdir)
 
+        add-job -jobName "get-netadapterchecksumoffload" -scriptBlock {
+            param($workdir = $args[0])
+            get-netadapterchecksumoffload | format-list * | out-file "$($workdir)\netadapterchecksumoffload.txt"            
+        } -arguments @($workdir)
+
         write-host "netstat ports"
         Invoke-Expression "netstat -bna > $($workdir)\netstat.txt"
 
