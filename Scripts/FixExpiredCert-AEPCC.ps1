@@ -377,7 +377,6 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
     write-host "reset trusted hosts to original values" -foregroundcolor green
     set-item wsman:\localhost\Client\TrustedHosts -value $curValue -Force
     Write-Progress -Completed -Activity "complete"
-    write-host "finished. total minutes: $(((get-date) - $startTime).TotalMinutes.ToString("0.0"))" -foregroundcolor green
 
     if ($global:successNodes) {
         $successUnique = $global:successNodes | sort-object -Unique
@@ -390,6 +389,8 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
         write-warning "`r`ntotal node connection errors: $(@($failUnique).Count). review output"   
         $failUnique
     }
+
+    write-host "finished. total minutes: $(((get-date) - $startTime).TotalMinutes.ToString("0.0"))" -foregroundcolor green
 }
 else {
     write-warning "This Script is supported for the Service Fabric runtime version greater than $supportedVersion. 
