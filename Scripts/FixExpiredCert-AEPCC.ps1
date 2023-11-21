@@ -105,16 +105,15 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                     .SYNOPSIS
                     . Updating Cluster Manifest file with AEPCC Parameter  
                     #>
-
                     function updateManifest {            
-                        Write-Host "Begin updating ClusterManifest.xml File"
+                        Write-Host "$env:computername : Begin updating ClusterManifest.xml File"
                         $manFile = $tempPath + "\clustermanifest.current.xml"
                         $newManifest = $tempPath + "\modified_clustermanifest.xml"
                         #Checking the AEPCC property value        
                         [object]$tempManAEPCC = get-content $manFile | select-string -pattern '<Parameter Name="AcceptExpiredPinnedClusterCertificate" Value="false" />' -AllMatches
                     
                         if ($tempManAEPCC) {
-                            Write-Host "AEPCC is False"
+                            Write-Host "$env:computername : AEPCC is False"
                             $intermediateManifest = $tempPath + "\intermediate_clustermanifest.xml"
                             get-content $manFile | ? { $_.trim() -ne '<Parameter Name="AcceptExpiredPinnedClusterCertificate" Value="false" />' } | set-content $intermediateManifest 
                             $manFile = $intermediateManifest
@@ -132,7 +131,7 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
             
                         $ModContent | Out-File -FilePath $newManifest -Encoding Default -Force  
                             
-                        Write-Host "Updated the ClusterManifest.xml File : " $newManifest 
+                        Write-Host "$env:computername : Updated the ClusterManifest.xml File : $newManifest"
                     
                     }
                     <#
@@ -141,7 +140,7 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                     #>
 
                     function updateSettings {       
-                        Write-Host "Begin updating Settings.xml File"
+                        Write-Host "$env:computername : Begin updating Settings.xml File"
                         $settingFile = $tempPath + "\Settings.xml"
                         $newSettings = $tempPath + "\modified_settings.xml"
 
@@ -149,7 +148,7 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
 
                         [object]$tempSettingAEPCC = get-content $settingFile | select-string -pattern '<Parameter Name="AcceptExpiredPinnedClusterCertificate" Value="false" />' -AllMatches
                         if ($tempSettingAEPCC) {
-                            Write-Host "AEPCC is False"
+                            Write-Host "$env:computername : AEPCC is False"
                             $intermediateSettings = $tempPath + "\intermediate_Settings.xml"
                             get-content $settingFile | ? { $_.trim() -ne '<Parameter Name="AcceptExpiredPinnedClusterCertificate" Value="false" />' } | set-content $intermediateSettings 
                             $settingFile = $intermediateSettings
@@ -165,7 +164,7 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         }
                     
                         $ModContent | Out-File -FilePath $newSettings -Encoding Default -Force
-                        Write-Host "Updated Settings.xml " $newSettings
+                        Write-Host "$env:computername : Updated Settings.xml $newSettings"
                     }
 
                     <#
@@ -174,8 +173,8 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                     #>
                     function StopServiceFabricServices {
                         if ($(Get-Process | ? ProcessName -like "*FabricInstaller*" | measure).Count -gt 0) {
-                            Write-Warning "Found FabricInstaller running, may cause issues if not stopped, consult manual guide..."
-                            Write-Host "Pausing (15s)..."
+                            Write-Warning "$env:computername : Found FabricInstaller running, may cause issues if not stopped, consult manual guide..."
+                            Write-Host "$env:computername : Pausing (15s)..."
                             Start-Sleep -Seconds 15
                         }
 
@@ -185,16 +184,16 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         $bootstrapService = Get-Service -Name $bootstrapAgent
                         if ($bootstrapService.Status -eq "Running") {
                             Stop-Service $bootstrapAgent -ErrorAction SilentlyContinue
-                            Write-Host "Stopping " $bootstrapAgent " service" 
+                            Write-Host "$env:computername : Stopping $bootstrapAgent service" 
                         }
                         Do {
                             Start-Sleep -Seconds 1
                             $bootstrapService = Get-Service -Name $bootstrapAgent
                             if ($bootstrapService.Status -eq "Stopped") {
-                                Write-Host $bootstrapAgent " now stopped" 
+                                Write-Host "$env:computername : $bootstrapAgent now stopped" 
                             }
                             else {
-                                Write-Host $bootstrapAgent " current status:" $bootstrapService.Status
+                                Write-Host "$env:computername : $bootstrapAgent current status: $($bootstrapService.Status)"
                             }
 
                         } While ($bootstrapService.Status -ne "Stopped")
@@ -202,16 +201,16 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         $fabricHostService = Get-Service -Name $fabricHost
                         if ($fabricHostService.Status -eq "Running") {
                             Stop-Service $fabricHost -ErrorAction SilentlyContinue
-                            Write-Host "Stopping " $fabricHost " service" 
+                            Write-Host "$env:computername : Stopping $fabricHost service" 
                         }
                         Do {
                             Start-Sleep -Seconds 1
                             $fabricHostService = Get-Service -Name $fabricHost
-                            if ($fabricHostService.Status -eq "Stopped") {            
-                                Write-Host $fabricHost " now stopped" 
+                            if ($fabricHostService.Status -eq "Stopped") {
+                                Write-Host "$env:computername : $fabricHost now stopped" 
                             }
                             else {
-                                Write-Host $fabricHost " current status:" $fabricHostService.Status
+                                Write-Host "$env:computername : $fabricHost current status: $($fabricHostService.Status)"
                             }
 
                         } While ($fabricHostService.Status -ne "Stopped")
@@ -228,16 +227,16 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         $fabricHostService = Get-Service -Name $fabricHost
                         if ($fabricHostService.Status -eq "Stopped") {
                             Start-Service $fabricHost -ErrorAction SilentlyContinue
-                            Write-Host "Starting" $fabricHost " service" 
+                            Write-Host "$env:computername : Starting $fabricHost service" 
                         }
                         Do {
                             Start-Sleep -Seconds 1
                             $fabricHostService = Get-Service -Name $fabricHost
                             if ($fabricHostService.Status -eq "Running") {
-                                Write-Host $fabricHost " now running" 
+                                Write-Host "$env:computername : $fabricHost now running" 
                             }
                             else {
-                                Write-Host $fabricHost " current status:" $fabricHostService.Status
+                                Write-Host "$env:computername : $fabricHost current status: $($fabricHostService.Status)"
                             }
 
                         } While ($fabricHostService.Status -ne "Running")
@@ -245,17 +244,17 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         $bootstrapService = Get-Service -Name $bootstrapAgent
                         if ($bootstrapService.Status -eq "Stopped") {
                             Start-Service $bootstrapAgent -ErrorAction SilentlyContinue
-                            Write-Host "Starting" $bootstrapAgent " service" 
+                            Write-Host "$env:computername : Starting $bootstrapAgent service" 
                         }
 
                         do {
                             Start-Sleep -Seconds 1
                             $bootstrapService = Get-Service -Name $bootstrapAgent
-                            if ($bootstrapService.Status -eq "Running") {            
-                                Write-Host $bootstrapAgent " now running" 
+                            if ($bootstrapService.Status -eq "Running") {
+                                Write-Host "$env:computername : $bootstrapAgent now running" 
                             }
                             else {
-                                Write-Host $bootstrapAgent " current status:" $bootstrapService.Status
+                                Write-Host "$env:computername : $bootstrapAgent current status: $($bootstrapService.Status)"
                             }
 
                         } While ($bootstrapService.Status -ne "Running")
@@ -286,13 +285,13 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         $packageVersion = $currentPackageXml.ServicePackage.DigestedConfigPackage.ConfigPackage | Select-Object -ExpandProperty Version
                         $SettingsFile = $clusterDataRootPath + "\" + $hostPath + "\Fabric\" + $packageName + "." + $packageVersion + "\settings.xml"
                         $SettingsPath = $clusterDataRootPath + "\" + $hostPath + "\Fabric\" + $packageName + "." + $packageVersion
-                        Write-Host "Settings file: " $SettingsFile       
-                        Write-Host "Settings path: " $SettingsPath 
+                        Write-Host "$env:computername : Settings file: " $SettingsFile
+                        Write-Host "$env:computername : Settings path: " $SettingsPath
 
                         # create a temp folder
                         $tempFolder = New-Item -ItemType Directory -Force -Path $tempPath 
 
-                        Write-Host "Created the temp Work folder :" $tempFolder
+                        Write-Host "$env:computername : Created the temp Work folder :" $tempFolder
 
                         #copy current config to the temp folder
                         Copy-Item -Path $manifestPath -Destination $tempPath -Force -Verbose
@@ -312,35 +311,35 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                         Copy-Item -Path $newSettings -Destination $SettingsFile -Force -Verbose
 
                         #stop these services
-                        Write-Host "Stopping services "
+                        Write-Host "$env:computername : Stopping services"
                         StopServiceFabricServices
 
                         #update the node configuration
                         $logRoot = $clusterDataRootPath + "\Log"
-                        Write-Host "Updating Node configuration with new setting AcceptExpiredPinnedClusterCertificate " 
+                        Write-Host "$env:computername : Updating Node configuration with new setting AcceptExpiredPinnedClusterCertificate " 
                     
                         #For Debugging 
-                        Write-Host "Cluster Manifest " $newManifest
-                        Write-Host " Log Root" $logRoot 
-                        Write-Host "Cluster Data Path  : "$clusterDataRootPath 
-                        Write-Host "Infra :" $infrastructureManifest
+                        Write-Host "$env:computername : Cluster Manifest $newManifest"
+                        Write-Host "$env:computername : Log Root $logRoot"
+                        Write-Host "$env:computername : Cluster Data Path  : $clusterDataRootPath"
+                        Write-Host "$env:computername : Infra : $infrastructureManifest"
                     
                         New-ServiceFabricNodeConfiguration -FabricDataRoot $clusterDataRootPath -FabricLogRoot $logRoot -ClusterManifestPath $newManifest -InfrastructureManifestPath $infrastructureManifest 
-                        Write-Host "Updating Node configuration  complete"
+                        Write-Host "$env:computername : Updating Node configuration complete"
 
                         #restart these services
-                        Write-Host "Starting services "
+                        Write-Host "$env:computername : Starting services "
                         StartServiceFabricServices
                     }
                     else {
-                        Write-Host ("Manifest File already contain the AEPCC parameter" + $nodeIpAddress)                    
+                        Write-Host "$env:computername : Manifest File already contains the AEPCC parameter $nodeIpAddress"
                     }
                 } -ArgumentList $clusterDataRootPath, $tempPath
                 
                 $global:successNodes += $nodeIpAddress
             }
             else {
-                Write-Warning "unable to connect to node: $nodeIpAddress"
+                Write-Warning "$env:computername : unable to connect to node: $nodeIpAddress"
                 $global:failNodes += $nodeIpAddress
             }
         }
