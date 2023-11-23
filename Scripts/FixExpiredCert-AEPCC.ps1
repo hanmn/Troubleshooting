@@ -35,7 +35,7 @@ Param(
     [switch]$cacheCredentials
 )
 Set-StrictMode -Version 3
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'continue'
 $startTime = get-date
 $global:failNodes = @()
 $global:successNodes = @()
@@ -380,13 +380,13 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
     if ($global:successNodes) {
         $successUnique = $global:successNodes | sort-object -Unique
         write-host "total node success: $(@($successUnique).Count)" -ForegroundColor green
-        $successUnique
+        write-host ($successUnique | fl * | out-string)
     }
     
     if ($global:failNodes) {
         $failUnique = $global:failNodes | sort-object -Unique
         write-warning "`r`ntotal node connection errors: $(@($failUnique).Count). review output"   
-        $failUnique
+        write-host ($failUnique | fl * | out-string)
     }
 
     write-host "finished. total minutes: $(((get-date) - $startTime).TotalMinutes.ToString("0.0"))" -foregroundcolor green
