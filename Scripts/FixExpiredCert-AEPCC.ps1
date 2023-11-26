@@ -34,7 +34,7 @@ Param(
     [Parameter(Mandatory = $false)] 
     [switch]$cacheCredentials
 )
-Set-StrictMode -Version 3
+
 $ErrorActionPreference = 'continue'
 $startTime = get-date
 $global:failNodes = @()
