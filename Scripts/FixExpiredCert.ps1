@@ -51,7 +51,6 @@ Param(
     [switch]$cacheCredentials
 )
 
-Set-StrictMode -Version 3
 $error.Clear()
 $ErrorActionPreference = 'continue'
 $startTime = get-date
