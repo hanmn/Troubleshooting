@@ -34,4 +34,4 @@ This contains the Cluster related TSG's surfaced in the Azure Portal during supp
 * [Phantom Nodes show in Service Fabric Explorer](./Phantom%20nodes.md)
 * [SF Node Open Life Cycle](./SF%20Node%20Open%20Life%20Cycle.md)
 * [Why did my node Reboot?](./Why%20did%20my%20node%20Reboot.md)
-* [dataDisk (D:\) out of disk space](./dataDisk%20%22D%22%20out%20of%20disk%20space.md)
+* [dataDisk (D:\) out of disk space](./Out%20of%20Diskspace.md)
