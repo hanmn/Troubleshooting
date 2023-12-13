@@ -18,6 +18,7 @@
 | | FabricDnsService.exe | Service Fabric DNS Service. Responsible for mapping DNS names to service fabric service names  | Network Service Account |
 | | FabricFAS.exe | Service Fabric Fault Analysis service | Network Service Account |
 | | FabricGateway.exe | Gateway process. The TCP listener for 19000 and http(s) listener for 19080 by default to bridge in the management and REST functions to the service fabric cluster | Network Service Account |
+| | FabricIS.exe | Service Fabric Infrastructure Service | System Account |
 | | FabricRM.exe | Service Fabric Repair Manager | Network Service Account |
 | | FabricUOS.exe | Service Fabric upgrade orchestration services (Standalone Cluster) | Network Service Account |
 | | FabricUS.exe | Service Fabric upgrade service | Network Service Account |
