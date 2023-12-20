@@ -182,6 +182,7 @@ param(
 )
 
 Set-StrictMode -Version Latest
+$PSModuleAutoLoadingPreference = 2
 $ErrorActionPreference = "Continue"
 $timer = get-date
 $currentWorkDir = get-location
@@ -633,7 +634,12 @@ function process-machine()
 
         add-job -jobName "get-netadapterchecksumoffload" -scriptBlock {
             param($workdir = $args[0])
-            get-netadapterchecksumoffload | format-list * | out-file "$($workdir)\netadapterchecksumoffload.txt"            
+            get-netadapterchecksumoffload | format-list * | out-file "$($workdir)\netadapterchecksumoffload.txt"
+        } -arguments @($workdir)
+
+        add-job -jobName "get-netnatstaticmapping" -scriptBlock {
+            param($workdir = $args[0])
+            get-netnatstaticmapping | format-list * | out-file "$($workdir)\netnatstaticmapping.txt"
         } -arguments @($workdir)
 
         write-host "netstat ports"
