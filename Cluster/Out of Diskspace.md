@@ -95,12 +95,10 @@ Our D: (azure %temp% drive used for Service Fabric Data Root) drive is full. How
 
 ## **Answer**
 There are multiple tools to report on drive and path usage.
-[directory-treesize.ps1](http://aka.ms/directory-treesize.ps1) is a powershell script in technet gallery that will quickly enumerate drive from powershell prompt. Example commands:
+[directory-treesize.ps1](https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Scripts/directory-treesize.ps1) is a powershell script to enumerate drive from powershell prompt. Example commands:
 ```powershell
-    [net.servicePointManager]::Expect100Continue = $true;
-    [net.servicePointManager]::SecurityProtocol = [net.SecurityProtocolType]::Tls12;
-    (new-object net.webclient).downloadfile("http://aka.ms/directory-treesize.ps1","$pwd\directory-treesize.ps1");
-    .\directory-treesize.ps1 d:\ -showPercent -detail -minSizeGB 0 -logFile $pwd\dts.log
+(new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/directory-treesize.ps1","$pwd\directory-treesize.ps1");
+.\directory-treesize.ps1 d:\ -showPercent -detail -minSizeGB 0 -logFile $pwd\dts.log
 ```
 ![](../media/outofdiskspace008.png)
 
@@ -133,6 +131,3 @@ Azure Cluster:  https://docs.microsoft.com/en-us/azure/service-fabric/service-fa
 
 Standalone Cluster:
 https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#customize-cluster-settings-for-standalone-clusters
-
-Directory Treesize:
-https://gallery.technet.microsoft.com/Windows-PowerShell-067cfed9?redir=0
