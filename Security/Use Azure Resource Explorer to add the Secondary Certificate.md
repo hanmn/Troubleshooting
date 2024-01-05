@@ -134,6 +134,7 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 #### 7. **Wait** for the virtual machine scale set Updating the secondary certificate to complete. At the top of page, click GET to check status. Verify "provisioningState" shows "Succeeded". If "provisioningState" equals "Updating", continue to periodically click GET at top of page to requery scale set.
 
 ![GET](../media/resourcemgr2.png)
+
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
 #### 8. **Perform steps 2 - 7 for each nodetype (virtual machine scale set)**
@@ -317,4 +318,5 @@ Another option is to use the [Azure Resource Explorer](https://resources.azure.c
 #### To troubleshoot errors while modifying a resource configuration, for example, an exclamation or warning icon is temporarily displayed, scroll to the bottom of the page and review the error:
 
 ![resources.azure.com error icon](../media/resourcemgr12.png)
+
 ![resources.azure.com error icon](../media/resourcemgr13.png)
