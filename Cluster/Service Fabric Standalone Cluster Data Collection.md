@@ -11,7 +11,7 @@ StandaloneLogCollector.exe is a utility included in the Service Fabric Standalon
 ## StandaloneLogCollector.exe setup
 
 1. Logon to machine with Service Fabric installed and open administrative prompt
-1. Download StandaloneLogCollector.exe included in package [service fabric standalone package](https://go.microsoft.com/fwlink/?LinkId=730690)
+1. Use either existing StandaloneLogCollector.exe included in original Service Fabric installation binaries or download current StandaloneLogCollector.exe included in package [service fabric standalone package](https://go.microsoft.com/fwlink/?LinkId=730690)
 1. Expand downloaded zip .\Microsoft.Azure.ServiceFabric.WindowsServer.#.#.#.#.zip
 1. Expand embedded zip in 'Tools' extracted subdirectory .\Tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage.zip
 1. Copy StandaloneLogCollector.exe to a path close to root for example c:\temp. this is to prevent [Directory Path is longer than 80 characters](#Directory-Path-is-longer-than-80-characters)
