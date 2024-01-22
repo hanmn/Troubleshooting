@@ -4,7 +4,8 @@
 To create a cluster from scratch using Azure Active Directory, please follow this MSDN document, which covers creating the AAD App, creating users, and assigning those users to roles on the app.
 https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-setup-aad
 
-    i. NOTE for internal Microsoft employees: if the cluster is configured in the Microsoft Tenant you must have IT authorize a Security Group to the "Admin" role
+
+- NOTE for internal Microsoft employees: if the cluster is configured in the Microsoft Tenant you must have IT authorize a Security Group to the "Admin" role
 https://microsoft.sharepoint.com/teams/CorpSTS/Microsoftcom%20AAD%20onboarding%20support/Home.aspx
 (Or try https://microsoft.sharepoint.com/teams/CSEOAAD)
 
