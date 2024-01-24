@@ -54,5 +54,7 @@ Update the cluster settings in Security section - EnforceLinuxMinTlsVersion and 
 - EnforceLinuxMinTlsVersion	bool, default is FALSE
   - set to true; only TLS version 1.2+ is supported. If false; support earlier TLS versions. Applies to Linux only
 
+This setting should enforce TLS1.2 for Service Fabric's Transport and HTTP Gateway. It’s not a machine-wide setting. For more information on setting up machine level TLS setting, please contact Ubuntu support - https://ubuntu.com/support
+
  **more info**
 - https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-fabric-settings#security
