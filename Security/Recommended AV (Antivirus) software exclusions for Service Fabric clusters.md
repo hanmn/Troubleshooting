@@ -56,7 +56,7 @@ Example json for configuring Antimalware on a vm scaleset node for service fabri
                     "AntimalwareEnabled": "true",
                     "Exclusions": {
                         "Extensions": "",
-                        "Paths": "D:\\SvcFab\\*;C:\\ProgramData\\Docker\\*;C:\\Program Files\\Microsoft Service Fabric\\bin\\*",
+                        "Paths": "%ProgramData%\\Docker;%ProgramFiles%\\Microsoft Service Fabric\\bin;D:\\SvcFab",
                         "Processes": ""
                     },
                     "RealtimeProtectionEnabled": "true",
@@ -72,6 +72,17 @@ Example json for configuring Antimalware on a vm scaleset node for service fabri
         }
     //]
 //}
+```
+
+### Powershell example
+
+Powershell is another method useful for standalone and server core clusters.  
+Run the following from an admin powershell prompt on node to set example folder exclusions:  
+
+**NOTE: This will override any existing configuration. Be sure to merge existing Windows Defender / IaaS Antimalware settings with below before executing.**  
+
+```powershell
+Set-MpPreference -ExclusionPath D:\SvcFab, "%ProgramData%\Docker", "%ProgramFiles%\Microsoft Service Fabric\bin"
 ```
 
 ## Verification
@@ -110,7 +121,7 @@ EnableFileHashComputation                     : False
 EnableLowCpuPriority                          : False
 EnableNetworkProtection                       : 0
 ExclusionExtension                            : 
-ExclusionPath                                 : {C:\Program Files\Microsoft Service Fabric\bin\*, C:\ProgramData\Docker\*, D:\SvcFab\*}
+ExclusionPath                                 : {%ProgramData%\Docker, %ProgramFiles%\Microsoft Service Fabric\bin, D:\SvcFab}
 ExclusionProcess                              : 
 HighThreatDefaultAction                       : 0
 LowThreatDefaultAction                        : 0
@@ -156,5 +167,7 @@ PSComputerName                                :
 
 https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-antivirus/deploy-microsoft-defender-antivirus  
 https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-antivirus/configure-server-exclusions-microsoft-defender-antivirus  
+https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-antivirus/configure-extension-file-exclusions-microsoft-defender-antivirus  
+
 https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/anti-virus-optimization-for-windows-containers  
 https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq  
