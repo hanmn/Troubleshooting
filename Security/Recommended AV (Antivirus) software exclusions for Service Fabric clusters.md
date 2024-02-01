@@ -57,7 +57,7 @@ Example json for configuring Antimalware on a vm scaleset node for service fabri
                     "Exclusions": {
                         "Extensions": "",
                         "Paths": "%ProgramData%\\Docker;%ProgramFiles%\\Microsoft Service Fabric\\bin;D:\\SvcFab",
-                        "Processes": ""
+                        "Processes": "%ProgramFiles%\\Microsoft Service Fabric\\bin\\Fabric\\Fabric.Code\\*"
                     },
                     "RealtimeProtectionEnabled": "true",
                     "ScheduledScanSettings": {
@@ -79,10 +79,11 @@ Example json for configuring Antimalware on a vm scaleset node for service fabri
 Powershell is another method useful for standalone and server core clusters.  
 Run the following from an admin powershell prompt on node to set example folder exclusions:  
 
-**NOTE: This will override any existing configuration. Be sure to merge existing Windows Defender / IaaS Antimalware settings with below before executing.**  
+**NOTE: This will override any existing configuration. Be sure to merge existing Windows Defender / IaaS Antimalware settings with below before executing or use Add-* cmdlets.**  
 
 ```powershell
 Set-MpPreference -ExclusionPath D:\SvcFab, "%ProgramData%\Docker", "%ProgramFiles%\Microsoft Service Fabric\bin"
+Set-MpPreference -ExclusionProcess "%ProgramFiles%\Microsoft Service Fabric\bin\Fabric\Fabric.Code\*"
 ```
 
 ## Verification
@@ -122,7 +123,7 @@ EnableLowCpuPriority                          : False
 EnableNetworkProtection                       : 0
 ExclusionExtension                            : 
 ExclusionPath                                 : {%ProgramData%\Docker, %ProgramFiles%\Microsoft Service Fabric\bin, D:\SvcFab}
-ExclusionProcess                              : 
+ExclusionProcess                              : {%ProgramFiles%\Microsoft Service Fabric\bin\Fabric\Fabric.Code\*}
 HighThreatDefaultAction                       : 0
 LowThreatDefaultAction                        : 0
 MAPSReporting                                 : 2
