@@ -189,6 +189,20 @@ Detailed information for importing a certificate into a service fabric container
     }
     ```
 
+1. Build the KestrelSample project to verify functionality  
+
+1. Optionally commit changes
+    - git add --all
+    - git commit -a -m 'sf container https'
+
+---
+
+### **Test Service Fabric container application with certificate**  
+
+1. Publish the KestrelSampleApplication to cluster to verify functionality of certificate. See powershell commands in [Reference](#Reference) that can be run from node for testing / troubleshooting.
+
+    ![](../media/sfx-container-logs-2.png)
+
 ---
 
 ## Reference
