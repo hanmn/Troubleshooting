@@ -4,13 +4,17 @@
 
 >[Requirements](#Requirements)  
 >[Steps](#Steps)  
->>[Verification](#Verification)  
+>>[Verify prerequisites](#Verify-prerequisites)  
 >>[Setup repository](#Setup-repository)  
 >>[Convert sample ASP.NET Core Kestrel application to Service Fabric container application](#Convert-sample-ASP.NET-Core-Kestrel-application-to-Service-Fabric-container-application)  
 >>[Test Service Fabric container application conversion](#Test-Service-Fabric-container-application-conversion)  
 >>[Use certificate file in service fabric container](#Use-certificate-file-in-service-fabric-container)  
 >
->[Reference](#Reference)
+>[Reference](#Reference)  
+>>[RDP to node](#RDP-to-node)  
+>>[Adding exportable certificate to each node](#Adding-exportable-certificate-to-each-node)  
+>>>[Configure RDP client to enable drive mapping](#Configure-RDP-client-to-enable-drive-mapping)  
+>>>[On each node, perform the following](#On-each-node-perform-the-following)  
 
 ## Overview  
 
@@ -20,7 +24,7 @@ For this example a build machine with Windows version 2004 (20H1 / May 2020 upda
 
 > ### :exclamation:NOTE: If service fabric is being used to stage the application certificate in the container, the certificate has to be installed in the nodes local machine certificate store *and* has to be marked as exportable. There are currently no builtin automated methods to perform this action.  
 
-> ### :exclamation:NOTE: It is critical to have an Azure Windows SKU that supports containers and is compatible with the .NET Core version being deployed. see [Windows Server container OS and Host OS compatibility](#https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started-containers#windows-server-container-os-and-host-os-compatibility) and [Virtual Machine Images](https://docs.microsoft.com/en-us/rest/api/compute/virtualmachineimages/listskus) to get current SKU list for given location.
+> ### :exclamation:NOTE: It is critical to have an Azure Windows SKU that supports containers and is compatible with the .NET Core version being deployed. see [Windows Server container OS and Host OS compatibility](#https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started-containers#windows-server-container-os-and-host-os-compatibility) and [Virtual Machine Images](https://docs.microsoft.com/en-us/rest/api/compute/virtualmachineimages/listskus) to get current SKU list for given location.  
 
 ## Requirements
 
@@ -32,11 +36,14 @@ For this example a build machine with Windows version 2004 (20H1 / May 2020 upda
 
 ## Steps
 
-### **Verification**  
+### **Verify prerequisites**  
 
-1. Verify Service Fabric version and sdk versions are current
-1. Verify Service Fabric cluster node OS version is compatible with ASP.NET core version being deployed  
-1. Verify Build machine OS version is compatible with node OS version  
+Verify the following before proceeding:  
+
+1. Service Fabric version and sdk versions are current
+1. Service Fabric cluster node OS version is compatible with ASP.NET core version being deployed  
+1. Build machine OS version is compatible with node OS version  
+1. Exportable application certificate in 'LocalMachine' certificate store on each node. See [Adding exportable certificate to each node](#Adding-exportable-certificate-to-each-node)  
 
 ### **Setup repository**  
 
@@ -209,40 +216,9 @@ Detailed information for importing a certificate into a service fabric container
 
     ![](../media/sfx-container-logs-2.png)
 
+#### **Console powershell and docker container commands from node verifying container web server response:**
 
----
-
-## Reference
-
-Windows Server container OS and Host OS compatibility: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started-containers#windows-server-container-os-and-host-os-compatibility  
-
-ASP.NET Core Kestrel example source code: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-3.1  
-
-Kestrel web server implementation in ASP.NET Core
-Securing Service Fabric containers: 
-https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-securing-containers  
-
-- Kestrel Sample Code: https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/fundamentals/servers/kestrel/samples
-
-Deploy a .NET app in a Windows container: https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/fundamentals/servers/kestrel/samples  
-
-Virtual Machine Images - List Skus: https://docs.microsoft.com/en-us/rest/api/compute/virtualmachineimages/listskus
-
-### **powershell command from node in RDP session to import pfx before deploying container application**  
-
-```text
-PS C:\Users\cloudadmin> Import-PfxCertificate -Exportable -CertStoreLocation Cert:\LocalMachine\My -filepath \\tsclient\c\temp\my.pfx
-
-
-   PSParentPath: Microsoft.PowerShell.Security\Certificate::LocalMachine\My
-
-Thumbprint                                Subject
-----------                                -------
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  CN=*.jagilber.com
-
-```
-
-### **powershell container commands from node verifying container web server response:**
+Below are some example docker and powershell commands that can be used to verify port and certificate response. See [RDP to node](#RDP-to-node) for steps on how to connect to node. After opening RDP connection to node, open admin powershell prompt to run the following commands.
 
 ```text
 PS C:\Users\cloudadmin> docker container ls
@@ -300,3 +276,69 @@ PS C:\Users\cloudadmin> [net.webrequest]::Create('https://127.0.0.1:5001').servi
 2846684986112 CN=GeoTrust RSA CA 2018, OU=www.digicert.com, O=DigiCert Inc, C=US CN=*.jagilber.com
 
 ```  
+
+---
+
+## Reference
+
+Windows Server container OS and Host OS compatibility: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started-containers#windows-server-container-os-and-host-os-compatibility  
+
+ASP.NET Core Kestrel example source code: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-3.1  
+
+Kestrel web server implementation in ASP.NET Core
+Securing Service Fabric containers: 
+https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-securing-containers  
+
+- Kestrel Sample Code: https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/fundamentals/servers/kestrel/samples
+
+Deploy a .NET app in a Windows container: https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/fundamentals/servers/kestrel/samples  
+
+Virtual Machine Images - List Skus: https://docs.microsoft.com/en-us/rest/api/compute/virtualmachineimages/listskus
+
+### RDP to node  
+
+1. Start 'Remote Desktop Connection' (mstsc.exe)  
+1. in 'Computer' field, enter the cluster FQDN and port number.  
+    **NOTE: Azure service fabric clusters provision incrementing NAT rules to each node for RDP access starting at port 3389.**  
+    Example: Default RDP port 3389 has a NAT rule to node 0. Port 3390 has a NAT rule to node 1.  
+    To connect to node 2, in the 'Computer' field, enter: sfjagilber1core2004.eastus.cloudapp.azure.com:3391  
+
+    ![](../media/mstsc-5.png)  
+
+### Adding exportable certificate to each node  
+
+Each node needs an exportable certificate in the 'LocalMachine' store.
+There are multiple ways to achieve this progammatically using Custom Script Extensions (CSE) and Desire State Configuration (DSC) as examples.
+For completeness of this process, below are high level manual steps that can be performed.  
+
+#### Configure RDP client to enable drive mapping  
+
+1. Start 'Remote Desktop Connection' (mstsc.exe) and select 'Show Options' dropdown.  
+
+    ![](../media/mstsc-1.png)  
+
+1. Select 'Local Resources' tab and 'More' button.  
+
+    ![](../media/mstsc-2.png)  
+
+1. Ensure 'Drives' option is checked.  
+
+    ![](../media/mstsc-3.png)  
+
+1. Select 'Ok' and on 'General' tab, select 'Save'  
+
+    ![](../media/mstsc-4.png)  
+
+#### On each node, perform the following  
+
+1. Open admin powershell prompt  
+
+1. Execute the 'Import-PfxCertificate' powershell command to import pfx before deploying container application  
+
+    ```text
+    PS C:\Users\cloudadmin> Import-PfxCertificate -Exportable -CertStoreLocation Cert:\LocalMachine\My -filepath \\tsclient\c\temp\my.pfx
+    PSParentPath: Microsoft.PowerShell.Security\Certificate::LocalMachine\My
+    Thumbprint                                Subject
+    ----------                                -------
+    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  CN=*.jagilber.com
+    ```
