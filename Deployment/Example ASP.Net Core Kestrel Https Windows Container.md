@@ -201,7 +201,14 @@ Detailed information for importing a certificate into a service fabric container
 
 1. Publish the KestrelSampleApplication to cluster to verify functionality of certificate. See powershell commands in [Reference](#Reference) that can be run from node for testing / troubleshooting.
 
+1. Review logging in 'Output' window for any errors.  
+
+    ![](../media/vs-build-output-1.png)
+
+1. Logging for container can be viewed from Service Fabric Explorer.  
+
     ![](../media/sfx-container-logs-2.png)
+
 
 ---
 
