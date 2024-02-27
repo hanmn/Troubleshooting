@@ -20,7 +20,12 @@ Warning
 
 ```text
 System.FabricNode	Certificate_cluster	Mon, 11 May 2020 08:43:09 GMT	Infinity	132336601893388932	false	false
-Certificate expiration: thumbprint = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, expiration = 2020-06-07 18:22:33.000, remaining lifetime is 27:9:39:23.661, please refresh ahead of time to avoid catastrophic failure. Warning threshold Security/CertificateExpirySafetyMargin is configured at 30:0:00:00.000, if needed, you can adjust it to fit your refresh process.
+Certificate expiration: thumbprint = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, 
+expiration = 2020-06-07 18:22:33.000, 
+remaining lifetime is 27:9:39:23.661, 
+please refresh ahead of time to avoid catastrophic failure. 
+Warning threshold Security/CertificateExpirySafetyMargin is configured at 30:0:00:00.000, 
+if needed, you can adjust it to fit your refresh process.
 ```
 
 ## Cause
