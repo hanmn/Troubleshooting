@@ -3,7 +3,7 @@
 When working with Microsoft support on a Service Fabric Windows cluster issue, it may be necessary to capture additional diagnostics information from one or more nodes in the cluster. 
 
 ## Default diagnostic information script will collect:
-**NOTE: All of these options disabled using switch arguments when running script.**
+**NOTE: All of these options can be disabled using switch arguments when running script.**
 - Windows Event Logs - System, Application, Firewall, Http, Service Fabric
 - Operating System information
     - Drive configuration
@@ -39,6 +39,7 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
     - List of Seed nodes
     - SFRP network connectivity check with installed certificate
     - REST queries to local FabricGateway for Cluster / Node / App / and Service events
+    - .etl, .trace, and .zip files from fabric log root for default last 60 minutes
 
 ## Optional diagnostic information script can collect:
 - Certificate information store list
@@ -79,21 +80,29 @@ There are multiple ways to run this script to collect information.
 
 # Help
 ```
+NAME
+    C:\github\jagilber\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1
+
 SYNOPSIS
     powershell script to collect service fabric node diagnostic data
 
-    To download and execute with arguments:
-    (new-object net.webclient).downloadfile("http://aka.ms/event-log-manager.ps1","$pwd\event-log-manager.ps1");
-    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1","$pwd\sf-collect-node-info.ps1");
+    To download and execute:
+    invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
     .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
 
+    optional download for event logs:
+    invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
+    
+    .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
+    
     upload to workspace sfgather* dir or zip
 
 
 SYNTAX
-    G:\github\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1 [[-workdir] <String>] [-certInfo] [[-eventLogNames] <String>] [[-externalUrl] <String>] [[-startTime] <DateTime>] [[-endTime] <DateTime>]
-    [-modifyFirewall] [[-netmonMin] <Int32>] [[-networkTestAddress] <String>] [[-perfmonMin] <Int32>] [[-timeoutMinutes] <Int32>] [[-apiversion] <String>] [[-ports] <Int32[]>] [[-remoteMachines] <String[]>] [-noAdmin]
-    [-noEventLogs] [-noOs] [-noNet] [-noSF] [-quiet] [[-runCommand] <String>] [<CommonParameters>]
+    C:\github\jagilber\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1 [[-workdir] <String>] [-certInfo] [[-eventLogNames] <String>] [[-externalUrl] <String>] [[-startTime] <DateTime>]     
+    [[-endTime] <DateTime>] [[-netmonMin] <Int32>] [[-networkTestAddress] <String>] [[-perfmonMin] <Int32>] [[-ports] <Object>] [[-timeoutMinutes] <Int32>] [[-apiversion] <String>] [[-remoteMachines]
+    <String[]>] [-noAdmin] [-noEventLogs] [-noOs] [-noNet] [-noSF] [-quiet] [[-runCommand] <String>] [[-logMin] <Int32>] [[-defaultFabricLogRoot] <String>] [[-defaultFabricDataRoot] <String>]
+    [<CommonParameters>]
 
 
 DESCRIPTION
@@ -160,7 +169,7 @@ PARAMETERS
 
         Required?                    false
         Position?                    2
-        Default value                System$|Application$|wininet|dns|Fabric|http|Firewall|Azure
+        Default value                System$|Application$|wininet|dns|Fabric|http|Firewall|Azure|insight
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
@@ -195,14 +204,6 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
-    -modifyFirewall [<SwitchParameter>]
-
-        Required?                    false
-        Position?                    named
-        Default value                False
-        Accept pipeline input?       false
-        Accept wildcard characters?  false
-
     -netmonMin <Int32>
         minutes to run network trace at end of collection after all jobs run.
 
@@ -231,13 +232,23 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
+    -ports <Object>
+        comma separated list of tcp ports to test.
+        default ports include basic connectivity, rdp, and service fabric.
+
+        Required?                    false
+        Position?                    9
+        Default value                @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985)
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -timeoutMinutes <Int32>
         script timeout in minutes.
         script will cancel any running jobs and collect what is available if timeout is hit.
 
         Required?                    false
-        Position?                    9
-        Default value                [Math]::Max($perfmonMin,$netmonMin) + 15
+        Position?                    10
+        Default value                [Math]::Max($perfmonMin, $netmonMin) + 15
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
@@ -245,21 +256,11 @@ PARAMETERS
         api version for testing fabricgateway endpoint with service fabric rest api calls.
 
         Required?                    false
-        Position?                    10
+        Position?                    11
         Default value                6.2-preview
         Accept pipeline input?       false
         Accept wildcard characters?  false
-
-    -ports <Int32[]>
-        comma separated list of tcp ports to test.
-        default ports include basic connectivity, rdp, and service fabric.
-
-        Required?                    false
-        Position?                    11
-        Default value                @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985)
-        Accept pipeline input?       false
-        Accept wildcard characters?  false
-
+        
     -remoteMachines <String[]>
         comma separated list of machine names and / or ip addresses to run diagnostic script on remotely.
         this will only work if proper connectivity, authentication, and OS health exists.
@@ -337,11 +338,36 @@ PARAMETERS
         Accept pipeline input?       false
         Accept wildcard characters?  false
 
+    -logMin <Int32>
+        if greater than 0, minutes of log files to collect based on last write time
+        default 60 minutes
+
+        Required?                    false
+        Position?                    14
+        Default value                60
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
+    -defaultFabricLogRoot <String>
+        Required?                    false
+        Position?                    15
+        Default value                d:\svcfab\log
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
+    -defaultFabricDataRoot <String>
+
+        Required?                    false
+        Position?                    16
+        Default value                d:\svcfab
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     <CommonParameters>
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer, PipelineVariable, and OutVariable. For more information, see
-        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+        about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
 
 INPUTS
 
@@ -352,60 +378,37 @@ NOTES
 
         File Name  : sf-collect-node-info.ps1
         Author     : microsoft service fabric support
-        Version    : 180904 original
+        Version    : 190522 add logic to use wevtutil.exe to export event logs if .\event-log-manager.ps1 script not available
         History    :
+                    190209 continue on event-log-manager.ps1 not available
+                    181029 fix -UseBasicParsing, add docker enumeration, tested on server core 1803
 
     -------------------------- EXAMPLE 1 --------------------------
-
-    PS C:\>.\sf-collect-node-info.ps1
-
+    PS > .\sf-collect-node-info.ps1
     default command to collect event logs, process, service, os information for last 7 days.
 
-
-
-
     -------------------------- EXAMPLE 2 --------------------------
-
-    PS C:\>.\sf-collect-node-info.ps1 -certInfo
-
+    PS > .\sf-collect-node-info.ps1 -certInfo
     example command to query all diagnostic information, event logs, and certificate store information.
 
-
-
-
     -------------------------- EXAMPLE 3 --------------------------
-
-    PS C:\>.\sf-collect-node-info.ps1 -startTime 8/16/2018
-
+    PS > .\sf-collect-node-info.ps1 -startTime 8/16/2018
     example command to query all diagnostic information using start date of 08/16/2018.
     dates are used for event log and rest queries
 
-
-
-
     -------------------------- EXAMPLE 4 --------------------------
-
-    PS C:\>.\sf-collect-node-info.ps1 -remoteMachines 10.0.0.4,10.0.0.5
-
+    PS > .\sf-collect-node-info.ps1 -remoteMachines 10.0.0.4,10.0.0.5
     example command to query diagnostic information remotely from two machines.
     files will be copied back to machine where script is being executed.
 
-
-
-
     -------------------------- EXAMPLE 5 --------------------------
-
-    PS C:\>.\sf-collect-node-info.ps1 -runCommand "dir c:\windows -recurse"
-
+    PS > .\sf-collect-node-info.ps1 -runCommand "dir c:\windows -recurse"
     example to run custom command on machine after data collection
     output will be captured in runCommand.txt
 
-
-
-
-
 RELATED LINKS
     https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1
+
 ```
 # Example output directory file structure:
 ```
