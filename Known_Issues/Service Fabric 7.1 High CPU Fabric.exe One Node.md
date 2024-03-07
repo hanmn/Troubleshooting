@@ -2,6 +2,7 @@
 
 [Issue](#Issue)  
 [Cause](#Cause)  
+[Impact](#Impact)  
 [Mitigation](#Mitigation)  
 [Resolution](#Resolution)  
 
@@ -13,12 +14,16 @@ Starting in version Service Fabric 7.1, you may experience high cpu on process f
 
 A recent change in Placement and Loadbalancing calculations has introduced this issue.
 
+## Impact
+
+This issue should not have any impact to cluster environment besides the high cpu.
+
 ## Mitigation
 
 Add the following parameters in the 'fabricSettings' section of the service fabric resource and Patch deployment using powershell or resources.azure.com. Refer to [Service Fabric Cluster Config Upgrade](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-config-upgrade-azure) for modifying and deploying settings.
 
 ```json
-//"fabricSettings": [
+// "fabricSettings": [
 //  {
 //   ...
 //  },
@@ -35,7 +40,7 @@ Add the following parameters in the 'fabricSettings' section of the service fabr
         }
       ]
     }
-//],
+// ],
 
 ```
 
