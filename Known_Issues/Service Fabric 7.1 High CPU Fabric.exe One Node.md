@@ -8,7 +8,7 @@
 
 ## Issue
 
-Starting in version Service Fabric 7.1, you may experience high cpu on process fabric.exe on one node in the cluster. The node with high cpu will be 'primary' for 'Service fabric:/System/FailoverManagerService'. 
+Starting in version Service Fabric 7.1, you may experience high cpu on process fabric.exe on one node in the cluster. The node with high cpu will be 'primary' for 'Service fabric:/System/FailoverManagerService'.
 
 ## Cause
 
@@ -16,7 +16,7 @@ A recent change in Placement and Loadbalancing calculations has introduced this 
 
 ## Impact
 
-This issue should not have any impact to cluster environment besides the high cpu.
+This issue should not have any impact to cluster environment other than high cpu for fabric.exe on one node.
 
 ## Mitigation
 
