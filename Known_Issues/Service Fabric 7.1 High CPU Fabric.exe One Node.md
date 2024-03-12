@@ -37,6 +37,8 @@ This issue should not have any impact to cluster environment other than high cpu
 
 Add the following parameters in the 'fabricSettings' section of the service fabric resource and Patch deployment using powershell or resources.azure.com. Refer to [Service Fabric Cluster Config Upgrade](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-config-upgrade-azure) for modifying and deploying settings.
 
+**Note: these settings cannot be applied before version 7.1 service fabric**
+
 ```json
 // "fabricSettings": [
 //  {
@@ -61,4 +63,4 @@ Add the following parameters in the 'fabricSettings' section of the service fabr
 
 ## Resolution
 
-This will be fixed in a future version (TBD) of Service Fabric.
+This will be fixed in a future version (TBD) of Service Fabric. When the fixed version of service fabric has been installed, the mitigation settings should be removed.
