@@ -97,6 +97,7 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
 
                 if ($error) {
                     $global:failNodes += $nodeIpAddress
+                    continue
                 }
 
                 #******************************************************************************
