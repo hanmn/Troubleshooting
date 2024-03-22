@@ -9,9 +9,7 @@ invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubl
 optional download for event logs:
 invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
 
-.\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
-
-upload to workspace sfgather* dir or zip
+if working with microsoft support, upload to workspace the outputted sfgather* directory or zip file
 
 .DESCRIPTION
     To enable script execution, you may need to Set-ExecutionPolicy Bypass -Force
@@ -52,10 +50,9 @@ upload to workspace sfgather* dir or zip
 .NOTES
     File Name  : sf-collect-node-info.ps1
     Author     : microsoft service fabric support
-    Version    : 200719 add collection of log files default 60 min
+    Version    : 200721 add collection of blg and sfcontainer.out files
     History    :
-                190209 continue on event-log-manager.ps1 not available
-                181029 fix -UseBasicParsing, add docker enumeration, tested on server core 1803
+                200719 add collection of log files default 60 min
 
 .EXAMPLE
     .\sf-collect-node-info.ps1
@@ -685,6 +682,28 @@ function process-machine() {
 
     monitor-jobs
 
+    write-host "cleaning empty directories in output"
+    $allDirectories = (Get-ChildItem $workdir -Recurse -Directory).FullName | sort -Descending
+
+    foreach ($dir in $allDirectories) {
+        $dirItem = [io.directoryinfo]::new($dir)
+        $error.Clear()
+
+        try {
+            if ($dirItem.GetFiles() + $dirItem.GetDirectories()) {
+                write-host "skipping output directory removal: $dir"
+                continue
+            }
+            else {
+                write-host "removing empty output directory: $dir"
+                remove-item $dir -Force
+            }
+        }
+        catch {
+            write-host "error during dir check $($error | out-string)"
+        }
+    }
+
     $global:zipFile = compress-file $workDir
 }
 
@@ -731,18 +750,29 @@ function enumerate-serviceFabric() {
         $fabricLogRoot = $defaultFabricLogRoot
     }
 
-    if($logMin -and (test-path $fabricLogRoot)) {
+    if ($logMin -and (test-path $fabricLogRoot)) {
         add-job -jobName "fabric log files" -scriptBlock {
             param($workdir = $args[0], $fabricLogRoot = $args[1], $logMin = $args[2])
-            $allFiles = ((Get-ChildItem -Path D:\SvcFab\Log -Recurse) -match ".trace$|.etl$|.dtr$|.zip$").FullName
-            foreach($file in $allFiles) {
-                $fileInfo = new-object io.fileinfo($file)
-                if($fileInfo.LastWriteTime -gt (get-date).AddMinutes(-$logMin)) {
-                    write-host "copying file $file $($fileInfo.LastWriteTime)"
-                    copy-item -Path $file -Destination $workdir
+
+            foreach ($file in (Get-ChildItem -Path $fabricLogRoot -Recurse).FullName) {
+                try {
+                    if (![regex]::isMatch($file, ".+?(?:\.trace$|\.blg$|\.etl$|\.dtr$|\.zip$|\\sfcontainerlogs.+?\.(?:out|err)$)", [text.regularExpressions.regexOptions]::ignoreCase)) {
+                        write-host "skipping file $file"
+                        continue
+                    }
+                    $fileInfo = new-object io.fileInfo($file)
+                    if ($fileInfo.LastWriteTime -gt (get-date).AddMinutes(-$logMin)) {
+                        write-host "copying file $file $($fileInfo.LastWriteTime) to $workdir"
+                        copy-item -Path $file -Destination $workdir
+                    }
+                    else {
+                        write-host "skipping file $file $($fileInfo.LastWriteTime)"
+                    }
                 }
-                else {
-                    write-host "skipping file $file $($fileInfo.LastWriteTime)"
+                catch {
+                    write-host "error copying file $file to $workdir $error"
+                    $error.clear()
+                    continue
                 }
             }
         } -arguments @($workdir, $fabricLogRoot, $logMin)
@@ -788,12 +818,6 @@ function enumerate-serviceFabric() {
                 write-host "sfrp response: $($sfrpresponse)"
                 out-file -Append -InputObject $sfrpResponse "$($workdir)\sfrp-response.txt"
             } -arguments @($workdir, $sfrpUrl, $ucert, $useBasicParsing)
-
-            add-job -jobName "sfrp repair check" -scriptBlock {
-                param($workdir = $args[0])
-                Get-ServiceFabricRepairTask -State Active Azure | out-file "$($workdir)\sfrp-repair.txt"
-            } -arguments @($workdir)
-
         }
         catch {
             $seedNodes = $xml.ClusterManifest.Infrastructure.WindowsServer.NodeList.Node
@@ -809,7 +833,18 @@ function enumerate-serviceFabric() {
         # todo handle continuationtoken
         $gwEpt = "$($httpGwEpt.Protocol)://localhost:$($httpGwEpt.Port)"
         $urlArgs = "api-version=$($apiversion)&timeout=$($restTimeoutSec)&StartTimeUtc=$($startTime.ToString(`"yyyy-MM-ddTHH:mm:ssZ`"))&EndTimeUtc=$($endTime.ToString(`"yyyy-MM-ddTHH:mm:ssZ`"))"
-
+        
+        <#
+            1 - Created
+            2 - Claimed
+            4 - Preparing
+            8 - Approved
+            16 - Executing
+            32 - Restoring
+            64 - Completed
+        #>
+        $stateFilter = 1 -bor 2 -bor 4 -bor 8 -bor 16 -bor 32
+        rest-query -url "$($gwEpt)/$/GetRepairTaskList?api-version=$($apiversion)&timeout=$($restTimeoutSec)&StateFilter=$stateFilter" -cert $clusterCert | out-file "$($workdir)\repair-tasks.txt"
         rest-query -url "$($gwEpt)/ImageStore?$($urlArgs)" -cert $clusterCert | out-file "$($workdir)\rest-imageStore.txt" 
         rest-query -url "$($gwEpt)/Nodes?$($urlArgs)" -cert $clusterCert | out-file "$($workdir)\rest-nodes.txt"
         rest-query -url "$($gwEpt)/$/GetClusterHealth?$($urlArgs)" -cert $clusterCert | out-file "$($workdir)\rest-getClusterHealth.txt"
@@ -882,6 +917,7 @@ function read-xml($xmlFile, [switch]$format) {
 }
 
 function rest-query($cert, $url) {
+    $error.clear()
     try {
         $result = $null
         write-host "rest query: $($url)" -foregroundcolor cyan
@@ -897,6 +933,8 @@ function rest-query($cert, $url) {
         return $result
     }
     catch {
+        write-host "rest exception $($error | out-string)"
+        $error.clear()
         return $null
     }
 }
