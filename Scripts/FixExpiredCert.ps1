@@ -97,11 +97,18 @@ ForEach ($nodeIpAddress in $nodeIpArray) {
 
         Start-Sleep(1)
 
+        $error.clear()
         Invoke-Command -Authentication Negotiate -ComputerName $nodeIpAddress {
             Set-NetFirewallRule -DisplayGroup  'File and Printer Sharing' -Enabled True -PassThru |
             Select-Object DisplayName, Enabled
         } -Credential ($creds)
 
+        if ($error) {
+            $global:failNodes += $nodeIpAddress
+            continue
+        }
+
+        $error.clear()
         Invoke-Command -Authentication Negotiate -Computername $nodeIpAddress -Scriptblock { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $certStoreLocation)
             Write-Host "$env:computername : Running on $((Get-WmiObject win32_computersystem).DNSHostName)" -ForegroundColor Green
 
@@ -307,7 +314,13 @@ ForEach ($nodeIpAddress in $nodeIpArray) {
             Write-Host "$env:computername : Starting services " -ForegroundColor Green
             StartServiceFabricServices
         } -ArgumentList $clusterDataRootPath, $oldThumbprint, $newThumbprint, $certStoreLocation
-        $global:successNodes += $nodeIpAddress
+        
+        if ($error) {
+            $global:failNodes += $nodeIpAddress
+        }
+        else {
+            $global:successNodes += $nodeIpAddress
+        }
     }
     else {
         Write-Warning "$env:computername : unable to connect to node: $nodeIpAddress"

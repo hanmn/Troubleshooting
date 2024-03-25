@@ -89,18 +89,24 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                 
                 Start-Sleep(1)
 
+                $error.clear()
                 Invoke-Command -Authentication Negotiate -ComputerName $nodeIpAddress {
                     $temp = Set-NetFirewallRule -DisplayGroup  'File and Printer Sharing' -Enabled True -PassThru |
                     Select-Object DisplayName, Enabled
                 } -Credential ($creds)
-            
+
+                if ($error) {
+                    $global:failNodes += $nodeIpAddress
+                    continue
+                }
+
                 #******************************************************************************
                 # Script body
                 # Execution begins here
                 #******************************************************************************
-
+                
+                $error.clear()
                 Invoke-Command -Authentication Negotiate -Computername $nodeIpAddress -Scriptblock { param($clusterDataRootPath, $tempPath)
-                    
                     <#
                     .SYNOPSIS
                     . Updating Cluster Manifest file with AEPCC Parameter  
@@ -336,7 +342,12 @@ if ([version]$SFEnv.FabricVersion -gt $supportedVersion ) {
                     }
                 } -ArgumentList $clusterDataRootPath, $tempPath
                 
-                $global:successNodes += $nodeIpAddress
+                if ($error) {
+                    $global:failNodes += $nodeIpAddress
+                }
+                else {
+                    $global:successNodes += $nodeIpAddress
+                }
             }
             else {
                 Write-Warning "$env:computername : unable to connect to node: $nodeIpAddress"
