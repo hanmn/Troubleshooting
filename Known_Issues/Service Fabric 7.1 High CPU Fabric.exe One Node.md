@@ -63,4 +63,4 @@ Add the following parameters in the 'fabricSettings' section of the service fabr
 
 ## Resolution
 
-This will be fixed in a future version (TBD) of Service Fabric. When the fixed version of service fabric has been installed, the mitigation settings should be removed.
+This will be fixed in Service Fabric 7.1 CU 5. When the fixed version of service fabric has been installed, the mitigation settings should be removed.
