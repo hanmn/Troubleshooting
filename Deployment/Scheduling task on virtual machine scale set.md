@@ -1,9 +1,9 @@
 # Scheduling task on virtual machine scale set  
 
 >[Modify ARM Template to Add Custom Script Extension](#Modify-ARM-Template-to-Add-Custom-Script-Extension)  
->[Example](#Example)
->>[template.json](#template-json)
->>[parameters.json](#parameters-json)
+>[Example](#Example)  
+>>[template.json](#template.json)  
+>>[parameters.json](#parameters.json)  
 
 ## Overview  
 
