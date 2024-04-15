@@ -5,7 +5,10 @@
 >>[template.json](#templatejson)  
 >>[parameters.json](#parametersjson)  
 >  
->[Troubleshooting](#troubleshooting)
+>[Script Information](#script-information)  
+>[Troubleshooting](#troubleshooting)  
+>>[ARM template deployment results](#arm-template-deployment-results)  
+>>[Troubleshooting on node](#troubleshooting-on-node)  
 
 ## Overview  
 
@@ -105,7 +108,7 @@ index f362926..ff080f0 100644
 +                                        "fileUris": [
 +                                            "[parameters('customScriptExtensionFileUri')]"
 +                                        ],
-+                                        "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File .\\', parameters('customScriptExtensionFileCommand'))]",
++                                        "commandToExecute": "[concat('powershell -ExecutionPolicy Bypass -File .\\', parameters('customScriptExtensionFileCommand'))]",
 +                                        "timestamp": 0
 +                                    }
 +                                }
@@ -134,15 +137,149 @@ index 289e771..e598691 100644
          },
 ```
 
+## Script Information
+
+Detailed information for schedule-task.ps1 script can be found by executing 'help .\schedule-task.ps1 -full' in a powershell prompt.
+
+```text
+ help .\schedule-task.ps1 -full
+
+NAME
+    C:\github\jagilber\Service-Fabric-Troubleshooting-Guides\Scripts\schedule-task.ps1
+
+SYNOPSIS
+    # script to schedule task
+    # schedule-task.ps1
+    # writes event 4103 to Microsoft-Windows-Powershell on completion in Operational event log
+
+SYNTAX
+    C:\github\jagilber\Service-Fabric-Troubleshooting-Guides\Scripts\schedule-task.ps1 [[-scriptFileStoragePath] <String>] [[-scriptFile] <String>] [[-taskName] <String>] [[-action] <String>] [[-actionParameter] <String>] [[-triggerTime] <String>]   
+    [[-triggerFrequency] <String>] [[-principal] <String>] [[-principalLogonType] <String>] [-start] [[-runLevel] <String>] [[-daysOfweek] <String[]>] [[-daysInterval] <Int32>] [-remove] [[-taskSettingsParameters] <Hashtable>] [<CommonParameters>]   
+
+DESCRIPTION
+
+PARAMETERS
+    -scriptFileStoragePath <String>
+        [string] storage location for script file on machine referenced by scheduled task.
+        Default value                c:\task-scripts
+
+    -scriptFile <String>
+        [string] optional script file to be used in scheduled task. can be drive letter, unc, or url.
+        $scriptFile will be downloaded to $scriptFileStoragePath.
+        schedule-task.ps1 script $action and $actionParameter are by default confitured to run powershell scripts.
+        $scriptFile if provided will be appended to $actionParameter in format $scriptFileStoragePath\$scriptFile.
+        Default value
+
+    -taskName <String>
+        [string] name of scheduled task.
+        Default value                az-vmss-cse-task
+
+    -action <String>
+        [string] action for scheduled task to perform.
+        Default value                powershell.exe
+
+    -actionParameter <String>
+        [string] action parameter(s) for $action.
+        $scriptFile if provided will be appended to $actionParameter in format $scriptFileStoragePath\$scriptFile.
+        Default value                -ExecutionPolicy Bypass -WindowStyle Hidden -NonInteractive -NoLogo -NoProfile
+
+    -triggerTime <String>
+        [datetime]/[string] time to start trigger execution.
+        see https://docs.microsoft.com/powershell/module/scheduledtasks/new-scheduledtasktrigger
+        Default value                3am
+
+    -triggerFrequency <String>
+        [string] scheduled task trigger frequency, one of: 'startup', 'once', 'daily', 'weekly'
+        Default value                startup
+
+    -principal <String>
+        [string] scheduled task authentication principal
+        Default value                BUILTIN\ADMINISTRATORS
+
+    -principalLogonType <String>
+        [string] principal logon type.
+        one of: 'none', 'password', 's4u', 'interactive', 'serviceaccount', 'interactiveorpassword', 'group'
+        Default value                group
+
+    -start [<SwitchParameter>]
+        [switch] start scheduled task
+        Default value                False
+
+    -runLevel <String>
+        [string] scheduled task execution level.
+        one of: 'highest', 'limited'
+        Default value                limited
+
+    -daysOfweek <String[]>
+        [string[]] days of week if $triggerFrequency equals 'weekly'.
+        one or more of: 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'
+        Default value                @('sunday')
+
+    -daysInterval <Int32>
+        [int] time interval in days between scheduled task if $triggerFrequency equals 'daily'.
+        Default value                1
+
+    -remove [<SwitchParameter>]
+        [switch] remove existing scheduled task and returns.
+        Default value                False
+
+    -taskSettingsParameters <Hashtable>
+        [hashtable] optional additional task settings paramaters to be passed to new-taskschedulesettingsset command.
+        example: .\schedule-task.ps1 -triggerFrequency weekly -taskSettingsParameters @{restartCount=3;runOnlyIfNetworkAvailable=$true}
+        see https://docs.microsoft.com/powershell/module/scheduledtasks/new-scheduledtasksettingsset.
+        Default value                @{}
+
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see
+        about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
+
+INPUTS
+
+OUTPUTS
+
+    -------------------------- EXAMPLE 1 --------------------------
+    PS > download script file task.ps1, schedule task at startup and execute task immediately.
+    .\schedule-task.ps1 -start -scriptFile https://raw.githubusercontent.com/{{owner}}/{{repo}}/master/temp/task.ps1
+
+    -------------------------- EXAMPLE 2 --------------------------
+    PS > download script file task.ps1, schedule task for weekly execute on sunday at 3am and task immediately.
+    .\schedule-task.ps1 -triggerFrequency weekly -start -scriptFile https://raw.githubusercontent.com/{{owner}}/{{repo}}/master/temp/task.ps1
+
+    -------------------------- EXAMPLE 3 --------------------------
+    PS > schedule task for daily execute of inline powerhsell command get-winevent.
+    .\schedule-task.ps1 -triggerFrequency daily -action powershell -actionParameter '-Command {get-winevent -LogName Application | ? LevelDisplayName -notmatch 'information'}'
+
+RELATED LINKS
+    invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/scripts/schedule-task.ps1" -outFile "$pwd\schedule-task.ps1";
+```
+
 ## Troubleshooting
 
 ### ARM template deployment results
 
 Script schedule-task.ps1 will throw exceptions if unable to find 'scriptFile' or if unable to create scheduled task. Exceptions are used in custom script extensions to fail the extension and report error back to ARM to fail deployment.
 
-### Microsoft-Windows-PowerShell/Operational event log entry
+### Troubleshooting on node
+
+Validation and troubleshooting of task can be performed by connecting to node with RDP. View the task in 'Task Scheduler' and event log entry in 'Event Viewer' powershell event 4103. Troubleshooting of the Custom Script Extension and schedule-task.ps1 can be performed from the 'Packages' directory.
+
+#### **Packages directory**
+
+Azure extensions are installed to the 'C:\Packages' directory on the nodes. Custom Script Extension location 'C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\{{typeHandlerVersion}}'. 'customScriptExtensionFileUri' will be downloaded to the '{{revision}}\Downloads' sub-folder. A powershell transcript will be generated in the working directory of schedule-task.ps1 that contains output from script during deployment.
+
+#### **Task Scheduler gui**
+
+Task Scheduler gui will show the current task configuration and execution history if enabled. Select 'Enable All Tasks History' in right pane to enable.
+
+![](../media/taskscheduler1.png)
+
+#### **Microsoft-Windows-PowerShell/Operational event log entry**
 
 Script schedule-task.ps1 will write event log entry in Microsoft-Windows-PowerShell/Operational event log at end of script which can be used for troubleshooting. Example event entry below:
+
+![](../media/eventvwr1.png)
 
 ```json
 Log Name:      Microsoft-Windows-PowerShell/Operational
@@ -284,7 +421,7 @@ user data:
     "ProgramFiles(x86)":  "C:\\Program Files (x86)",
     "ConfigSequenceNumber":  "23",
     "ProgramFiles":  "C:\\Program Files",
-    "PSExecutionPolicyPreference":  "Unrestricted",
+    "PSExecutionPolicyPreference":  "Bypass",
     "SystemRoot":  "C:\\windows",
     "OS":  "Windows_NT",
     "ALLUSERSPROFILE":  "C:\\ProgramData",
