@@ -1,6 +1,9 @@
 # Schedule task on virtual machine scale set  
 
->[Modify ARM Template to Add Custom Script Extension](#Modify-ARM-Template-to-Add-Custom-Script-Extension)  
+>[Overview](#overview)  
+>>[Modify ARM Template to Add Custom Script Extension](#modify-arm-template-to-add-custom-script-extension)  
+>>[Modify using powershell az module](#modify-using-powershell-az-module)  
+>  
 >[Example](#Example)  
 >>[template.json](#templatejson)  
 >>[parameters.json](#parametersjson)  
@@ -56,6 +59,51 @@ Add new 'CustomScriptExtension' extension to 'Microsoft.Compute/virtualMachinesc
     }
   }
 },
+```
+
+## Modify using powershell az module
+
+An alternate method if ARM template is not available is to use powershell with az module.
+
+```powershell
+$vmssName = '{{scale set name}}'
+$rgName = '{{resource group name}}'
+$fileUris = @('https://raw.githubusercontent.com/{{owner}}/{{repo}}/master/schedule-task.ps1')
+$commandToExecute = 'powershell -ExecutionPolicy Bypass -File .\schedule-task.ps1 -start -scriptFile https://raw.githubusercontent.com/{{owner}}/{{repo}}/master/temp/task.ps1'
+$extensionName = 'CustomScriptExtension'
+$extensionType = 'CustomScriptExtension'
+$publisher = 'Microsoft.Compute'
+$typeHandlerVersion = 1.10
+$timestamp = 1 # increment to force update
+
+$settings = @{
+  fileUris = $fileUris
+  commandToExecute = $commandToExecute
+  timestamp = $timestamp
+}
+
+$vmss = Get-AzVmss -ResourceGroupName $rgName -VMScaleSetName $vmssName
+$vmss.VirtualMachineProfile.ExtensionProfile.Extensions
+
+
+# to remove extension
+$vmssWithoutExtension = Remove-AzVmssExtension -VirtualMachineScaleSet $vmss -Name $extensionName
+<#
+Update-AzVmss -ResourceGroupName $rgName -VMScaleSetName $vmssName -VirtualMachineScaleSet $vmssWithOutExtension
+#>
+
+$vmssWithExtension = Add-AzVmssExtension -VirtualMachineScaleSet $vmssWithoutExtension `
+  -Name $extensionName `
+  -Publisher $publisher `
+  -Type $extensionType `
+  -TypeHandlerVersion $typeHandlerVersion `
+  -AutoUpgradeMinorVersion $true `
+  -Setting $settings `
+  -Verbose
+
+$vmssWithExtension | convertto-json -Depth 6
+
+Update-AzVmss -ResourceGroupName $rgName -VMScaleSetName $vmssName -VirtualMachineScaleSet $vmssWithExtension
 ```
 
 ## Example
