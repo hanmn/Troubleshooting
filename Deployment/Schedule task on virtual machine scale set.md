@@ -329,7 +329,7 @@ Script schedule-task.ps1 will write event log entry in Microsoft-Windows-PowerSh
 
 ![](../media/eventvwr1.png)
 
-```json
+```text
 Log Name:      Microsoft-Windows-PowerShell/Operational
 Source:        Microsoft-Windows-PowerShell
 Date:          9/20/2020 4:42:16 PM
