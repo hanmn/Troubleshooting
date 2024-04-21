@@ -85,9 +85,9 @@ param(
     [string]$triggerTime = '3am',
     [ValidateSet('startup', 'once', 'daily', 'weekly')]
     [string]$triggerFrequency = 'startup',
-    [string]$principal = 'BUILTIN\ADMINISTRATORS', #'SYSTEM',
+    [string]$principal = 'SYSTEM',
     [ValidateSet('none', 'password', 's4u', 'interactive', 'serviceaccount', 'interactiveorpassword', 'group')]
-    [string]$principalLogonType = 'group',
+    [string]$principalLogonType = 's4u',
     [switch]$start,
     [ValidateSet('highest', 'limited')]
     [string]$runLevel = 'limited',
@@ -241,4 +241,5 @@ Stop-Transcript
 if(!$success) {
     throw [exception]::new("task not created $taskName")
 }
+
 return $error.Count

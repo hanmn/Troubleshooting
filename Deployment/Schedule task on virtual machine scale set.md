@@ -242,7 +242,7 @@ PARAMETERS
 
     -principal <String>
         [string] scheduled task authentication principal
-        Default value                BUILTIN\ADMINISTRATORS
+        Default value                SYSTEM
 
     -principalLogonType <String>
         [string] principal logon type.
