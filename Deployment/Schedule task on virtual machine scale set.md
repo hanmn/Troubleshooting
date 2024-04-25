@@ -214,7 +214,7 @@ PARAMETERS
     -scriptFile <String>
         [string] optional script file to be used in scheduled task. can be drive letter, unc, or url.
         $scriptFile will be downloaded to $scriptFileStoragePath.
-        schedule-task.ps1 script $action and $actionParameter are by default confitured to run powershell scripts.
+        schedule-task.ps1 script $action and $actionParameter are by default configured to run powershell scripts.
         $scriptFile if provided will be appended to $actionParameter in format $scriptFileStoragePath\$scriptFile.
         Default value
 
@@ -247,7 +247,7 @@ PARAMETERS
     -principalLogonType <String>
         [string] principal logon type.
         one of: 'none', 'password', 's4u', 'interactive', 'serviceaccount', 'interactiveorpassword', 'group'
-        Default value                group
+        Default value                serviceaccount
 
     -start [<SwitchParameter>]
         [switch] start scheduled task

@@ -25,7 +25,7 @@
 .PARAMETER scriptFile
     [string] optional script file to be used in scheduled task. can be drive letter, unc, or url. 
     $scriptFile will be downloaded to $scriptFileStoragePath.
-    schedule-task.ps1 script $action and $actionParameter are by default confitured to run powershell scripts.
+    schedule-task.ps1 script $action and $actionParameter are by default configured to run powershell scripts.
     $scriptFile if provided will be appended to $actionParameter in format $scriptFileStoragePath\$scriptFile.
 
 .PARAMETER taskName
@@ -87,7 +87,7 @@ param(
     [string]$triggerFrequency = 'startup',
     [string]$principal = 'SYSTEM',
     [ValidateSet('none', 'password', 's4u', 'interactive', 'serviceaccount', 'interactiveorpassword', 'group')]
-    [string]$principalLogonType = 's4u',
+    [string]$principalLogonType = 'serviceaccount',
     [switch]$start,
     [ValidateSet('highest', 'limited')]
     [string]$runLevel = 'limited',
