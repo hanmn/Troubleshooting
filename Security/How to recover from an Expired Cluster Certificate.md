@@ -21,6 +21,20 @@ It requires explicit opt-in, and is only applicable on clusters secured with sel
     </Section>
 ```
 
+The section to add via Azure Resource Manager:
+
+```json
+      {
+        "name": "Security",
+        "parameters": [
+          {
+            "name": "AcceptExpiredPinnedClusterCertificate",
+            "value": "true"
+          }
+        ]
+      }
+```
+
 3) It is recommended that the cluster certificate is renewed as soon as feasible, see Additional References below.
 
 
