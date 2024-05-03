@@ -4,7 +4,7 @@ powershell script to collect service fabric node diagnostic data
 
 To download and execute:
 invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
-.\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
+.\sf-collect-node-info.ps1
 
 optional download for event logs:
 invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
@@ -81,8 +81,9 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
     api version for testing fabricgateway endpoint with service fabric rest api calls.
 
 .PARAMETER certInfo
-    switch to enable collection of certificate store export to troubleshoot certificate issues.
+    bool to enable collection of certificate store export to troubleshoot certificate issues.
     thumbprints and serial numbers during export will be partially masked.
+    default true.
 
 .PARAMETER endTime
     end time in normal dateTime formatting.
@@ -98,7 +99,7 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
 
 .PARAMETER logMin
     if greater than 0, minutes of log files to collect based on last write time
-    default 60 minutes
+    default 30 minutes
 
 .PARAMETER netmonMin
     minutes to run network trace at end of collection after all jobs run.
@@ -162,7 +163,7 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
 [CmdletBinding()]
 param(
     [string]$workdir,
-    [switch]$certInfo,
+    [bool]$certInfo = $true,
     [string]$eventLogNames = "System$|Application$|wininet|dns|Fabric|http|Firewall|Azure|insight",
     [string]$externalUrl = "bing.com",
     [dateTime]$startTime = (get-date).AddDays(-7),
@@ -181,7 +182,7 @@ param(
     [switch]$noSF,
     [switch]$quiet,
     [string]$runCommand,
-    [int]$logMin = 60,
+    [int]$logMin = 30,
     [string]$defaultFabricLogRoot = 'd:\svcfab\log',
     [string]$defaultFabricDataRoot = 'd:\svcfab'
 )
@@ -613,7 +614,8 @@ function process-machine() {
 
     if ($certInfo) {
         write-host "certs (output scrubbed)"
-        [regex]::Replace((Get-ChildItem -Path cert: -Recurse | format-list * | out-string), "[0-9a-fA-F]{20}`r`n", "xxxxxxxxxxxxxxxxxxxx`r`n") | out-file "$($workdir)\certs.txt"
+        certutil -verifystore MY | out-file "$($workdir)\certs.txt"
+        [regex]::Replace((get-content -raw "$($workdir)\certs.txt"), "[0-9a-fA-F]{20}`r`n", "xxxxxxxxxxxxxxxxxxxx`r`n") | out-file "$($workdir)\certs.txt"
     }
     
     #
