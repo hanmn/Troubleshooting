@@ -1,4 +1,4 @@
-# How to change Storage Account for Service Fabric Logs in Azure
+# How to Rotate Access Keys of Storage Account for Service Fabric logs
 
 This trouble shooting guide describes the steps of rotating Access Key 1 of storage account used for Service Fabric Logs. Access Key 2 can be rotated in similar fashion.
 
