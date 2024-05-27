@@ -10,6 +10,10 @@
 ## Issue
 
 Starting in version Service Fabric 7.1, you may experience high cpu on process fabric.exe on one node in the cluster.
+This applies to Service Fabric Runtime 7.1 versions prior to CU5, you can review the version number noted in [Service Fabric 7.1 CU5 Release Nodes](https://github.com/microsoft/service-fabric/blob/master/release_notes/Service-Fabric-71CU5-releasenotes.md).
+
+If you had previously applied the original mitigation please move to the [Mitigation](#Mitigation) section.
+
 
 ## Symptoms
 
@@ -27,7 +31,7 @@ Example trace message:
 
 ## Cause
 
-A recent change in Placement and Loadbalancing calculations has introduced this issue.
+A  change in Placement and Loadbalancing calculations in earlier versions of Service Fabric release 7.1 introduced this issue.
 
 ## Impact
 
@@ -35,9 +39,9 @@ This issue should not have any impact to cluster environment other than high cpu
 
 ## Mitigation
 
-Add the following parameters in the 'fabricSettings' section of the service fabric resource and Patch deployment using powershell or resources.azure.com. Refer to [Service Fabric Cluster Config Upgrade](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-config-upgrade-azure) for modifying and deploying settings.
+This issue was fixed in Service Fabric 7.1 CU5 and the mitigation settings should be removed if you have upgraded your cluster to 7.1 CU5 (or higher).
 
-**Note: these settings cannot be applied before version 7.1 service fabric**
+Please remove the PlacementAndLoadBalancing setting and parameters form the fabricSettings section of the Service Fabric resource and Patch deployment using powershell or resources.azure.com. Refer to [Service Fabric Cluster Config Upgrade](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-config-upgrade-azure) for modifying and deploying settings.
 
 ```json
 // "fabricSettings": [
@@ -63,4 +67,4 @@ Add the following parameters in the 'fabricSettings' section of the service fabr
 
 ## Resolution
 
-This will be fixed in Service Fabric 7.1 CU 5. When the fixed version of service fabric has been installed, the mitigation settings should be removed.
+Upgrade the Service Fabric version of the Cluster to a version greater than or equal to 7.1 CU5 as listed here [Service Fabric 7.1 CU5 Release Nodes](https://github.com/microsoft/service-fabric/blob/master/release_notes/Service-Fabric-71CU5-releasenotes.md). 
