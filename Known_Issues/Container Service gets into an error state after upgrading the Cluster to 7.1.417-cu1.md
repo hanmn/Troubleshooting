@@ -1,4 +1,4 @@
-# Application with dependency  on wastorage.dll crashes on Service Fabric runtime 6.4.617.9590
+# DNS resolution within a container running on 7.1.417 cu1 or later (Linux based clusters only) requires Service Fabric DNS
 
 After upgrading to Service Fabric 7.1.417 (cu1), containerized applications start failing with DNS related errors.  "The remote name could not be resolved"
 
