@@ -29,9 +29,9 @@ $patchedVersionsTable = @{
 }
 
 if (!(Get-AzContext)) {
-    write-host "connecting to azure"
-    Connect-AzAccount
-}
+        write-host "connecting to azure"
+        Connect-AzAccount
+    }
    
 ForEach($subscriptionId in $subscriptionIdArray)
 {
@@ -47,26 +47,28 @@ ForEach($subscriptionId in $subscriptionIdArray)
         # get the cluster manifest
         $manifest = Get-AzServiceFabricCluster -ResourceGroupName $cluster.ResourceGroupName -ClusterName $cluster.Name        
         $hosting = $manifest.FabricSettings
-        $clusterVersion = $manifest.ClusterCodeVersion
+        $clusterVersion = [version]$manifest.ClusterCodeVersion
 
         # Calculate Patch Level
-        $codeVersion = $clusterVersion.Split('.') | Select-Object -First 4
-        if($codeVersion[3] -like '1*')
+        if($clusterVersion.Revision -like '1*')
         {
-            $operatingSystem = "Linux"
+            if($clusterVersion.Revision -like '1804*') {
+                $operatingSystem = "Linux_1804"
+            } else {
+                $operatingSystem = "Linux_16"
+            }
         }
         else
         {
             $operatingSystem = "Windows"
         }
 
-        $lookupIndex = $operatingSystem + "_" + $codeVersion[0] + $codeVersion[1]
-        $PatchLevel = $patchedVersionsTable[$lookupIndex]
-        $PatchVersion = $PatchLevel.Split('.') | Select-Object -First 4
+        $lookupIndex = $operatingSystem + "_" + $clusterVersion.Major + $clusterVersion.Minor
+        $PatchLevel = [version]$patchedVersionsTable[$lookupIndex]
 
         # check if we are on a version too low
-        if(($clusterVersion[0] -lt 6) `
-            -or (($clusterVersion[0] -eq 6) -and (($clusterVersion[1] -lt 4))) `
+        if(($clusterVersion.Major -lt 6) `
+            -or (($clusterVersion.Major -eq 6) -and (($clusterVersion.Minor -lt 4))) `
             )
         { $lowVersion = $true } else { $lowVersion = $false }
 
@@ -76,9 +78,9 @@ ForEach($subscriptionId in $subscriptionIdArray)
 
         if(($IPProvider) -and ($IPProvider.Value = $true))
         {
-            if(($clusterVersion[0] -eq $PatchVersion[0]) `
-            -and ($clusterVersion[1] -eq $PatchVersion[1]) `
-            -and ($clusterVersion[3] -ge $PatchVersion[3]) `
+            if(($clusterVersion.Major -eq $PatchLevel.Major) `
+            -and ($clusterVersion.Minor -eq $PatchLevel.Minor) `
+            -and ($clusterVersion.Build -ge $PatchLevel.Build) `
             )
             {
                 Write-Host "     OK: " $manifest.Id
