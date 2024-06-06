@@ -28,7 +28,10 @@ $patchedVersionsTable = @{
     Ubuntu_1804_71 = "7.1.455.1804"
 }
 
-Login-AzAccount
+if (!(Get-AzContext)) {
+    write-host "connecting to azure"
+    Connect-AzAccount
+}
    
 ForEach($subscriptionId in $subscriptionIdArray)
 {
