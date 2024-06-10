@@ -47,6 +47,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
         # get the cluster manifest
         $manifest = Get-AzServiceFabricCluster -ResourceGroupName $cluster.ResourceGroupName -ClusterName $cluster.Name        
         $hosting = $manifest.FabricSettings
+        $upgradeMode = $manifest.UpgradeMode
         $clusterVersion = [version]$manifest.ClusterCodeVersion
 
         # Calculate Patch Level
@@ -87,6 +88,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
                 Write-Host "        Open Networking in use: " $IPProvider.Value
                 Write-Host "                  Code Version: " $clusterVersion
                 Write-Host "                 Patch Version: " $PatchLevel
+                Write-Host "                  Upgrade Mode: " $upgradeMode
             }
             else
             {
@@ -94,6 +96,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
                 Write-Host "        Open Networking in use: " $IPProvider.Value
                 Write-Host "                  Code Version: " $clusterVersion
                 Write-Host "                 Patch Version: " $PatchLevel
+                Write-Host "                  Upgrade Mode: " $upgradeMode
                 Write-Host "    SF CodeVersion is vulnerable and feature is enabled!  If you are using the open networking feature, please upgrade by Nov 15, 2020 to a supported/patched version of Service Fabric to avoid service disruptions, otherwise please disable this feature." -ForegroundColor Red            }
 
         } else {
@@ -102,6 +105,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
                 Write-Host "   **Problem** resourceId: " $manifest.Id -ForegroundColor Red
                 Write-Host "        Open Networking in use: False" 
                 Write-Host "                  Code Version: " $clusterVersion
+                Write-Host "                  Upgrade Mode: " $upgradeMode
                 Write-Host "    SF CodeVersion is < 6.4, please upgrade by Nov 15, 2020 to a supported/patched version of Service Fabric to avoid service disruptions." -ForegroundColor Red
             }
             else
@@ -110,6 +114,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
                 Write-Host "        Open Networking in use: False" 
                 Write-Host "                  Code Version: " $clusterVersion
                 Write-Host "                 Patch Version: " $PatchLevel
+                Write-Host "                  Upgrade Mode: " $upgradeMode
             }            
         }
     }
