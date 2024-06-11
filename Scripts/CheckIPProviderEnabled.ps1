@@ -1,7 +1,7 @@
 ﻿<#
 
 .SYNOPSIS
-    Script to Determine if any Service Fabric cluster is vulnerable to Schenker -SSIRP 2034
+    Script to Determine if any Service Fabric cluster has Open Networking feature enabled and is not running on a patched version 
 
 .DESCRIPTION
     Usage Instructions: .\CheckIPProviderEnabled.ps1 @("{subscription id 1}", "{subscription id 1}", "{subscription id ...}")
