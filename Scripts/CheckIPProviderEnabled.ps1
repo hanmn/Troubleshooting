@@ -53,10 +53,11 @@ ForEach($subscriptionId in $subscriptionIdArray)
         # Calculate Patch Level
         if($clusterVersion.Revision -like '1*')
         {
+            #Modified by Reshma V, Due to OS system mismatch with patchedVersionsTable the patch version was always empty for Linux clusters
             if($clusterVersion.Revision -like '1804*') {
-                $operatingSystem = "Linux_1804"
+                $operatingSystem = "Ubuntu_1804"
             } else {
-                $operatingSystem = "Linux_16"
+                $operatingSystem = "Ubuntu_16"
             }
         }
         else
