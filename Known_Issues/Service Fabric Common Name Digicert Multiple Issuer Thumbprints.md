@@ -10,19 +10,20 @@
 
 ## Issue
 
-Service Fabric clusters using Certificate Common Name and Issuer thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 may become unresponsive or have state 'Upgrade Service Unreachable'.  
+For certificates issued by Digicert intermediate 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4, when chains are built on Windows, the chain may be built with the new Digicert intermediate, 626d44e704d1ceabe3bf0d53397464ac8080142c, which shares a public key with 1fb8. Impacted clusters may become unresponsive and may show state as 'Upgrade Service Unreachable' as some SF components are unable to authenticate to each other.
 
 ## Affects
 
 This issue affects any cluster version that has the following configuration:  
 
-- Certificate Common Name instead of thumbprint
-- Certificate issued from Digicert
-- Certificate Issuer Thumbprint configured with only: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4  
+- Windows-based
+- Using X509 Certificates declared by common name and issuer pinning
+- Cluster certificate is issued by 1fb8
+- Pinned-issuer list includes 1fb8 but does not include 626d
 
 ## Symptoms
 
-- One or mode cluster nodes appear down/unhealthy
+- One or more cluster nodes appear down/unhealthy
 - Cluster is unreachable, whether from the Azure portal or directly (SFX/other clients)
 - Event logs show errors similar to: "authorization failure: CertificateNotMatched"
 
@@ -106,12 +107,20 @@ DigiCert introduced a new CA which reuses the signing key of an existing and sti
 
 ## Impact
 
-Issue can cause either one or more nodes to stop participating in cluster or for entire cluster to stop functioning.
+- One or more nodes to stop participating in cluster or for entire cluster to stop functioning
+- May be unable to connect to cluster via SFX or Portal
+- Cluster may show unreachable from Azure portal and you may not be able to deploy upgrades
+- May not be able to deploy application upgrades
 
 ## Mitigation
 
+If the cluster meets the description in Affects, but none of the symptoms have been observed. Action is needed. Please run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
+
+"1fb86b1168ec743154062e8c9cc5b171a4b7ccb4" -> "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4,626d44e704d1ceabe3bf0d53397464ac8080142c" (and including any other pre-existing TPs)
+
 If an upgrade is unfeasible or the cluster is already affected:
 
+On each node in the cluster,
 - Install the CA cert with Thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c in the LocalMachine\Disallowed store in certlm.msc, "Local Computer\Untrusted certificates"  
 - Issuer/ Intermediate certficate 626d44e704d1ceabe3bf0d53397464ac8080142c can be downloaded from https://www.digicert.com/kb/digicert-root-certificates.htm
 
@@ -121,9 +130,15 @@ example command once .crt file has been downloaded:
 certutil -addstore -enterprise Disallowed .\DigiCertSHA2SecureServerCA-2.crt
 ```
 
-or  
+Once this is done, cluster should restore. If it does not, please look for the following symptoms: 
+- Calls are failing with FABRIC_E_GATEWAY_NOT_REACHABLE
 
-- If you have multiple certificates with the same CN from authorized issuers, fall back to one not signed by the shared key by deleting the conflicting certificate and let the cluster choose another certificate. This change however has risks and should be tested.
+If these symptoms are present, a rolling restart will need to take place. On each seed node, one-by-one, either
+
+1. Restart each of the seed nodes
+2. On each seed node, terminate the following processes: FabricGateway.exe, FileStoreService.exe, FabricUpgrade.exe
+
+Please wait for FabricGateway to come up on each node before proceeding to the next node. This will help prevent further availability loss.
 
 ## Resolution
 
