@@ -1,16 +1,12 @@
 # Service Fabric Common Name Digicert Multiple Issuer Thumbprints
 
-[Issue](#Issue)  
 [Affects](#Affects)  
+[Issue](#Issue)  
 [Symptoms](#Symptoms)  
 [Cause](#Cause)  
 [Impact](#Impact)  
 [Mitigation](#Mitigation)  
 [Resolution](#Resolution)  
-
-## Issue
-
-For certificates issued by Digicert intermediate 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4, when chains are built on Windows, the chain may be built with the new Digicert intermediate, 626d44e704d1ceabe3bf0d53397464ac8080142c, which shares a public key with 1fb8. Impacted clusters may become unresponsive and may show state as 'Upgrade Service Unreachable' as some SF components are unable to authenticate to each other.
 
 ## Affects
 
@@ -20,6 +16,10 @@ This issue affects any cluster version that has the following configuration:
 - Using X509 Certificates declared by common name and issuer pinning
 - Cluster certificate is issued by 1fb8
 - Pinned-issuer list includes 1fb8 but does not include 626d
+
+## Issue
+
+For certificates issued by Digicert intermediate 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4, when chains are built on Windows, the chain may be built with the new Digicert intermediate, 626d44e704d1ceabe3bf0d53397464ac8080142c, which shares a public key with 1fb8. Impacted clusters may become unresponsive and may show state as 'Upgrade Service Unreachable' as some SF components are unable to authenticate to each other.
 
 ## Symptoms
 
