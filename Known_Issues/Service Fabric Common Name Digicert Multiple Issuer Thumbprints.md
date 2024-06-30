@@ -14,7 +14,7 @@ This issue affects any cluster version that has the following configuration:
 
 - Windows-based
 - Using X509 Certificates declared by common name and issuer pinning
-- Cluster certificate is issued by 1fb8
+- Cluster certificate is issued by 1fb8 ([DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm))
 - Pinned-issuer list includes 1fb8 but does not include 626d
 
 ## Issue
