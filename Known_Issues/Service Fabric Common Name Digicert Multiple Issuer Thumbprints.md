@@ -1,25 +1,24 @@
 # Service Fabric Common Name Digicert Multiple Issuer Thumbprints
 
-[Affects](#Affects)  
 [Issue](#Issue)  
+[Affects](#Affects)  
 [Symptoms](#Symptoms)  
 [Cause](#Cause)  
 [Impact](#Impact)  
 [Mitigation](#Mitigation)  
 [Resolution](#Resolution)  
 
+## Issue
+
+Service Fabric clusters secured with DigiCert certificates declared by Common Name are at risk of failing validation, if the certificate declaration pins the issuer thumbprints.
+
 ## Affects
 
 This issue affects any cluster version that has the following configuration:  
 
-- Windows-based
 - Using X509 Certificates declared by common name and issuer pinning
-- Cluster certificate is issued by 1fb8 ([DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm))
-- Pinned-issuer list includes 1fb8 but does not include 626d
-
-## Issue
-
-For certificates issued by Digicert intermediate 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4, when chains are built on Windows, the chain may be built with the new Digicert intermediate, 626d44e704d1ceabe3bf0d53397464ac8080142c, which shares a public key with 1fb8. Impacted clusters may become unresponsive and may show state as 'Upgrade Service Unreachable' as some SF components are unable to authenticate to each other.
+- Cluster certificate is issued by Digicert CA cert with SHA-1 thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 ([DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm))
+- Pinned-issuer list includes 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 but does not include new issuer thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c
 
 ## Symptoms
 
@@ -104,6 +103,9 @@ Event Xml:
 ## Cause
 
 DigiCert introduced a new CA which reuses the signing key of an existing and still-valid CA. This means there are 2 different CA certificates in circulation, and either can be included in the chain built for a certificate signed by this shared key. Existing certificates declared in SF clusters by subject with issuer pinning are at risk of spontaneously failing validation. This PKI/set of CAs is not restricted to a given cloud.
+
+SHA-1 Thumbprint of new CA: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4
+SHA-1 Thumprint of Existing CA: 626d44e704d1ceabe3bf0d53397464ac8080142c
 
 ## Impact
 
