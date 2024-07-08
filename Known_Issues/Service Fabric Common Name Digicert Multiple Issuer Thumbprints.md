@@ -17,7 +17,7 @@ Service Fabric clusters secured with DigiCert certificates declared by Common Na
 This issue affects any cluster version that has the following configuration:  
 
 - Using X509 Certificates declared by common name and issuer pinning
-- Cluster certificate is issued by the Digicert CA cert with SHA-1 thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 ([DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm)); cluster cert has an Authority Key Identifier (AKI) of 0f80611c823161d52f28e78d4638b42ce1c6d9e2
+- Cluster certificate is issued by the Digicert CA cert with SHA-1 thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 ([DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm#intermediates)); cluster cert has an Authority Key Identifier (AKI) of 0f80611c823161d52f28e78d4638b42ce1c6d9e2
 - Cluster pinned-issuer list includes 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 but does not include new issuer thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c
 
 ## Symptoms
