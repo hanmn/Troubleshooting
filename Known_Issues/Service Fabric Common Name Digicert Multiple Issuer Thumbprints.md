@@ -104,8 +104,8 @@ Event Xml:
 
 DigiCert introduced a new CA which reuses the signing key of an existing and still-valid CA. This means there are 2 different CA certificates in circulation, and either can be included in the chain built for a certificate signed by this shared key. Existing certificates declared in SF clusters by subject with issuer pinning are at risk of spontaneously failing validation. This PKI/set of CAs is not restricted to a given cloud.
 
-SHA-1 Thumbprint of new CA: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4
-SHA-1 Thumprint of Existing CA: 626d44e704d1ceabe3bf0d53397464ac8080142c
+- SHA-1 Thumbprint of new CA: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4
+- SHA-1 Thumprint of Existing CA: 626d44e704d1ceabe3bf0d53397464ac8080142c
 
 ## Impact
 
