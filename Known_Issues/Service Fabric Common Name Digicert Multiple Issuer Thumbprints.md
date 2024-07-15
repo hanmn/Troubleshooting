@@ -124,7 +124,7 @@ If an upgrade is unfeasible or the cluster is already affected:
 
 On each node in the cluster,
 - Install the CA cert with Thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c in the LocalMachine\Disallowed store in certlm.msc, "Local Computer\Untrusted certificates"  
-- Issuer/ Intermediate certficate 626d44e704d1ceabe3bf0d53397464ac8080142c can be downloaded from https://www.digicert.com/kb/digicert-root-certificates.htm
+- Issuer/ Intermediate certficate 626d44e704d1ceabe3bf0d53397464ac8080142c can be downloaded from https://www.digicert.com/kb/digicert-root-certificates.htm#intermediates
 
 example command once .crt file has been downloaded:  
 
@@ -135,12 +135,13 @@ certutil -addstore -enterprise Disallowed .\DigiCertSHA2SecureServerCA-2.crt
 Once this is done, cluster should restore. If it does not, please look for the following symptoms: 
 - Calls are failing with FABRIC_E_GATEWAY_NOT_REACHABLE
 
-If these symptoms are present, a rolling restart will need to take place. On each seed node, one-by-one, either
+If these symptoms are present, a rolling restart will need to take place. 
 
-1. Restart each of the seed nodes
-2. On each seed node, terminate the following processes: FabricGateway.exe, FileStoreService.exe, FabricUpgrade.exe
+On each seed node, one-by-one, either
+- Restart each of the seed nodes or
+- On each seed node, terminate the following processes: FabricGateway.exe, FileStoreService.exe, FabricUpgrade.exe
 
-Please wait for FabricGateway to come up on each node before proceeding to the next node. This will help prevent further availability loss.
+Please wait for FabricGateway.exe to come up on each node before proceeding to the next node. This will help prevent further availability loss.
 
 ## Resolution
 
