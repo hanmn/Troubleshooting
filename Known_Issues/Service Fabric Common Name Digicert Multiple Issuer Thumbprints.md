@@ -1,4 +1,4 @@
-# Service Fabric Common Name Digicert Multiple Issuer Thumbprints
+# DigiCert-issued cluster certificates declared by Common Name with issuer pinning may fail due to key confusion
 
 [Issue](#Issue)  
 [Affects](#Affects)  
@@ -10,21 +10,24 @@
 
 ## Issue
 
-Service Fabric clusters secured with DigiCert certificates declared by Common Name are at risk of failing validation, if the certificate declaration pins the issuer thumbprints.
+Service Fabric clusters secured with DigiCert-issued certificates declared by Common Name with issuer thumbprint pinning are at risk of failing validation. This may lead to partial cluster unavailability, the cluster being inaccessible or cluster upgrades stalling/failing.
 
 ## Affects
 
-This issue affects any cluster version that has the following configuration:  
+This issue affects any cluster version with the following configuration:  
 
-- Using X509 Certificates declared by common name and issuer pinning
-- Cluster certificate is issued by DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm#intermediates), which has SHA-1 thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4; i.e. cluster cert has an Authority Key Identifier (AKI) of 0f80611c823161d52f28e78d4638b42ce1c6d9e2
-- Cluster pinned-issuer list includes 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 but does not include new issuer thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c
+- Using DigiCert-issued X509 Certificates declared by common name with issuer pinning
+- Cluster certificate is issued by either of the [DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm#intermediates); you can identify if this is the case as follows:
+  - the cluster certificate's Authority Key Identifier (AKI, extension OId: 2.5.29.35) of 0f80611c823161d52f28e78d4638b42ce1c6d9e2, or
+  - the signing certificate has the SHA-1 thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 or 626d44e704d1ceabe3bf0d53397464ac8080142c 
+- The cluster certificate's issuer thumbprint list includes only one, but not both of the following SHA-1 thumbprints: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4, 626d44e704d1ceabe3bf0d53397464ac8080142c
 
 ## Symptoms
 
 - One or more cluster nodes appear down/unhealthy
 - Cluster is unreachable, whether from the Azure portal or directly (SFX/other clients)
 - Event logs show errors similar to: "authorization failure: CertificateNotMatched"
+- Any pending upgrades are not progressing
 
 Example event message from Application event log:
 
@@ -107,16 +110,12 @@ DigiCert introduced a new CA which reuses the signing key of an existing and sti
 - SHA-1 Thumbprint of new CA: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4
 - SHA-1 Thumprint of Existing CA: 626d44e704d1ceabe3bf0d53397464ac8080142c
 
-## Impact
-
-- One or more nodes to stop participating in cluster or for entire cluster to stop functioning
-- May be unable to connect to cluster via SFX or Portal
-- Cluster may show unreachable from Azure portal and you may not be able to deploy upgrades
-- May not be able to deploy application upgrades
+Since the two CA certificates are using the same signing key, either can be resolved as the intermediate upon building the certificate chain of the cluster certificate; if the declaration specifies only one of the issuer thumbprints, and the actual chain includes the other one, validation will fail. As a consequence, in-cluster or cluster-to-RP calls will fail with an authentication error. On Windows, CryptoAPI will favor the most recently issued CA certificates from multiple matches; given that this CA was recently introduced, its thumbprint will not be listed on the cluster certificate declaration, and so the likelihood of failure is high.
 
 ## Mitigation
+Action is needed for clusters which meet the description in the Affects section, whether or not the symptoms have been observed, as follows:
 
-If the cluster meets the description in Affects, but none of the symptoms have been observed. Action is needed. Please run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
+If the cluster does not show the symptoms: pease run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
 
 "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4" -> "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4,626d44e704d1ceabe3bf0d53397464ac8080142c" (and including any other pre-existing TPs)
 
