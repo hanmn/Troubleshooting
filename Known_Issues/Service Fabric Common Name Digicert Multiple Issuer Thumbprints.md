@@ -1,4 +1,4 @@
-# Service Fabric Common Name Digicert Multiple Issuer Thumbprints
+# DigiCert-issued cluster certificates declared by Common Name with issuer pinning may fail due to key confusion
 
 [Issue](#Issue)  
 [Affects](#Affects)  
@@ -10,21 +10,24 @@
 
 ## Issue
 
-Service Fabric clusters using Certificate Common Name and Issuer thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 may become unresponsive or have state 'Upgrade Service Unreachable'.  
+Service Fabric clusters secured with DigiCert-issued certificates declared by Common Name with issuer thumbprint pinning are at risk of failing validation. This may lead to partial cluster unavailability, the cluster being inaccessible or cluster upgrades stalling/failing.
 
 ## Affects
 
-This issue affects any cluster version that has the following configuration:  
+This issue affects any cluster version with the following configuration:  
 
-- Certificate Common Name instead of thumbprint
-- Certificate issued from Digicert
-- Certificate Issuer Thumbprint configured with only: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4  
+- Using DigiCert-issued X509 Certificates declared by common name with issuer pinning
+- Cluster certificate is issued by either of the [DigiCert SHA2 Secure Server CA](https://www.digicert.com/kb/digicert-root-certificates.htm#intermediates); you can identify if this is the case as follows:
+  - the cluster certificate's Authority Key Identifier (AKI, extension OId: 2.5.29.35) of 0f80611c823161d52f28e78d4638b42ce1c6d9e2, or
+  - the signing certificate has the SHA-1 thumbprint 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4 or 626d44e704d1ceabe3bf0d53397464ac8080142c 
+- The cluster certificate's issuer thumbprint list includes only one, but not both of the following SHA-1 thumbprints: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4, 626d44e704d1ceabe3bf0d53397464ac8080142c
 
 ## Symptoms
 
-- One or mode cluster nodes appear down/unhealthy
+- One or more cluster nodes appear down/unhealthy
 - Cluster is unreachable, whether from the Azure portal or directly (SFX/other clients)
 - Event logs show errors similar to: "authorization failure: CertificateNotMatched"
+- Any pending upgrades are not progressing
 
 Example event message from Application event log:
 
@@ -104,16 +107,23 @@ Event Xml:
 
 DigiCert introduced a new CA which reuses the signing key of an existing and still-valid CA. This means there are 2 different CA certificates in circulation, and either can be included in the chain built for a certificate signed by this shared key. Existing certificates declared in SF clusters by subject with issuer pinning are at risk of spontaneously failing validation. This PKI/set of CAs is not restricted to a given cloud.
 
-## Impact
+- SHA-1 Thumbprint of new CA: 1fb86b1168ec743154062e8c9cc5b171a4b7ccb4
+- SHA-1 Thumprint of Existing CA: 626d44e704d1ceabe3bf0d53397464ac8080142c
 
-Issue can cause either one or more nodes to stop participating in cluster or for entire cluster to stop functioning.
+Since the two CA certificates are using the same signing key, either can be resolved as the intermediate upon building the certificate chain of the cluster certificate; if the declaration specifies only one of the issuer thumbprints, and the actual chain includes the other one, validation will fail. As a consequence, in-cluster or cluster-to-RP calls will fail with an authentication error. On Windows, CryptoAPI will favor the most recently issued CA certificates from multiple matches; given that this CA was recently introduced, its thumbprint will not be listed on the cluster certificate declaration, and so the likelihood of failure is high.
 
 ## Mitigation
+Action is needed for clusters which meet the description in the Affects section, whether or not the symptoms have been observed, as follows:
+
+If the cluster does not show the symptoms: pease run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
+
+"1fb86b1168ec743154062e8c9cc5b171a4b7ccb4" -> "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4,626d44e704d1ceabe3bf0d53397464ac8080142c" (and including any other pre-existing TPs)
 
 If an upgrade is unfeasible or the cluster is already affected:
 
+On each node in the cluster,
 - Install the CA cert with Thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c in the LocalMachine\Disallowed store in certlm.msc, "Local Computer\Untrusted certificates"  
-- Issuer/ Intermediate certficate 626d44e704d1ceabe3bf0d53397464ac8080142c can be downloaded from https://www.digicert.com/kb/digicert-root-certificates.htm
+- Issuer/ Intermediate certficate 626d44e704d1ceabe3bf0d53397464ac8080142c can be downloaded from https://www.digicert.com/kb/digicert-root-certificates.htm#intermediates
 
 example command once .crt file has been downloaded:  
 
@@ -121,9 +131,16 @@ example command once .crt file has been downloaded:
 certutil -addstore -enterprise Disallowed .\DigiCertSHA2SecureServerCA-2.crt
 ```
 
-or  
+Once this is done, cluster should restore. If it does not, please look for the following symptoms: 
+- Calls are failing with FABRIC_E_GATEWAY_NOT_REACHABLE
 
-- If you have multiple certificates with the same CN from authorized issuers, fall back to one not signed by the shared key by deleting the conflicting certificate and let the cluster choose another certificate. This change however has risks and should be tested.
+If these symptoms are present, a rolling restart will need to take place. 
+
+On each seed node, one-by-one, either
+- Restart each of the seed nodes or
+- On each seed node, terminate the following processes: FabricGateway.exe, FileStoreService.exe, FabricUpgrade.exe
+
+Please wait for FabricGateway.exe to come up on each node before proceeding to the next node. This will help prevent further availability loss.
 
 ## Resolution
 
