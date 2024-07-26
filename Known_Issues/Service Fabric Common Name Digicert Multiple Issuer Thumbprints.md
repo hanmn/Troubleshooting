@@ -115,13 +115,13 @@ Since the two CA certificates are using the same signing key, either can be reso
 ## Mitigation
 Action is needed for clusters which meet the description in the Affects section, whether or not the symptoms have been observed, as follows:
 
-### If the cluster does not show the symptomsdescribed above 
+### If the cluster does not show the symptoms as described above 
 
 pease run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
 
 "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4" -> "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4,626d44e704d1ceabe3bf0d53397464ac8080142c" (and including any other pre-existing TPs)
 
-### If an upgrade is infeasible or the cluster is showing symptoms
+### If an upgrade is infeasible or the cluster is already affected
 
 On each node in the cluster,
 - Install the CA cert with Thumbprint 626d44e704d1ceabe3bf0d53397464ac8080142c in the LocalMachine\Disallowed store in certlm.msc, "Local Computer\Untrusted certificates"  
