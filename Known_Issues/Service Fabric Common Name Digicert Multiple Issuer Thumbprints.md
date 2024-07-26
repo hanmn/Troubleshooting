@@ -117,7 +117,7 @@ Action is needed for clusters which meet the description in the Affects section,
 
 ### If the cluster does not show the symptoms as described above 
 
-pease run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
+Please run a cluster upgrade as soon as possible to add the new certificate issuer thumbprint: 
 
 "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4" -> "1fb86b1168ec743154062e8c9cc5b171a4b7ccb4,626d44e704d1ceabe3bf0d53397464ac8080142c" (and including any other pre-existing TPs)
 
