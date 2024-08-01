@@ -1,3 +1,5 @@
+<code>applys to Windows OS</code>
+
 ## How to set ACL for a SF certificate 
 
 For a cluster running on a local dev box you do that by finding the certificate either using certmgr.msc or the relevant mmc snap-in and then right click > All Tasks > Manage Private Keys and then giving read permissions to NETWORK SERVICE.

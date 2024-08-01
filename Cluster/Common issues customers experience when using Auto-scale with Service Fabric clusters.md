@@ -1,6 +1,6 @@
 # Common issues customers experience when using Auto-scale with Service Fabric clusters
 
-## **Reference**: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-scale-up-down
+## **Reference**: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-scale-in-out
 
 1. Scaling down the primary node type to less than the minimum number required based on the cluster [Reliability level](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-capacity#the-reliability-characteristics-of-the-cluster) can make the cluster unstable or can bring it down completely. This could result in data loss for your applications and for the system services.  In extreme cases you may need to rebuild the cluster.
 
