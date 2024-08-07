@@ -1,12 +1,23 @@
 # Service Fabric Standalone Cluster Data Collection
 
-Service Fabric Standalone Cluster is a cluster that is not deployed using Azure Service Fabric Resource Provider (SFRP) as a managed service. Standalone clusters are typically deployed on-premises but can be deployed on Azure virtual machines without using SFRP as self-service.  See [standalone cluster overview](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-standalone-clusters-overview) for additional information.
+>[Download](standaloneLogCollector.exe-download)  
+>[Setup](standaloneLogCollector.exe-setup)  
+>[Parameters](standaloneLogCollector.exe-parameters)  
+>[Single node collect commands](standaloneLogCollector.exe-single-node-collect-commands)  
+>[Cluster collect commands](standaloneLogCollector.exe-cluster-collect-commands)  
+>[Upload commands](standaloneLogCollector.exe-upload-commands)  
+>[Troubleshooting](troubleshooting)  
+>[Reference](reference)  
+
+Service Fabric Standalone Cluster is a cluster that is not deployed using Azure Service Fabric Resource Provider (SFRP) as a managed service. Standalone clusters are typically deployed on-premises but can be deployed on Azure virtual machines without using SFRP as self-service.  See [standalone cluster overview](https://docs.microsoft.com/azure/service-fabric/service-fabric-standalone-clusters-overview) for additional information.
 
 Azure managed clusters provide some automated management of the cluster as well as telemetry and diagnostics to Microsoft. When opening a case with Microsoft Support, this information is already available and manual data collection is not normally required. Standalone clusters do not have these additional features so data collection if required is a manual process.  
 
+Service Fabric [standalone diagnostics configuration settings](https://docs.microsoft.com/azure/service-fabric/service-fabric-cluster-manifest#diagnostics) describe the design time configuration options available for the diagnostics store containing log data. The default option is on local node only. Other available options are central file storage (unc) which allows the management of all nodes diagnostic data and Azure storage. Some advantages of centralized storage are data collection with standalonelogcollector and management such as archiving or further analysis. With Azure storage, in addition to central storage features, there are the added benefits of storage management and log analysis. Using Azure storage allows immediate access of Service Fabric diagnostic data to Microsoft support for troubleshooting issues without the need of having to use standalonelogcollector.exe.  
+
 ## StandaloneLogCollector.exe download
 
-StandaloneLogCollector.exe is a utility included in the Service Fabric Standalone runtime download that can be used to assist with data collection. Information about download content is available in [service fabric cluster standalone package contents](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-standalone-package-contents).
+StandaloneLogCollector.exe is a utility included in the Service Fabric Standalone runtime download that can be used to assist with data collection. Information about download content is available in [service fabric cluster standalone package contents](https://docs.microsoft.com/azure/service-fabric/service-fabric-cluster-standalone-package-contents).
 
 ## StandaloneLogCollector.exe setup
 
@@ -126,7 +137,7 @@ NOTE: It is recommended to use the smallest timeframe possible that represents t
 
 CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download latest [release]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") from git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -? or see [CollectServiceFabricData](https://github.com/microsoft/CollectServiceFabricData).  
 
-**NOTE: Kusto and Log Analytics options are not free. See [Azure Monitor Pricing](https://azure.microsoft.com/en-us/pricing/details/monitor/) for Log Analytics and [Azure Data Explorer Pricing](https://azure.microsoft.com/is-is/pricing/details/data-explorer/) for Kusto**
+**NOTE: Kusto and Log Analytics options are not free. See [Azure Monitor Pricing](https://azure.microsoft.com/pricing/details/monitor/) for Log Analytics and [Azure Data Explorer Pricing](https://azure.microsoft.com/is-is/pricing/details/data-explorer/) for Kusto**
 
 ### example command to upload to new log analytics workspace
 
@@ -186,7 +197,7 @@ If unable to use -mode *upload mode types, use -mode collect instead. After data
 
 ### Directory Path is longer than 80 characters
 
-The trace path and filename length is long and can cause issues on machines where [LongPathsEnabled](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file) has not been set. Use a directory with a short name to prevent this error. Example: c:\temp
+The trace path and filename length is long and can cause issues on machines where [LongPathsEnabled](https://docs.microsoft.com/windows/win32/fileio/naming-a-file) has not been set. Use a directory with a short name to prevent this error. Example: c:\temp
 
 ```powershell
 The default output directory path 'C:\Users\user\Downloads\Microsoft.Azure.ServiceFabric.WindowsServer.6.5.676.9590\tools\Microsoft.Azure.ServiceFabric.WindowsServer.SupportPackage\nt0000000.2019.10.26.11.48.15' is longer than 80 characters. Please specify a shorter path, like c:\myOutput
@@ -212,10 +223,11 @@ Examples:
 ```powershell
 PS C:\temp\standalonelogcollector> .\StandaloneLogCollector.exe -scope cluster -mode collect
 
-The privacy statement for using Microsoft Azure Service Fabric Standalone Log Collector can be found on https://privacy.microsoft.com/en-US .
+The privacy statement for using Microsoft Azure Service Fabric Standalone Log Collector can be found on https://privacy.microsoft.com .
 Enter any key to continue.
+```
 
-
+```text
 10/31/2019 2:36:48 PM,Info,MainWorkflow,Tool version: 6.0.0.0,
 10/31/2019 2:36:48 PM,Info,MainWorkflow,Parameters: OutputDirectoryPath:C:\temp\standalonelogcollector\nt0000000.2019.10.31.14.36.48;StartUtcTime:10/31/2019 1:36:48 PM;EndUtcTime:10/31/2019 2:36:48 PM;IncludeLeaseLogs:False;WorkingDirectoryPath:C:\temp\standalonelogcollector\nt0000000.2019.10.31.14.36.48.temp;Scope:Cluster;Mode:Collect;ConnectionString:;ClusterConfigFilePath:;IncludeCrashDumps:False,
 10/31/2019 2:36:48 PM,Info,MainWorkflow,Workflow begins,
@@ -249,14 +261,15 @@ Enter any key to continue.
 10/31/2019 2:37:18 PM,Info,MainWorkflow,Workflow ends,
 
 Please review the information in the log package before uploading it to Microsoft: C:\temp\standalonelogcollector\nt0000000.2019.10.31.14.36.48
-Press any key to complete.
+Press any key to complete.  
 ```
+
 #### Example upload command output
 
-```
+```text
 PS C:\temp\standalonelogcollector> .\StandaloneLogCollector.exe -mode upload -output .\nt0000000.2019.10.31.14.54.32\ -StorageConnectionString "https://XXX.blob.core.windows.net/containerName?sasToken"
 
-The privacy statement for using Microsoft Azure Service Fabric Standalone Log Collector can be found on https://privacy.microsoft.com/en-US .
+The privacy statement for using Microsoft Azure Service Fabric Standalone Log Collector can be found on https://privacy.microsoft.com .
 Enter any key to continue.
 
 
