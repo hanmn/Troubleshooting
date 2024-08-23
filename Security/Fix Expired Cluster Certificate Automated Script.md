@@ -11,9 +11,13 @@ Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher
 
 ## [Verify Certificate Expired Status on Node]
    * [RDP](https://docs.microsoft.com/azure/service-fabric/service-fabric-cluster-remote-connect-to-azure-cluster-node) to any node
-        * Open the Certificate Mgr for 'Local Computer' and check below details
+        * Open the Certificate Manager for 'Local Computer' (certlm.msc) and check below details
         * Make sure certificate is ACL'd to network service
         * Verify the Certificate Expiry, if it is expired, follow below steps
+
+![](../media/certlm1.png)  
+
+![](../media/certlm2.png)  
 
 ## [Fix Expired Cert steps]
 
