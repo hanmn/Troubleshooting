@@ -53,6 +53,7 @@ $global:failNodes = @()
 $global:successNodes = @()
 $SFEnv = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Service Fabric" 
 $defaultBinary = 'C:\Program Files\Microsoft Service Fabric\bin\FabricHost.exe'
+$creds = $null
 
 if ($SFEnv.FabricDataRoot) {
     $clusterDataRootPath = $SFEnv.FabricDataRoot
