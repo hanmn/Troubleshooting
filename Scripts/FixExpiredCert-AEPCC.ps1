@@ -34,11 +34,9 @@
 #>
 
 Param(
-    [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [string[]] $nodeIpArray = @("0"),
     [string]$clusterDataRootPath = 'd:\svcfab',
-    [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
     [string]$tempPath = 'd:\temp\certwork',
     [switch]$cacheCredentials,
