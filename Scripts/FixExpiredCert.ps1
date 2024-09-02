@@ -63,17 +63,6 @@ If (!(Test-Path $clusterDataRootPath)) {
 
 $curValue = (get-item wsman:\localhost\Client\TrustedHosts).value
 
-if (!$global:creds) {
-    Write-Host "Enter your RDP Credentials"
-
-    #Get the RDP User Name and Password
-    $creds = Get-Credential
-
-    if ($cacheCredentials) {
-        $global:creds = $creds
-    }
-}
-
 if (![regex]::IsMatch($oldThumbprint, '^[0-9A-Fa-f]{24,}$') -or ![regex]::IsMatch($newThumbprint, '^[0-9A-Fa-f]{24,}$')) {
     write-warning "verify oldthumbprint:($oldthumbprint) and newthumbprint:($newthumbprint) are specified and are correct."
     #return
@@ -289,6 +278,17 @@ if ($localOnly) {
     write-host "executing on local node only"
     invoke-command -ScriptBlock $scriptBlock -ArgumentList $clusterDataRootPath, $oldThumbprint, $newThumbprint, $certStoreLocation
     return
+}
+
+if (!$global:creds) {
+    Write-Host "Enter your RDP Credentials"
+
+    #Get the RDP User Name and Password
+    $creds = Get-Credential
+
+    if ($cacheCredentials) {
+        $global:creds = $creds
+    }
 }
 
 ForEach ($nodeIpAddress in $nodeIpArray) {

@@ -81,15 +81,6 @@ If (!(Test-Path $clusterDataRootPath)) {
 #Saving current list of Trusted Hosts
 $curValue = (get-item wsman:\localhost\Client\TrustedHosts).value
 
-if (!$global:creds) {
-    Write-Host "Enter your RDP Credentials"
-    $creds = Get-Credential
-
-    if ($cacheCredentials) {
-        $global:creds = $creds
-    }
-}
-
 $scriptBlock = { 
     param($clusterDataRootPath, $tempPath)
     <#
@@ -331,6 +322,15 @@ if ($localOnly) {
     write-host "executing on local node only"
     invoke-command -ScriptBlock $scriptBlock -ArgumentList $clusterDataRootPath, $tempPath
     return
+}
+
+if (!$global:creds) {
+    Write-Host "Enter your RDP Credentials"
+    $creds = Get-Credential
+
+    if ($cacheCredentials) {
+        $global:creds = $creds
+    }
 }
 
 function fixNodes($title, $scriptBlock, $nodeIpArray) {
