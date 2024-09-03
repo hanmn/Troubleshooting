@@ -64,8 +64,12 @@ If (!(Test-Path $clusterDataRootPath)) {
 $curValue = (get-item wsman:\localhost\Client\TrustedHosts).value
 
 if (![regex]::IsMatch($oldThumbprint, '^[0-9A-Fa-f]{24,}$') -or ![regex]::IsMatch($newThumbprint, '^[0-9A-Fa-f]{24,}$')) {
-    write-warning "verify oldthumbprint:($oldthumbprint) and newthumbprint:($newthumbprint) are specified and are correct."
-    #return
+    $errMessage = "verify oldthumbprint:($oldthumbprint) and newthumbprint:($newthumbprint) are specified and are correct."
+    if($oldThumbprint.Contains(' ') -or $oldThumbprint.Contains(' ')){
+        write-error $errMessage
+        return
+    }
+    write-warning $errMessage
 }
 
 $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $certStoreLocation)
@@ -188,7 +192,7 @@ $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $ce
     $thumbprintPath = $certStoreLocation + $newThumbprint
     If (!(Test-Path $thumbprintPath)) {
         Write-Host "$env:computername : $newThumbprint not installed"
-        Exit-PSSession
+        return
     }
 
     #TODO: validate newThumbprint is ACL'd for NETWORK_SERVICE
@@ -201,7 +205,7 @@ $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $ce
     Get-ChildItem | Format-Table Subject, Thumbprint, SerialNumber -AutoSize
     Set-Location $currentLocation
 
-    $thumbprint = $certStoreLocation + "\" + $newThumbprint
+    $thumbprint = $certStoreLocation + $newThumbprint
     Write-Host "$env:computername : Setting ACL for $thumbprint" -ForegroundColor Green
 
     #get the container name
