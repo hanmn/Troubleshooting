@@ -297,8 +297,6 @@ Virtual Machine Images - List Skus: https://docs.microsoft.com/en-us/rest/api/co
 
 ### RDP to node  
 
-Additional information on how to connect to cluster is available here [Remote connect to a virtual machine scale set instance or a cluster node](https://docs.microsoft.com/azure/service-fabric/service-fabric-cluster-remote-connect-to-azure-cluster-node)
-
 1. Start 'Remote Desktop Connection' (mstsc.exe)  
 1. in 'Computer' field, enter the cluster FQDN and port number.  
     **NOTE: Azure service fabric clusters provision incrementing NAT rules to each node for RDP access starting at port 3389.**  
