@@ -310,7 +310,7 @@ function main() {
                 $global:creds = $creds
             }
         }
-        else{
+        else {
             $creds = $global:creds
         }
         
@@ -331,9 +331,14 @@ function main() {
             $adminPath = "\\$($machine)\admin$\temp"
 
             Invoke-Command -Authentication Negotiate -ComputerName $machine {
-                Set-NetFirewallRule -DisplayGroup  'File and Printer Sharing' -Enabled True -PassThru |
-                Select-Object DisplayName, Enabled
-            } -Credential $creds
+                $displayGroup = 'File and Printer Sharing'
+                $logFile = $args[0]
+                if ((Get-NetFirewallRule -DisplayGroup $displayGroup).Enabled -icontains 'false') {
+                    Write-Warning "enabling firewall $displayGroup" | out-file -Append $logFile
+                    Set-NetFirewallRule -DisplayGroup $displayGroup -Enabled True -PassThru |
+                    Select-Object DisplayName, Enabled
+                }
+            } -Credential $creds -ArgumentList $logFile
     
             if (!(Test-path $adminPath)) {
                 Write-Warning "unable to connect to $($machine) to start diagnostics. skipping!"
@@ -363,7 +368,7 @@ function main() {
                             if ($item.key -imatch "quiet" -or $item.key -imatch "noadmin" -or $item.key -imatch "workdir") {
                                 continue
                             }
-                            if(@($item.value).count -gt 1){
+                            if (@($item.value).count -gt 1) {
                                 $item.value = $item.value -join ','
                             }
 
@@ -414,6 +419,17 @@ function main() {
             else {
                 write-host "warning: unable to find diagnostic files in $($sourcePath)"
             }
+
+            Invoke-Command -Authentication Negotiate -ComputerName $machine {
+                $displayGroup = 'File and Printer Sharing'
+                $logFile = $args[0]
+                $firewallWarning = "enabling firewall $displayGroup"
+                if ((get-content -raw $logFile) -imatch $firewallWarning -and (Get-NetFirewallRule -DisplayGroup $displayGroup).Enabled -icontains 'true') {
+                    Write-Warning "disabling firewall $displayGroup" | out-file -Append $logFile
+                    Set-NetFirewallRule -DisplayGroup $displayGroup -Enabled False -PassThru |
+                    Select-Object DisplayName, Enabled
+                }
+            } -Credential $creds -ArgumentList $logFile
         }
 
         $global:zipFile = compress-file $workDir
@@ -990,10 +1006,10 @@ try {
         }
 
         if ($param.Value.ParameterType -imatch "bool") {
-            if($paramValue -ieq 'true'){
+            if ($paramValue -ieq 'true') {
                 $paramValue = 1
             }
-            else{
+            else {
                 $paramValue = 0
             }
         }
