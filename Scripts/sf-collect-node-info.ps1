@@ -330,15 +330,15 @@ function main() {
         foreach ($machine in (new-object collections.arraylist(, $remoteMachines))) {
             $adminPath = "\\$($machine)\admin$\temp"
 
-            Invoke-Command -Authentication Negotiate -ComputerName $machine {
+            Invoke-Command -Authentication Negotiate -ComputerName $machine -scriptBlock {
+                $logFile = "c:\windows\temp\fw.txt"
                 $displayGroup = 'File and Printer Sharing'
-                $logFile = $args[0]
                 if ((Get-NetFirewallRule -DisplayGroup $displayGroup).Enabled -icontains 'false') {
                     Write-Warning "enabling firewall $displayGroup" | out-file -Append $logFile
                     Set-NetFirewallRule -DisplayGroup $displayGroup -Enabled True -PassThru |
                     Select-Object DisplayName, Enabled
                 }
-            } -Credential $creds -ArgumentList $logFile
+            } -Credential $creds
     
             if (!(Test-path $adminPath)) {
                 Write-Warning "unable to connect to $($machine) to start diagnostics. skipping!"
@@ -375,7 +375,6 @@ function main() {
                             $sb.Append("-$($item.key) $($item.value) ")
                         }
                         
-                        $arguments = "-File $($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
                         write-host "executing: $($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
                         Invoke-Expression "$($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
                         write-host ($error | out-string)
@@ -420,14 +419,14 @@ function main() {
                 write-host "warning: unable to find diagnostic files in $($sourcePath)"
             }
 
-            Invoke-Command -Authentication Negotiate -ComputerName $machine {
+            Invoke-Command -Authentication Negotiate -ComputerName $machine -scriptBlock {
+                $logFile = "c:\windows\temp\fw.txt"
                 $displayGroup = 'File and Printer Sharing'
-                $logFile = $args[0]
-                $firewallWarning = "enabling firewall $displayGroup"
-                if ((get-content -raw $logFile) -imatch $firewallWarning -and (Get-NetFirewallRule -DisplayGroup $displayGroup).Enabled -icontains 'true') {
+                if ((test-path $logFile)) {
                     Write-Warning "disabling firewall $displayGroup" | out-file -Append $logFile
                     Set-NetFirewallRule -DisplayGroup $displayGroup -Enabled False -PassThru |
                     Select-Object DisplayName, Enabled
+                    Remove-Item $logFile
                 }
             } -Credential $creds -ArgumentList $logFile
         }
