@@ -16,7 +16,7 @@
 
 2.  Verify which ports Service Fabric applications are configured to listen on. Check the application's service manifest to see which port port is configured. It is also possible for a service to be configured for dynamic port binding, in which case the port number is not assigned in the service manifest file, but will be assigned at runtime from the Application Port range which is defined in the Cluster Manifest.
 
-3.  [Check for a Network Security Group](../Security/NSG%20configuration%20for%20Service%20Fabric%20clusters%20(Applied%20at%20VNET%20level).md) which might be blocking external traffic.
+3.  [Check for a Network Security Group](../Security/NSG configuration for Service Fabric clusters Applied at VNET level.md) which might be blocking external traffic.
 
 4.  RDP to the VM to determine which EXE is listening on the internal port.
 
