@@ -45,9 +45,9 @@ See
 Renew certificate.
 If certificate is expired, see:
 
-[Fix Expired Cluster Certificate Automated Script](../Security/Fix-Expired-Cluster-Certificate-Automated-Script.md)  
-[Fix Expired Cluster Certificate Manual Steps](../Security/Fix-Expired-Cluster-Certificate-Manual-Steps.md)  
-[How to recover from an Expired Cluster Certificate](../Security/How-to-recover-from-an-Expired-Cluster-Certificate.md)  
+[Fix Expired Cluster Certificate Automated Script](../Security/Fix Expired Cluster Certificate Automated Script.md)  
+[Fix Expired Cluster Certificate Manual Steps](../Security/Fix Expired Cluster Certificate Manual Steps.md)  
+[How to recover from an Expired Cluster Certificate](../Security/How to recover from an Expired Cluster Certificate.md)  
 
 ## Reference
 

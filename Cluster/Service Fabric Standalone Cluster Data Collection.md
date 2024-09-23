@@ -1,13 +1,13 @@
 # Service Fabric Standalone Cluster Data Collection
 
->[Download](standaloneLogCollector.exe-download)  
->[Setup](standaloneLogCollector.exe-setup)  
->[Parameters](standaloneLogCollector.exe-parameters)  
->[Single node collect commands](standaloneLogCollector.exe-single-node-collect-commands)  
->[Cluster collect commands](standaloneLogCollector.exe-cluster-collect-commands)  
->[Upload commands](standaloneLogCollector.exe-upload-commands)  
->[Troubleshooting](troubleshooting)  
->[Reference](reference)  
+>[Download](#standalonelogcollectorexe-download)  
+>[Setup](#standalonelogcollectorexe-setup)  
+>[Parameters](#standalonelogcollectorexe-parameters)  
+>[Single node collect commands](#standalonelogcollectorexe-single-node-collect-commands)  
+>[Cluster collect commands](#standalonelogcollectorexe-cluster-collect-commands)  
+>[Upload commands](#standalonelogcollectorexe-upload-commands)  
+>[Troubleshooting](#troubleshooting)  
+>[Reference](#reference)  
 
 Service Fabric Standalone Cluster is a cluster that is not deployed using Azure Service Fabric Resource Provider (SFRP) as a managed service. Standalone clusters are typically deployed on-premises but can be deployed on Azure virtual machines without using SFRP as self-service.  See [standalone cluster overview](https://docs.microsoft.com/azure/service-fabric/service-fabric-standalone-clusters-overview) for additional information.
 
@@ -135,7 +135,7 @@ NOTE: It is recommended to use the smallest timeframe possible that represents t
 
 ### Node or cluster upload command to kusto or log analytics using collectsfdata.exe
 
-CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download latest [release]("https://github.com/microsoft/CollectServiceFabricData/releases/latest") from git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -? or see [CollectServiceFabricData](https://github.com/microsoft/CollectServiceFabricData).  
+CollectSFData can be used to manage Service Fabric diagnostic data. One option is to upload data collected from standalonelogcollector.exe to kusto or log analytics. Download latest [release](https://github.com/microsoft/CollectServiceFabricData/releases/latest) from git repo. Use the --cacheLocation argument to specify the folder output location from standalonelogcollector.exe. For full syntax use -? or see [CollectServiceFabricData](https://github.com/microsoft/CollectServiceFabricData).  
 
 **NOTE: Kusto and Log Analytics options are not free. See [Azure Monitor Pricing](https://azure.microsoft.com/pricing/details/monitor/) for Log Analytics and [Azure Data Explorer Pricing](https://azure.microsoft.com/is-is/pricing/details/data-explorer/) for Kusto**
 
