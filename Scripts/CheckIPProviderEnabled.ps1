@@ -18,6 +18,7 @@ Param(
 )
 Set-StrictMode -Version 3
 $ErrorActionPreference = "Continue"
+$issuesFound = 0
 
 $patchedVersionsTable = @{
     Windows_70 = "7.0.478.9590"
@@ -93,6 +94,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
             }
             else
             {
+                $issuesFound++
                 Write-Host "   **Problem** resourceId: " $manifest.Id -ForegroundColor Red
                 Write-Host "        Open Networking in use: " $IPProvider.Value
                 Write-Host "                  Code Version: " $clusterVersion
@@ -103,6 +105,7 @@ ForEach($subscriptionId in $subscriptionIdArray)
         } else {
             if($lowVersion)
             {
+                $issuesFound++
                 Write-Host "   **Problem** resourceId: " $manifest.Id -ForegroundColor Red
                 Write-Host "        Open Networking in use: False" 
                 Write-Host "                  Code Version: " $clusterVersion
@@ -119,5 +122,12 @@ ForEach($subscriptionId in $subscriptionIdArray)
             }            
         }
     }
+}
+
+Write-Host "Checks complete.."
+
+if($issuesFound -eq 0)
+{
+    Write-Host "All Clear - no issues were found!"
 }
 

@@ -6,7 +6,7 @@
 >[Steps](#Steps)  
 >>[Verify prerequisites](#Verify-prerequisites)  
 >>[Setup repository](#Setup-repository)  
->>[Convert sample ASP.NET Core Kestrel application to Service Fabric container application](#Convert-sample-ASP.NET-Core-Kestrel-application-to-Service-Fabric-container-application)  
+>>[Convert sample ASP.NET Core Kestrel application to Service Fabric container application](#convert-sample-aspnet-core-kestrel-application-to-service-fabric-container-application)  
 >>[Test Service Fabric container application conversion](#Test-Service-Fabric-container-application-conversion)  
 >>[Use certificate file in service fabric container](#Use-certificate-file-in-service-fabric-container)  
 >
@@ -24,7 +24,7 @@ For this example a build machine with Windows version 2004 (20H1 / May 2020 upda
 
 > ### :exclamation:NOTE: If service fabric is being used to stage the application certificate in the container, the certificate has to be installed in the nodes local machine certificate store *and* has to be marked as exportable. There are currently no builtin automated methods to perform this action.  
 
-> ### :exclamation:NOTE: It is critical to have an Azure Windows SKU that supports containers and is compatible with the .NET Core version being deployed. see [Windows Server container OS and Host OS compatibility](#https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started-containers#windows-server-container-os-and-host-os-compatibility) and [Virtual Machine Images](https://docs.microsoft.com/en-us/rest/api/compute/virtualmachineimages/listskus) to get current SKU list for given location.  
+> ### :exclamation:NOTE: It is critical to have an Azure Windows SKU that supports containers and is compatible with the .NET Core version being deployed. see [Windows Server container OS and Host OS compatibility](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started-containers#windows-server-container-os-and-host-os-compatibility) and [Virtual Machine Images](https://docs.microsoft.com/en-us/rest/api/compute/virtualmachineimages/listskus) to get current SKU list for given location.  
 
 ## Requirements
 
@@ -36,7 +36,7 @@ For this example a build machine with Windows version 2004 (20H1 / May 2020 upda
 
 ## Steps
 
-### **Verify prerequisites**  
+### Verify prerequisites  
 
 Verify the following before proceeding:  
 
@@ -45,7 +45,7 @@ Verify the following before proceeding:
 1. Build machine OS version is compatible with node OS version  
 1. Exportable application certificate in 'LocalMachine' certificate store on each node. See [Adding exportable certificate to each node](#Adding-exportable-certificate-to-each-node)  
 
-### **Setup repository**  
+### Setup repository 
 
 1. Create new repository folder on build machine. ex: aspNetCoreKestrelHttps
 1. Copy source files from [Kestrel Sample Code](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/fundamentals/servers/kestrel/samples) into new repository folder on build machine. Both 2.x and 3. are available. For this example. .NET 3.x will be used.  
@@ -69,7 +69,7 @@ Verify the following before proceeding:
     - git add --all
     - git commit -a -m 'init'
 
-### **Convert sample ASP.NET Core Kestrel application to Service Fabric container application**  
+### Convert sample ASP.NET Core Kestrel application to Service Fabric container application
 
 1. In Visual Studio, right click the 'KestrelSample' web project, select 'Add', 'Container Orchestrator Support...'
 
@@ -91,7 +91,7 @@ Verify the following before proceeding:
 
 ---
 
-### **Test Service Fabric container application conversion**  
+### Test Service Fabric container application conversion
 
 With the example project converted to a service fabric container application, deploy the application to cluster
 
@@ -109,7 +109,7 @@ With the example project converted to a service fabric container application, de
 
 ---
 
-### **Use certificate file in service fabric container**  
+### Use certificate file in service fabric container  
 
 Detailed information for importing a certificate into a service fabric container is located here: [Import a certificate file into a container running on Service Fabric](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-securing-containers)  
 
@@ -204,7 +204,7 @@ Detailed information for importing a certificate into a service fabric container
 
 ---
 
-### **Test Service Fabric container application with certificate**  
+### Test Service Fabric container application with certificate
 
 1. Publish the KestrelSampleApplication to cluster to verify functionality of certificate. See powershell commands in [Reference](#Reference) that can be run from node for testing / troubleshooting.
 
@@ -216,7 +216,7 @@ Detailed information for importing a certificate into a service fabric container
 
     ![](../media/sfx-container-logs-2.png)
 
-#### **Console powershell and docker container commands from node verifying container web server response:**
+#### Console powershell and docker container commands from node verifying container web server response:
 
 Below are some example docker and powershell commands that can be used to verify port and certificate response. See [RDP to node](#RDP-to-node) for steps on how to connect to node. After opening RDP connection to node, open admin powershell prompt to run the following commands.
 

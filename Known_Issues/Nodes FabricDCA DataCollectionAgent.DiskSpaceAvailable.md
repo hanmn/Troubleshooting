@@ -45,7 +45,7 @@ This issue can have multiple causes:
 
 Depending on cause, there are different actions to mitigate issue.  
 These steps may be necessary before resolving issue if cluster is not functioning.  
-To Determine cause of issue, use [Out Of Diskspace](../Cluster/Out-of-Diskspace.md) to troubleshoot.
+To Determine cause of issue, use [Out Of Diskspace](../Cluster/Out of Diskspace.md) to troubleshoot.
 
 Depending on cause, to temporarily resolve:
 
@@ -63,7 +63,7 @@ For production workloads a minimum size of 50 GB temp drive is recommended.
 See [Reference](#Reference).
 
 Depending on cause, there are different actions to resolve issue.  
-To Determine cause of issue, use [Out Of Diskspace](../Cluster/Out-of-Diskspace.md) to troubleshoot.
+To Determine cause of issue, use [Out Of Diskspace](../Cluster/Out of Diskspace.md) to troubleshoot.
 
 ## Reference
 
