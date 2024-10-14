@@ -31,7 +31,7 @@
     use when there are connectivity issues between nodes by rdp'ing to each node and running with this switch.
 
 .LINK
-    iwr https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/FixExpiredCert-AEPCC.ps1 -out $pwd/FixExpiredCert-AEPCC.ps1
+    iwr https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/DisableIPProvider.ps1 -out $pwd/DisableIPProvider.ps1
 #>
 
 Param(
@@ -252,9 +252,9 @@ else {
     fixNodes -title "Custom Nodes" -scriptBlock $scriptBlock -nodeIpArray $nodeIpArray
 }
 
-Write-host "Waiting 60 seconds and then connecting to the cluster" -foregroundcolor green
+Write-host "Waiting 120 seconds and then connecting to the cluster" -foregroundcolor green
 Write-host "getting the list of all nodes" -foregroundcolor green
-start-sleep -Seconds 60
+start-sleep -Seconds 120
 
 Connect-ServiceFabricCluster
 $node = Get-ServiceFabricNode
