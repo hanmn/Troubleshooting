@@ -9,6 +9,10 @@ This article will demonstrate how to try to recover a cluster that is on an unsu
 ## [Symptoms]  
 
    * Cluster is using Open Network, not upgraded and the cluster is down
+   * Cluster State 'UpgradeServiceNotReachable' in Azure Portal
+   * Application/Node details are not displayed in Azure Portal
+   * Unable to connect to the cluster through SFX/PowerShell
+   * Node(s) goes down for any reason and cannot restart (stuck down)
 
 ## [Remediation]
 
