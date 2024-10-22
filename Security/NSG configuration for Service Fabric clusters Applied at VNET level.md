@@ -29,18 +29,6 @@ Pinging e3673.dscg.akamaiedge.net [23.15.148.186] with 32 bytes of data:
 Reply from 23.15.148.186: bytes=32 time=1ms TTL=54
 ```
 
-To work-around this you can do either of the following:
-
-- temporarily disable the  Deny all outbound rule
-- Manually download the **Service Fabric Runtime** cab (e.g. MicrosoftAzureServiceFabric.6.3.162.9494.cab) and copy this file to the new node in c:\Windows\Temp folder.  The direct download links can be found by reading the **Full Release Notes**, which are announced on the [Service Fabric Team blog](https://techcommunity.microsoft.com/t5/azure-service-fabric/bg-p/Service-Fabric)
-
-    - Example: https://techcommunity.microsoft.com/t5/azure-service-fabric/azure-service-fabric-7-0-fourth-refresh-release/ba-p/1205414
-
-        "And last but not least, the full release notes with a complete list of bug fixes and changes for the 7.0 CU4 runtime are available here: [Microsoft Azure Service Fabric 7.0 Fourth Refresh Release Notes](https://github.com/Azure/service-fabric/blob/master/release_notes/Service-Fabric-70CU4-releasenotes.md)"
-
-        Links can be found at bottom of the article.
-
-
 ## **SFRP endpoint** 
 
     You need to allow outbound traffic to port 443 from the cluster to the IP of the Regional Service Fabric Resource Provider (SFRP) endpoint(s).
