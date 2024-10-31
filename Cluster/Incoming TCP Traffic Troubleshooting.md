@@ -14,21 +14,21 @@
     Get-AzureRmLoadBalancerProbeConfig -LoadBalancer $slb
 ```
 
-2.  Verify which ports Service Fabric applications are configured to listen on. Check the application's service manifest to see which port port is configured. It is also possible for a service to be configured for dynamic port binding, in which case the port number is not assigned in the service manifest file, but will be assigned at runtime from the Application Port range which is defined in the Cluster Manifest.
+2. Verify which ports Service Fabric applications are configured to listen on. Check the application's service manifest to see which port port is configured. It is also possible for a service to be configured for dynamic port binding, in which case the port number is not assigned in the service manifest file, but will be assigned at runtime from the Application Port range which is defined in the Cluster Manifest.
 
-3.  [Check for a Network Security Group](../Security/NSG configuration for Service Fabric clusters Applied at VNET level.md) which might be blocking external traffic.
+3. [Check for a Network Security Group](../Security/NSG configuration for Service Fabric clusters Applied at VNET level.md) which might be blocking external traffic.
 
-4.  RDP to the VM to determine which EXE is listening on the internal port.
+4. RDP to the VM to determine which EXE is listening on the internal port.
 
 - [Determine Processes Listening on Port](../Cluster/Determine%20Process%20Listening%20on%20Port.md)
 
-5.  RDP to the VM and try to connect locally 
+5. RDP to the VM and try to connect locally 
 
 - ie. http://localhost:8892/api/values
 
-6.  At this point you know how traffic should flow from the client to the server process and you can do basic network troubleshooting (ie. netmon, attach debugger, etc)
+6. At this point you know how traffic should flow from the client to the server process and you can do basic network troubleshooting (ie. netmon, attach debugger, etc)
 
-7.  For a service where the external port is load balanced to all of the backend VMs it is often not possible to determine which VM the client will be connecting to. In this scenario you have a few options to troubleshoot:
+7. For a service where the external port is load balanced to all of the backend VMs it is often not possible to determine which VM the client will be connecting to. In this scenario you have a few options to troubleshoot:
 
     - If long running TCP connections are used, wait for the client to connect and then try to determine which VM the client is connected to (netmon on the Azure VMs). This can be problematic if there are a large number of VMs.
 
