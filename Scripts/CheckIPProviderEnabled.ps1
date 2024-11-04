@@ -2,6 +2,7 @@
 
 .SYNOPSIS
     Script to Determine if any Service Fabric cluster has Open Networking feature enabled and is not running on a patched version 
+    Also checking if cluster is running 7.0 =>7.0CU3 (7.0.455 => 7.0.469) using Windows Container feature (irrespective of whether open network feature is enabled or disabled)
 
 .DESCRIPTION
     Usage Instructions: .\CheckIPProviderEnabled.ps1 @("{subscription id 1}", "{subscription id 1}", "{subscription id ...}")
@@ -75,11 +76,30 @@ ForEach($subscriptionId in $subscriptionIdArray)
             )
         { $lowVersion = $true } else { $lowVersion = $false }
 
+        $is7EdgeCase = 0;
+
+        # check if we are on a 7.0 =>7.0CU3 (7.0.455 => 7.0.469) and using Windows Container Feature
+        if( ($clusterVersion.Major -eq 7) -and ($clusterVersion.Minor -eq 0) -and ($clusterVersion.Build -lt 470))
+        { 
+            $vmssList = get-azvmss -ResourceGroupName $cluster.ResourceGroupName
+
+            foreach($vmss in $vmssList)
+            {
+                $vmssVm = Get-AzVmssVM -ResourceGroupName $cluster.ResourceGroupName -VMScaleSetName $vmss.Name -InstanceId 0
+                $OsType = $vmssVm.StorageProfile.OsDisk.OsType
+                $OsSku = $vmssVm.StorageProfile.ImageReference.Sku
+                if($OsType -eq 'Windows' -and $OsSku -like '*with-Containers*') {
+                    $is7EdgeCase++
+                }
+            }
+        } 
+
+        Write-Host " "
 
         # check if the Open Network feature is enabled
         try {$IPProvider = $hosting.Parameters | Where-Object -Property Name -eq "IPProviderEnabled"} catch {}
 
-        if(($IPProvider) -and ($IPProvider.Value = $true))
+        if((($IPProvider) -and ($IPProvider -eq $true)) -or ($is7EdgeCase -gt 0))
         {
             if(($clusterVersion.Major -eq $PatchLevel.Major) `
             -and ($clusterVersion.Minor -eq $PatchLevel.Minor) `
@@ -96,21 +116,32 @@ ForEach($subscriptionId in $subscriptionIdArray)
             {
                 $issuesFound++
                 Write-Host "   **Problem** resourceId: " $manifest.Id -ForegroundColor Red
-                Write-Host "        Open Networking in use: " $IPProvider.Value
-                Write-Host "                  Code Version: " $clusterVersion
-                Write-Host "                 Patch Version: " $PatchLevel
-                Write-Host "                  Upgrade Mode: " $upgradeMode
-                Write-Host "    SF CodeVersion is vulnerable and feature is enabled!  If you are using the open networking feature, please upgrade by Nov 15, 2020 to a supported/patched version of Service Fabric to avoid service disruptions, otherwise please disable this feature." -ForegroundColor Red            }
-
+                if(($IPProvider) -and ($IPProvider -eq $true))
+                {
+                    Write-Host "                    Open Networking in use: " $IPProvider.Value
+                }
+                Write-Host "      7.0 < CU4 w/Container Feature in use: " ($is7EdgeCase -gt 0)
+                Write-Host "                              Code Version: " $clusterVersion
+                Write-Host "                             Patch Version: " $PatchLevel
+                Write-Host "                              Upgrade Mode: " $upgradeMode
+                if($lowVersion) { 
+                    $issuesFound++ 
+                    Write-Host "    SF CodeVersion is vulnerable and Open Networking feature is enabled!  Please upgrade immediately to a supported/patched version of Service Fabric to avoid service disruptions, otherwise please disable this feature." -ForegroundColor Red
+                }
+                if($is7EdgeCase -gt 0) { 
+                    $issuesFound++ 
+                    Write-Host "    SF CodeVersion is 7.0 =>7.0CU3 (7.0.455 => 7.0.469) and using Windows Container Feature on one or more nodetypes.  Please upgrade immediately to a supported/patched version of Service Fabric to avoid service disruptions." -ForegroundColor Red
+                }
+            }
         } else {
             if($lowVersion)
             {
-                $issuesFound++
+                $issuesFound++ 
                 Write-Host "   **Problem** resourceId: " $manifest.Id -ForegroundColor Red
-                Write-Host "        Open Networking in use: False" 
-                Write-Host "                  Code Version: " $clusterVersion
-                Write-Host "                  Upgrade Mode: " $upgradeMode
-                Write-Host "    SF CodeVersion is < 6.4, please upgrade by Nov 15, 2020 to a supported/patched version of Service Fabric to avoid service disruptions." -ForegroundColor Red
+                Write-Host "                    Open Networking in use: " $lowVersion
+                Write-Host "                              Code Version: " $clusterVersion
+                Write-Host "                              Upgrade Mode: " $upgradeMode
+                Write-Host "    SF CodeVersion is < 6.4, please upgrade immediately to a supported/patched version of Service Fabric to avoid service disruptions." -ForegroundColor Red
             }
             else
             {
@@ -130,4 +161,3 @@ if($issuesFound -eq 0)
 {
     Write-Host "All Clear - no issues were found!"
 }
-
