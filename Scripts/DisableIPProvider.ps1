@@ -9,6 +9,7 @@
  .SYNOPSIS
     Update the Service Fabric Cluster to disable IPProviderEnabled settings
         Automating steps found in https://github.com/Azure/Service-Fabric-Troubleshooting-Guides/blob/master/Cluster/unsupported-ipprovider.md
+    Also covers edge case for clusters running 7.0 =>7.0CU3 (7.0.455 => 7.0.469) using Windows Container feature (irrespective of whether open network feature is enabled or disabled)
 
  .DESCRIPTION
     Script can be used to recover an unpatched Service Fabric cluster running > 6.3.63 with open networking enabled. 
@@ -40,6 +41,7 @@ Param(
     [string]$clusterDataRootPath = 'd:\svcfab',
     [ValidateNotNullOrEmpty()]
     [string]$tempPath = 'd:\temp',
+    [switch]$removeContainerFeature,
     [switch]$cacheCredentials,
     [switch]$localOnly
 )
@@ -139,6 +141,24 @@ $scriptBlock = {
     $settingsPath = ($clusterDataRootPath)
     Write-Host "$env:computername : Settings path: " $settingsPath
 
+    # if cluster is running 7.0 =>7.0CU3 (7.0.455 => 7.0.469) using Windows Container feature (irrespective of whether open network feature is enabled or disabled)
+    # it should be disabled to allow the Cluster Upgrade
+    if( ($clusterVersion.Major -eq 7) -and ($clusterVersion.Minor -eq 0) -and ($clusterVersion.Build -lt 470))
+    {
+        $isContainerFeatureInstalled = Get-WindowsFeature -Name "containers"
+        if($isContainerFeatureInstalled.Installed)
+        {
+            Write-Host "Cluster is running 7.0 =>7.0CU3 (7.0.455 => 7.0.469) and is using Windows Container feature.  To mitigate the security issue the cluster must be upgraded.  If the cluster is already in a failed state the Windows Container Feature must be removed to allow a cluster upgrade to complete successfully." -ForegroundColor Yellow
+
+            if($removeContainerFeature) {                
+                Write-Host "Removing Windows Container feature"
+                $isContainerFeatureInstalled | Remove-WindowsFeature
+            } else {
+                Write-Host "WARNING: to remove the Windows Container feature please rerun this script and use the -removeContainerFeature switch" -ForegroundColor Yellow
+            }
+        }
+    }
+
     # Validating whether Manifest file already contain IPProviderEnabled parameter with true                   
     [object]$tempIPPE = get-content ($settingsPath + '\FabricHostSettings.xml') | select-string -pattern '<Parameter Name="IPProviderEnabled" Value="true" />' -AllMatches
                 
@@ -189,7 +209,7 @@ function fixNodes($title, $scriptBlock, $nodeIpArray) {
         #Verifying whether corresponding VM is up and running
         if (Test-Connection -ComputerName $nodeIpAddress -Quiet) {
             $activity = "$title : total minutes: $(((get-date) - $startTime).TotalMinutes.tostring("0.0")). connecting to: $nodeIpAddress  ($count of $($nodeIpArray.Count))"
-            $status = "success: $($global:successNodes | sort -Unique) fail: $($global:failNodes | sort -Unique)"
+            $status = "success: $($global:successNodes | Sort-Object -Unique) fail: $($global:failNodes | sort -Unique)"
             Write-Progress -Activity $activity `
                 -Status $status `
                 -PercentComplete (($count / $nodeIpArray.Count) * 100)
@@ -269,13 +289,13 @@ Write-Progress -Completed -Activity "complete"
 if ($global:successNodes) {
     $successUnique = $global:successNodes | sort-object -Unique
     write-host "total node success: $(@($successUnique).Count)" -ForegroundColor green
-    write-host ($successUnique | fl * | out-string)
+    write-host ($successUnique | Format-List * | out-string)
 }
     
 if ($global:failNodes) {
     $failUnique = $global:failNodes | sort-object -Unique
     write-warning "`r`ntotal node failed: $(@($failUnique).Count). review output"   
-    write-host ($failUnique | fl * | out-string)
+    write-host ($failUnique | Format-List * | out-string)
     write-warning "for any failed nodes, rdp to node and run this script with '-localOnly' switch"
 }
 
