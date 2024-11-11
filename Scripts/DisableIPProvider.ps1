@@ -23,6 +23,9 @@
  .PARAMETER tempPath
     Temporary path to store backup files. default 'd:\temp'
 
+.PARAMETER removeContainerFeature
+    switch to optionally remove the container feature if the 7.0 edge case is detected.
+
  .PARAMETER cacheCredentials
     switch to optionally enable storing credentials in $global:creds variable.
     to clear, execute: $global:creds=$null
