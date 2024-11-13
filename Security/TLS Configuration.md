@@ -47,6 +47,9 @@ Service Fabric Upgrade Service (FabricUS.exe) currently depends on TLS 1.0, but 
 So  if you want to force FabricUS.exe to leverage TLS 1.2 protocol, please tweak the registry key as suggested in Option:2 or 3, so that the DotNet Framework will default to TLS 1.2.
 
 
+# See more: 
+https://azure.microsoft.com/en-us/blog/how-to-disable-ssl-3-0-in-azure-websites-roles-and-virtual-machines/
+
 # Linux Clusters
 
 Update the cluster settings in Security section - EnforceLinuxMinTlsVersion and TLS1_2_CipherList as needed
