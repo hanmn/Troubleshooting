@@ -44,7 +44,7 @@ Service Fabric Upgrade Service (FabricUS.exe) currently depends on TLS 1.0, but 
 1. Cluster will be showing **UpgradeServiceNotReachable** status
 2. Azure Portal cannot display the node and application status.
 
-So  if you want to force FabricUS.exe to leverage TLS 1.2 protocol, please tweak the registry key as suggested in Option:2 or 3, so that the DotNet Framework will default to TLS 1.2.
+So  if you want to force FabricUS.exe to leverage TLS 1.2 protocol, please tweak the registry key as suggested in Option:2 or 3, so that the DotNet Framework will default to TLS 1.2. If you have no other dependency on TLS 1.0 planned you can also use the machine wide configuration presented in Option 1.
 
 
 # Linux Clusters
