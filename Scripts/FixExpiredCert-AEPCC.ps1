@@ -332,6 +332,9 @@ if (!$global:creds) {
         $global:creds = $creds
     }
 }
+else{
+    $creds = $global:creds
+}
 
 function fixNodes($title, $scriptBlock, $nodeIpArray) {
     $count = 0
