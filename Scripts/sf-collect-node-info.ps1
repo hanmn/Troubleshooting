@@ -4,7 +4,7 @@ powershell script to collect service fabric node diagnostic data
 
 To download and execute:
 invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
-.\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
+.\sf-collect-node-info.ps1
 
 optional download for event logs:
 invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
@@ -80,9 +80,14 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
 .PARAMETER apiVersion
     api version for testing fabricgateway endpoint with service fabric rest api calls.
 
+.PARAMETER cacheCredentials
+    switch enable storing credentials in $global:creds variable.
+    to clear, execute: $global:creds=$null
+
 .PARAMETER certInfo
-    switch to enable collection of certificate store export to troubleshoot certificate issues.
+    bool to enable collection of certificate store export to troubleshoot certificate issues.
     thumbprints and serial numbers during export will be partially masked.
+    default true.
 
 .PARAMETER endTime
     end time in normal dateTime formatting.
@@ -98,7 +103,7 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
 
 .PARAMETER logMin
     if greater than 0, minutes of log files to collect based on last write time
-    default 60 minutes
+    default 30 minutes
 
 .PARAMETER netmonMin
     minutes to run network trace at end of collection after all jobs run.
@@ -162,7 +167,7 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
 [CmdletBinding()]
 param(
     [string]$workdir,
-    [switch]$certInfo,
+    [bool]$certInfo = $true,
     [string]$eventLogNames = "System$|Application$|wininet|dns|Fabric|http|Firewall|Azure|insight",
     [string]$externalUrl = "bing.com",
     [dateTime]$startTime = (get-date).AddDays(-7),
@@ -170,7 +175,7 @@ param(
     [int]$netmonMin,
     [string]$networkTestAddress = $env:computername,
     [int]$perfmonMin,
-    [object]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985),
+    [object[]]$ports = @(1025, 1026, 19000, 19080, 135, 445, 3389, 5985),
     [int]$timeoutMinutes = [Math]::Max($perfmonMin, $netmonMin) + 15,
     [string]$apiversion = "6.2-preview", #"6.0"
     [string[]]$remoteMachines,
@@ -181,14 +186,15 @@ param(
     [switch]$noSF,
     [switch]$quiet,
     [string]$runCommand,
-    [int]$logMin = 60,
+    [int]$logMin = 30,
     [string]$defaultFabricLogRoot = 'd:\svcfab\log',
-    [string]$defaultFabricDataRoot = 'd:\svcfab'
+    [string]$defaultFabricDataRoot = 'd:\svcfab',
+    [switch]$cacheCredentials
 )
 
-Set-StrictMode -Version Latest
 $PSModuleAutoLoadingPreference = 2
 $ErrorActionPreference = "Continue"
+$creds = $null
 $timer = get-date
 $currentWorkDir = get-location
 $osInfo = (get-wmiobject -Class Win32_OperatingSystem -Namespace root\cimv2)
@@ -294,6 +300,20 @@ function main() {
     }
 
     if ($remoteMachines) {
+
+        if (!$global:creds) {
+            Write-Host "Enter your RDP Credentials"
+            #Get the RDP User Name and Password
+            $creds = Get-Credential
+        
+            if ($cacheCredentials) {
+                $global:creds = $creds
+            }
+        }
+        else {
+            $creds = $global:creds
+        }
+        
         # setup local (source) machine for best chance of success
         $winrmClientInfo = (winrm get winrm/config/client)
         $trustedHostsPattern = "TrustedHosts = (.*)"
@@ -310,6 +330,16 @@ function main() {
         foreach ($machine in (new-object collections.arraylist(, $remoteMachines))) {
             $adminPath = "\\$($machine)\admin$\temp"
 
+            Invoke-Command -Authentication Negotiate -ComputerName $machine -scriptBlock {
+                $logFile = "c:\windows\temp\fw.txt"
+                $displayGroup = 'File and Printer Sharing'
+                if ((Get-NetFirewallRule -DisplayGroup $displayGroup).Enabled -icontains 'false') {
+                    Write-Warning "enabling firewall $displayGroup" | out-file -Append $logFile
+                    Set-NetFirewallRule -DisplayGroup $displayGroup -Enabled True -PassThru |
+                    Select-Object DisplayName, Enabled
+                }
+            } -Credential $creds
+    
             if (!(Test-path $adminPath)) {
                 Write-Warning "unable to connect to $($machine) to start diagnostics. skipping!"
                 $remoteMachines.Remove($machine)
@@ -323,7 +353,7 @@ function main() {
             copy-item -path ($MyInvocation.ScriptName) -Destination $adminPath -force
 
             write-host "adding job for $($machine)"
-            [void]$jobs.Add((Invoke-Command -JobName $machine -AsJob -ComputerName $machine -scriptblock {
+            [void]$jobs.Add((Invoke-Command -JobName $machine -AsJob -ComputerName $machine -Credential $creds -scriptblock {
                         param($scriptUrl = $args[0], $machine = $args[1], $sfCollectInfoDir = $args[2], $allParams = $args[3])
                         $parentWorkDir = "$($env:systemroot)\temp"
                         $workDir = "$($parentWorkDir)\$($sfCollectInfoDir)$($machine)"
@@ -338,13 +368,15 @@ function main() {
                             if ($item.key -imatch "quiet" -or $item.key -imatch "noadmin" -or $item.key -imatch "workdir") {
                                 continue
                             }
+                            if (@($item.value).count -gt 1) {
+                                $item.value = $item.value -join ','
+                            }
 
                             $sb.Append("-$($item.key) $($item.value) ")
                         }
                         
-                        $arguments = "-File $($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
-                        write-host "powershell.exe $($arguments)"
-                        start-process -filepath "powershell.exe" -ArgumentList $arguments -Wait -NoNewWindow
+                        write-host "executing: $($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
+                        Invoke-Expression "$($scriptPath) -quiet -noadmin -workdir $($workDir) $($sb.tostring())"
                         write-host ($error | out-string)
                     } -ArgumentList @($scriptUrl, $machine, $sfCollectInfoDir, $global:allparams)))
         }
@@ -386,6 +418,17 @@ function main() {
             else {
                 write-host "warning: unable to find diagnostic files in $($sourcePath)"
             }
+
+            Invoke-Command -Authentication Negotiate -ComputerName $machine -scriptBlock {
+                $logFile = "c:\windows\temp\fw.txt"
+                $displayGroup = 'File and Printer Sharing'
+                if ((test-path $logFile)) {
+                    Write-Warning "disabling firewall $displayGroup" | out-file -Append $logFile
+                    Set-NetFirewallRule -DisplayGroup $displayGroup -Enabled False -PassThru |
+                    Select-Object DisplayName, Enabled
+                    Remove-Item $logFile
+                }
+            } -Credential $creds -ArgumentList $logFile
         }
 
         $global:zipFile = compress-file $workDir
@@ -613,7 +656,8 @@ function process-machine() {
 
     if ($certInfo) {
         write-host "certs (output scrubbed)"
-        [regex]::Replace((Get-ChildItem -Path cert: -Recurse | format-list * | out-string), "[0-9a-fA-F]{20}`r`n", "xxxxxxxxxxxxxxxxxxxx`r`n") | out-file "$($workdir)\certs.txt"
+        certutil -verifystore MY | out-file "$($workdir)\certs.txt"
+        [regex]::Replace((get-content -raw "$($workdir)\certs.txt"), "[0-9a-fA-F]{20}`r`n", "xxxxxxxxxxxxxxxxxxxx`r`n") | out-file "$($workdir)\certs.txt"
     }
     
     #
@@ -757,7 +801,7 @@ function enumerate-serviceFabric() {
             foreach ($file in (Get-ChildItem -Path $fabricLogRoot -Recurse).FullName) {
                 try {
                     if (![regex]::isMatch($file, ".+?(?:\.trace$|\.blg$|\.etl$|\.dtr$|\.zip$|\\sfcontainerlogs.+?\.(?:out|err)$)", [text.regularExpressions.regexOptions]::ignoreCase)) {
-                        write-host "skipping file $file"
+                        write-verbose "skipping file $file"
                         continue
                     }
                     $fileInfo = new-object io.fileInfo($file)
@@ -766,7 +810,7 @@ function enumerate-serviceFabric() {
                         copy-item -Path $file -Destination $workdir
                     }
                     else {
-                        write-host "skipping file $file $($fileInfo.LastWriteTime)"
+                        write-verbose "skipping file $file $($fileInfo.LastWriteTime)"
                     }
                 }
                 catch {
@@ -942,9 +986,6 @@ function rest-query($cert, $url) {
 try {
     # process command line arguments on recursive call
     # arrays on command line easier to pass as strings
-    if (@($ports).count -le 1) {
-        [object[]]$ports = $ports.Replace(" ", ",").Split(",")
-    }
 
     # create argument list with all values including defaults
     foreach ($param in $MyInvocation.MyCommand.Parameters.GetEnumerator()) {
@@ -963,6 +1004,15 @@ try {
             continue
         }
 
+        if ($param.Value.ParameterType -imatch "bool") {
+            if ($paramValue -ieq 'true') {
+                $paramValue = 1
+            }
+            else {
+                $paramValue = 0
+            }
+        }
+
         # remove switches unless true
         if ($param.Value.ParameterType -imatch "switch" -and $paramValue.Ispresent -eq $false) {
             continue
@@ -975,6 +1025,9 @@ try {
         if ($param.Value.ParameterType -imatch "string" -and !$paramValue) {
             continue
         }
+        elseif ($param.Value.ParameterType -imatch "string") {
+            $paramValue = "`"$paramValue`""
+        }
 
         # join arrays passed as string due to command line issues with arrays
         if ($param.Value.ParameterType.IsArray -and $paramValue) {
@@ -986,7 +1039,7 @@ try {
             #$paramValue = "`'$($arr)`'"
         }
         
-        if ($paramValue) {
+        if ($paramValue -and $paramValue.ToString().Contains(' ')) {
             $global:allparams.Add($param.key, "`"$($paramValue)`"")
         }
         else {

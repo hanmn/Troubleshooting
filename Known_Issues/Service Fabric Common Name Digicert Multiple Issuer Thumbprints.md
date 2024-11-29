@@ -4,7 +4,6 @@
 [Affects](#Affects)  
 [Symptoms](#Symptoms)  
 [Cause](#Cause)  
-[Impact](#Impact)  
 [Mitigation](#Mitigation)  
 [Resolution](#Resolution)  
 

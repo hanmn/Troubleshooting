@@ -10,10 +10,14 @@ Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher
    * Error message related to Certificate in  '%SystemRoot%\System32\Winevt\Logs\Microsoft-ServiceFabric%4Admin.evtx'  event log from 'transport' resource
 
 ## [Verify Certificate Expired Status on Node]
-   * RDP to any node
-        * Open the Certificate Mgr for 'Local Computer' and check below details
+   * [RDP](https://docs.microsoft.com/azure/service-fabric/service-fabric-cluster-remote-connect-to-azure-cluster-node) to any node
+        * Open the Certificate Manager for 'Local Computer' (certlm.msc) and check below details
         * Make sure certificate is ACL'd to network service
         * Verify the Certificate Expiry, if it is expired, follow below steps
+
+![](../media/certlm1.png)  
+
+![](../media/certlm2.png)  
 
 ## [Fix Expired Cert steps]
 
@@ -112,7 +116,7 @@ Service Fabric clusters running 6.5 CU3 or later (version 6.5.658.9590 or higher
 
 ![resources.azure.com vmss provisioningstate succeeded](../media/resourcemgr11.png)
 
-7. RDP into node 0 for each NodeType in the cluster
+7. [RDP](https://docs.microsoft.com/azure/service-fabric/service-fabric-cluster-remote-connect-to-azure-cluster-node) into node 0 for each NodeType in the cluster
 
     * if a cluster has a single nodetype they only need to RDP into one of the nodes
 

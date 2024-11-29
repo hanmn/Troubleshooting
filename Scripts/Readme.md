@@ -17,7 +17,7 @@ Each script will describe its own dependencies for execution.  Generally, you wi
 A great place to find such an environment is the [Azure Cloud Shell](https://azure.microsoft.com/en-us/features/cloud-shell/).
 
 ### **Find Your Way**
-The repo is organized by support scenario and each support topic contains a description of the articles in a [readme.md](../readme.md).  The scripts in this folder act as resources for various articles in this repo which provide details on how to use effectively use them.
+The repo is organized by support scenario and each support topic contains a description of the articles in a [readme.md](../README.md).  The scripts in this folder act as resources for various articles in this repo which provide details on how to use effectively use them.
 
 ### **Liability**
 As described in the [MIT license](../LICENSE-CODE), these scripts are provided as-is with no warranty or liability associated with their use.

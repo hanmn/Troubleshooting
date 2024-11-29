@@ -56,7 +56,7 @@ https://github.com/ChackDan/Service-Fabric/tree/master/ARM%20Templates/ReversePr
         ]
 ```
 
->> b. If the new certificate is in a **different Key Vault** as the Primary add an additional secret to the array of 'secrets' as shown below, or alternatively use [Add new cert to VMSS](.\Add_New_Cert_To_VMMS.ps1)
+>> b. If the new certificate is in a **different Key Vault** as the Primary add an additional secret to the array of 'secrets' as shown below, or alternatively use [Add new cert to VMSS](../Scripts/Add_New_Cert_To_VMSS.ps1)
 
 ```json
 "virtualMachineProfile": {
