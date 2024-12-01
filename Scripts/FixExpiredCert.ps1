@@ -93,6 +93,11 @@ $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $ce
         Do {
             Start-Sleep -Seconds 1
             $bootstrapService = Get-Service -Name $bootstrapAgent
+
+            if(!$bootstrapService) {
+                break
+            }
+
             if ($bootstrapService.Status -eq "Stopped") {
                 Write-Host "$env:computername : $bootstrapAgent now stopped" -ForegroundColor Green
             }
@@ -110,6 +115,11 @@ $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $ce
         Do {
             Start-Sleep -Seconds 1
             $fabricHostService = Get-Service -Name $fabricHost
+
+            if(!$fabricHostService) {
+                break
+            }
+
             if ($fabricHostService.Status -eq "Stopped") {
                 Write-Host "$env:computername : $fabricHost now stopped" -ForegroundColor Green
             }
@@ -132,6 +142,11 @@ $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $ce
         Do {
             Start-Sleep -Seconds 1
             $fabricHostService = Get-Service -Name $fabricHost
+
+            if(!$fabricHostService) {
+                break
+            }
+
             if ($fabricHostService.Status -eq "Running") {
                 Write-Host "$env:computername : $fabricHost now running" -ForegroundColor Green
             }
@@ -150,6 +165,11 @@ $scriptBlock = { param($clusterDataRootPath, $oldThumbprint, $newThumbprint, $ce
         Do {
             Start-Sleep -Seconds 1
             $bootstrapService = Get-Service -Name $bootstrapAgent
+
+            if(!$bootstrapService) {
+                break
+            }
+
             if ($bootstrapService.Status -eq "Running") {
                 Write-Host "$env:computername : $bootstrapAgent now running" -ForegroundColor Green
             }
