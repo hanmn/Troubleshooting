@@ -314,6 +314,9 @@ if (!$global:creds) {
         $global:creds = $creds
     }
 }
+else{
+    $creds = $global:creds
+}
 
 ForEach ($nodeIpAddress in $nodeIpArray) {
     $count++
