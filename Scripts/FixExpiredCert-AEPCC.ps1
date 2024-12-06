@@ -171,6 +171,11 @@ $scriptBlock = {
         Do {
             Start-Sleep -Seconds 1
             $bootstrapService = Get-Service -Name $bootstrapAgent
+
+            if(!$bootstrapService) {
+                break
+            }
+
             if ($bootstrapService.Status -eq "Stopped") {
                 Write-Host "$env:computername : $bootstrapAgent now stopped" 
             }
@@ -188,6 +193,11 @@ $scriptBlock = {
         Do {
             Start-Sleep -Seconds 1
             $fabricHostService = Get-Service -Name $fabricHost
+
+            if(!$fabricHostService) {
+                break
+            }
+
             if ($fabricHostService.Status -eq "Stopped") {
                 Write-Host "$env:computername : $fabricHost now stopped" 
             }
@@ -205,8 +215,8 @@ $scriptBlock = {
     function StartServiceFabricServices {
         $bootstrapAgent = "ServiceFabricNodeBootstrapAgent"
         $fabricHost = "FabricHostSvc"
-
         $fabricHostService = Get-Service -Name $fabricHost
+
         if ($fabricHostService.Status -eq "Stopped") {
             Start-Service $fabricHost -ErrorAction SilentlyContinue
             Write-Host "$env:computername : Starting $fabricHost service" 
@@ -214,6 +224,11 @@ $scriptBlock = {
         Do {
             Start-Sleep -Seconds 1
             $fabricHostService = Get-Service -Name $fabricHost
+
+            if(!$fabricHostService) {
+                break
+            }
+
             if ($fabricHostService.Status -eq "Running") {
                 Write-Host "$env:computername : $fabricHost now running" 
             }
@@ -232,6 +247,11 @@ $scriptBlock = {
         do {
             Start-Sleep -Seconds 1
             $bootstrapService = Get-Service -Name $bootstrapAgent
+            
+            if(!$bootstrapService) {
+                break
+            }
+
             if ($bootstrapService.Status -eq "Running") {
                 Write-Host "$env:computername : $bootstrapAgent now running" 
             }
@@ -331,6 +351,9 @@ if (!$global:creds) {
     if ($cacheCredentials) {
         $global:creds = $creds
     }
+}
+else{
+    $creds = $global:creds
 }
 
 function fixNodes($title, $scriptBlock, $nodeIpArray) {
