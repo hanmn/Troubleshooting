@@ -50,7 +50,7 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
 - Windows 2012 / Windows  2016 Service Fabric cluster
 - Script files:
     - [sf-collect-node-info.ps1](../Scripts/sf-collect-node-info.ps1)
-    - [event-log-manager.ps1](http://aka.ms/event-log-manager.ps1)  
+    - [event-log-manager.ps1](../Scripts/event-log-manager.ps1)  
         NOTE: event-log-manager.ps1 is used to process Windows Event logs and will be downloaded automatically if there is network connectivity.
 
 # Setup
@@ -62,8 +62,8 @@ There are multiple ways to run this script to collect information.
 # Instructions
 1. Copy the script files specified above to location where script will be executed. If network connectivity exists on machine where script will be executed, the following command can be used to download:
 ```powershell
-    (new-object net.webclient).downloadfile("https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/S
-    cripts/sf-collect-node-info.ps1","$pwd\sf-collect-node-info.ps1");
+    invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/S
+    cripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
 ```
 2. Preferably, open Administrator Powershell prompt.  
     **NOTE: A non-Administrator powershell prompt can be used if needed but not all data will be collected.**
@@ -87,16 +87,12 @@ SYNOPSIS
     powershell script to collect service fabric node diagnostic data
 
     To download and execute:
+    [net.servicePointManager]::Expect100Continue = $true;[net.servicePointManager]::SecurityProtocol = [net.securityProtocolType]::Tls12;
     invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
-    .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
+    .\sf-collect-node-info.ps1
 
-    optional download for event logs:
-    invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
-    
-    .\sf-collect-node-info.ps1 -certInfo -remoteMachines 10.0.0.4,10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8
-    
-    upload to workspace sfgather* dir or zip
-
+    optional download for event log conversion:
+    invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
 
 SYNTAX
     C:\github\jagilber\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1 [[-workdir] <String>] [-certInfo] [[-eventLogNames] <String>] [[-externalUrl] <String>] [[-startTime] <DateTime>]     

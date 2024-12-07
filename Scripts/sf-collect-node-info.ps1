@@ -3,11 +3,12 @@
 powershell script to collect service fabric node diagnostic data
 
 To download and execute:
+[net.servicePointManager]::Expect100Continue = $true;[net.servicePointManager]::SecurityProtocol = [net.securityProtocolType]::Tls12;
 invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
 .\sf-collect-node-info.ps1
 
-optional download for event logs:
-invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
+optional download for event log conversion:
+invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/event-log-manager.ps1" -outFile "$pwd\event-log-manager.ps1";
 
 if working with microsoft support, upload to workspace the outputted sfgather* directory or zip file
 
@@ -50,8 +51,9 @@ if working with microsoft support, upload to workspace the outputted sfgather* d
 .NOTES
     File Name  : sf-collect-node-info.ps1
     Author     : microsoft service fabric support
-    Version    : 200721 add collection of blg and sfcontainer.out files
+    Version    : 210307 add tls settings and update event-log-manager url
     History    :
+                200721 add collection of blg and sfcontainer.out files
                 200719 add collection of log files default 60 min
 
 .EXAMPLE
@@ -192,6 +194,8 @@ param(
     [switch]$cacheCredentials
 )
 
+[net.servicePointManager]::Expect100Continue = $true;
+[net.servicePointManager]::SecurityProtocol = [net.securityProtocolType]::Tls12;
 $PSModuleAutoLoadingPreference = 2
 $ErrorActionPreference = "Continue"
 $creds = $null
@@ -288,7 +292,7 @@ function main() {
     # stage event-log-manager script
     if (!$noEventLogs -and !(test-path $eventScriptFile)) {
         try {
-            invoke-webRequest "http://aka.ms/event-log-manager.ps1" -outFile $eventScriptFile
+            invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/event-log-manager.ps1" -outFile $eventScriptFile
         }
         catch {
             write-warning ($error | Out-String)
