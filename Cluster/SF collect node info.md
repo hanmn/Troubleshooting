@@ -62,8 +62,7 @@ There are multiple ways to run this script to collect information.
 # Instructions
 1. Copy the script files specified above to location where script will be executed. If network connectivity exists on machine where script will be executed, the following command can be used to download:
 ```powershell
-    invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/S
-    cripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
+    invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
 ```
 2. Preferably, open Administrator Powershell prompt.  
     **NOTE: A non-Administrator powershell prompt can be used if needed but not all data will be collected.**
