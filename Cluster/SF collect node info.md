@@ -1,9 +1,11 @@
 # Collecting Service Fabric Windows node diagnostics data
 
-When working with Microsoft support on a Service Fabric Windows cluster issue, it may be necessary to capture additional diagnostics information from one or more nodes in the cluster. 
+When working with Microsoft support on a Service Fabric Windows cluster issue, it may be necessary to capture additional diagnostics information from one or more nodes in the cluster.  
 
-## Default diagnostic information script will collect:
+## Default diagnostic information script will collect  
+
 **NOTE: All of these options can be disabled using switch arguments when running script.**
+
 - Windows Event Logs - System, Application, Firewall, Http, Service Fabric
 - Operating System information
     - Drive configuration
@@ -41,44 +43,55 @@ When working with Microsoft support on a Service Fabric Windows cluster issue, i
     - REST queries to local FabricGateway for Cluster / Node / App / and Service events
     - .etl, .trace, and .zip files from fabric log root for default last 60 minutes
 
-## Optional diagnostic information script can collect:
+## Optional diagnostic information script can collect  
+
 - Certificate information store list
 - Performance Monitor counter collection for basic performance
 - Network trace
 
-# Requirements
+## Requirements  
+
 - Windows 2012 / Windows  2016 Service Fabric cluster
 - Script files:
     - [sf-collect-node-info.ps1](../Scripts/sf-collect-node-info.ps1)
     - [event-log-manager.ps1](../Scripts/event-log-manager.ps1)  
         NOTE: event-log-manager.ps1 is used to process Windows Event logs and will be downloaded automatically if there is network connectivity.
 
-# Setup
-There are multiple ways to run this script to collect information.
+## Setup  
+
+There are multiple ways to run this script to collect information.  
+
 1. RDP and run script locally on each node(s).
 2. Assuming proper connectivity and authentication, from administrator machine, run script remotely for each node(s).
 3. Assuming proper connectivity and authentication, RDP into a node and run script remotely for each node(s).
 
-# Instructions
+## Instructions  
+
 1. Copy the script files specified above to location where script will be executed. If network connectivity exists on machine where script will be executed, the following command can be used to download:
+
 ```powershell
     invoke-webRequest "https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1" -outFile "$pwd\sf-collect-node-info.ps1";
 ```
+
 2. Preferably, open Administrator Powershell prompt.  
     **NOTE: A non-Administrator powershell prompt can be used if needed but not all data will be collected.**
-3. To execute with default configuration:
+3. To execute with default configuration:  
+
 ```powershell
     .\sf-collect-node-info.ps1
 ```
-4. After script has executed, instructions will be displayed showing location of zip file containing all of the diagnostics.
-5. Upload diagnostics zip file to case workspace.
+
+4. After script has executed, instructions will be displayed showing location of zip file containing all of the diagnostics.  
+5. Upload diagnostics zip file to case workspace.  
 6. For additional information about different arguments and switches, see 'Help' information below or from command prompt type:
+
 ```powershell
     help .\sf-collect-node-info.ps1 -full
 ```
 
-# Help
-```
+## Help  
+
+```text
 NAME
     C:\github\jagilber\Service-Fabric-Troubleshooting-Guides\Scripts\sf-collect-node-info.ps1
 
@@ -405,8 +418,10 @@ RELATED LINKS
     https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/master/Scripts/sf-collect-node-info.ps1
 
 ```
-# Example output directory file structure:
-```
+
+## Example output directory file structure  
+
+```text
 PS C:\temp> tree /a /f C:\Users\CLOUDA~1\AppData\Local\Temp\2\sfColInfo-NT0000000
 Folder PATH listing
 Volume serial number is 000000A6 20A7:59B7
@@ -806,7 +821,4 @@ C:\USERS\CLOUDA~1\APPDATA\LOCAL\TEMP\2\SFCOLINFO-NT0000000
             |       \---Code
             \---RuntimeSettings
                     0.settings
-                    
-
-PS C:\temp> 
-```
+```  
